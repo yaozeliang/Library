@@ -53,7 +53,7 @@
                                         <a href="{% url 'book_list' %}?search={{search}}&orderby=id">Id</a>  | 
                                         <a href="{% url 'book_list' %}?search={{ search }}&orderby=author">Author</a> |  
                                         <a href="{% url 'book_list' %}?search={{ search }}&orderby=title">Title</a> | 
-                                        <a href="{% url 'book_list' %}?search={{ search }}&orderby=category">Category</a> 
+                                        <a href="{% url 'book_list' %}?search={{ search }}&orderby=quantity">Quantity</a>
                                     </div>
    
                                     <div class="col-4">
@@ -80,9 +80,9 @@
                                                 <th>Title</th>
                                                 <th>Author</th>
                                                 <th>Category</th>
-                                                <th>Publisher</th>
                                                 <th>Status</th>
                                                 <th>Quantity</th>
+                                                <th>Location</th>
                                                 <th>Operation</th>
                                             </tr>
                                         </thead>
@@ -93,13 +93,14 @@
                                                 <th scope="row">{{book.id}}</th>
                                                 <td>{{book.title}}</td>
                                                 <td>{{book.author}}</td>
-                                                <th>{{book.category}}</th>
-                                                <td>{{book.publisher}}</td>
+                                                <td>{{book.category}}</td>
                                                 <!-- <td>{{book.updated|date:"Y/m/d H:i" }}</td> -->
                                                 <td>{{book.get_status_display}}</td>
                                                 <td>{{book.quantity}}</td>
+                                                <td>{{book.floor_number}}{{book.bookshelf_number}}</td>
                                                 <td>
-                                                    <a href="{% url 'book_detail' book.id%}" class="badge badge-info">Detail</a>&nbsp;
+                                                    <a href="{% url 'book_detail' book.id%}" class="badge badge-success">Detail</a>&nbsp;
+                                                    <a href="{% url 'book_update' book.id%}" class="badge badge-info">Update</a>&nbsp;
                                                     <a href="{% url 'book_delete' book.id%}" class="badge badge-warning">Delete</a>&nbsp;
                                                 </td>
 
@@ -119,18 +120,18 @@
 
                                           {% if books.has_previous %}
 
-                                          <li class="page-item "><a href="?page=1&order={{ order }}&search={{ search }}"><span class="page-link">First</span></a></li>
-                                          <li class="page-item"><a class="page-link" href="?page={{ books.previous_page_number }}&order={{ order }}&search={{ search }}">{{ books.previous_page_number }}</a></li>
+                                          <li class="page-item "><a href="?page=1&orderby={{ order }}&search={{ search }}"><span class="page-link">First</span></a></li>
+                                          <li class="page-item"><a class="page-link" href="?page={{ books.previous_page_number }}&orderby={{ order }}&search={{ search }}">{{ books.previous_page_number }}</a></li>
                                           <li class="page-item active"><a class="page-link" href=""> {{ books.number }}</a></li>
 
                                           {% else %}
-                                          <li class="page-item disabled"><a href="?page=1&order={{ order }}&search={{ search }}"><span class="page-link">First</span></a></li>
+                                          <li class="page-item disabled"><a href="?page=1&orderby={{ order }}&search={{ search }}"><span class="page-link">First</span></a></li>
                                           <li class="page-item active"><a class="page-link" href=""> {{ books.number }}</a></li>
                                           {% endif %}
 
                                           {% if books.has_next %}
-                                          <li class="page-item"><a class="page-link" href="?page={{ books.next_page_number }}&order={{ order }}&search={{ search }}">{{ books.next_page_number }}</a></li>
-                                          <li class="page-item"><a class="page-link" href="?page={{ books.paginator.num_pages }}&order={{ order }}&search={{ search }}">Last</a></li>
+                                          <li class="page-item"><a class="page-link" href="?page={{ books.next_page_number }}&orderby={{ order }}&search={{ search }}">{{ books.next_page_number }}</a></li>
+                                          <li class="page-item"><a class="page-link" href="?page={{ books.paginator.num_pages }}&orderby={{ order }}&search={{ search }}">Last</a></li>
                                           {% else %}
                                           <li class="page-item disabled"><a href=""><span class="page-link">End</span></a></li>
                                           {% endif %}

@@ -25,23 +25,30 @@ from django.contrib.messages.views import SuccessMessageMixin
 from django.core.files.storage import FileSystemStorage
 from django.contrib.messages.views import messages
 from django.views.decorators.csrf import csrf_exempt
+from .forms import BookPostForm
 
 class BookListView(ListView):
     model=Book
     context_object_name = 'books'
     template_name = 'book/booklist.html'
+    search_value=""
+    order_field="id"
 
     def get_queryset(self):
-        search =self.request.GET.get("search")  
-        order_by=self.request.GET.get("orderby","id")
-        all_books = Book.objects.all().order_by(order_by)
+        search =self.request.GET.get("search") 
+        order_by=self.request.GET.get("orderby")
+
+        if order_by:
+            all_books = Book.objects.all().order_by(order_by)
+            self.order_field=order_by
+        else:
+            all_books = Book.objects.all().order_by(self.order_field)
+
         if search:
             all_books = all_books.filter(
                 Q(title__icontains=search)|Q(author__icontains=search)
             )
-        else:
-            search = ''
-        self.search_value=search
+            self.search_value=search
         self.count_total = all_books.count()
         paginator = Paginator(all_books, 6)
         page = self.request.GET.get('page')
@@ -52,6 +59,7 @@ class BookListView(ListView):
         context = super(BookListView, self).get_context_data(*args, **kwargs)
         context['count_total'] = self.count_total
         context['search'] = self.search_value
+        context['order'] = self.order_field
         return context
 
 class BookDetailView(DetailView):
@@ -65,7 +73,7 @@ class BookDetailView(DetailView):
 
 class BookCreateView(CreateView):
     model=Book
-    fields=['author','title','description','category','publisher','quantity'] 
+    fields=['title','author','description','category','publisher','quantity','floor_number','bookshelf_number'] 
     template_name='book/book_create.html'
 
     def post(self,request, *args, **kwargs):
@@ -73,6 +81,26 @@ class BookCreateView(CreateView):
         new_book_name = request.POST['title']
         messages.success(request, f"New Book << {new_book_name} >> Added")
         return redirect('book_list')
+
+
+
+
+
+class BookUpdateView(LoginRequiredMixin,UpdateView):
+    model = Book
+    login_url = 'login'
+    # fields = ['title','avatar','category','tags','body']
+    form_class=BookPostForm
+    template_name = 'book/book_update.html'
+
+    # def dispatch(self, request, *args, **kwargs):
+    #     obj = self.get_object()
+    #     if obj.author != self.request.user:
+    #         return HttpResponse("Sorry, you don't have right to update")
+    #         # raise PermissionDenied
+    #     return super().dispatch(request, *args, **kwargs)
+
+
 
 
 class BookDeleteView(View):

@@ -1,7 +1,7 @@
 
 from django.contrib import admin
 from django.urls import path, include  # add this
-from .views import BookListView,BookCreateView,BookDeleteView,BookDetailView
+from .views import BookListView,BookCreateView,BookDeleteView,BookDetailView,BookUpdateView
 from .views import CategoryListView,CategoryCreateView,CategoryDeleteView
 from .views import PublisherListView,PublisherCreateView,PublisherDeleteView
 
@@ -9,8 +9,11 @@ from .views import PublisherListView,PublisherCreateView,PublisherDeleteView
 urlpatterns = [
     path('book-list',BookListView.as_view(),name="book_list"),
     path('book-create',BookCreateView.as_view(),name="book_create"),
+    path('book-update/<int:pk>/',BookUpdateView.as_view(),name="book_update"),
     path('book-delete/<int:pk>/',BookDeleteView.as_view(),name="book_delete"),
     path('book-detail/<int:pk>/',BookDetailView.as_view(),name="book_detail"),
+
+    # Category
     path('category-list',CategoryListView.as_view(),name="category_list"),
     path('category-create',CategoryCreateView.as_view(),name="category_create"),  
     path('category-delete/<int:pk>/',CategoryDeleteView.as_view(),name="category_delete"), 

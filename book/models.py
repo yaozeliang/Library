@@ -12,6 +12,12 @@ BOOK_STATUS =(
     (1, "In Stock"),
 )
 
+FLOOR =(
+    (1, "1st "),
+    (2, "2nd "),
+    (3, "3rd "),
+)
+
 class Category(models.Model):
     
     name = models.CharField(max_length=50, blank=True)
@@ -60,9 +66,14 @@ class Book(models.Model):
     )
 
     status=models.IntegerField(choices=BOOK_STATUS,default=1)
+    floor_number=models.IntegerField(choices=FLOOR,default=1)
+    bookshelf_number=models.CharField('Bookshelf Number',max_length=10,default='0001')
 
     def get_absolute_url(self): 
         return reverse('book_list')
     
     def __str__(self):
         return self.title
+
+
+

@@ -34,7 +34,7 @@
                     <div class="col-xl-12">
                         <div class="card">
                             <div class="card-header">
-                                <h5>Detail : << {{book.title}} >> </h5>
+                                <h5><i class="fas fa-book"></i> Detail : << {{book.title}} >> </h5>
                             </div>
 
                             <div class="card-block">
@@ -75,13 +75,24 @@
                                             </p>
                                         </div>
                                         <div class="tab-pane fade" id="pills-contact" role="tabpanel" aria-labelledby="pills-contact-tab">
-                                            <p> lcoation </p>
+                                            <div class='row'>
+                                                <div class='col-6'>
+                                                    <p> Location Id: {{book.floor_number}}{{book.bookshelf_number}}</p>
+                                                    <p> Floor: {{book.get_floor_number_display}} floor </p>
+                                                    <p> Bookshelf: {{book.bookshelf_number}} </p>
+                                                 
+                                                </div>
+ 
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
-
+                                
                             </div>
+                            
+
                         </div>
+                        <a href="{% url 'book_list' %}" class='btn btn-secondary'>Return List</a>
                     </div>
                     
                 </div>
