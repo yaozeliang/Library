@@ -1,0 +1,89 @@
+{% extends "layouts/base.html" %}
+{% load crispy_forms_tags %}
+{% block title %} Storage {% endblock %} 
+
+<!-- Specific CSS goes HERE -->
+{% block stylesheets %}{% endblock stylesheets %}
+
+{% block content %}
+
+<div class="pcoded-content">
+    <div class="pcoded-inner-content">
+        <div class="page-header">
+            <div class="page-block">
+                <div class="row align-items-center">
+                    <div class="col-md-12">
+                        <div class="page-header-title">
+                            <h5 class="m-b-10">Book Management</h5>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+        <br>
+        <!-- [ breadcrumb ] end -->
+        <div class="main-body">
+            <div class="page-wrapper">
+                <div class="row">
+                    <div class="col-xl-12">
+                        <div class="card">
+                            <div class="card-header">
+                                <h5>Add New Book</h5>
+                            </div>
+                            <div class="card-block table-border-style">
+                                <!-- <form method="post" enctype="multipart/form-data">
+                                    {% csrf_token %}
+                                    {% for field in form %}
+                                    <div class="form-group">
+                                        <label>{{ field.label }}</label>
+                                        {% if field.field.widget.input_type != "select" %}
+                                        <input type="{{ field.field.widget.input_type }}" name={{ field.name }} id="{{ field.name }}" class="form-control">
+                                        {% endif %}
+
+
+                            
+                                        {% if field.field.widget.input_type == "select" %}
+                                        <select name={{ field.name }} id="{{ field.name }}" class="form-control">
+                                            {% for id,value in field.field.choices %}
+                                                <option value="{{ id }}">{{ value }}</option>
+                                            {% endfor %}
+                                        </select>
+                                        {% endif %}
+                                        
+                                        {% if field.errors %}
+                                        <div class="alert alert-danger" style="margin:10px">
+                                            {{ field.errors }}
+                                        </div>
+                                        {% endif %}
+                                    </div>
+                                    {% endfor %}
+
+                                    <button type="submit" class="btn btn-primary btn-block">Add New Book</button>
+                                </form> -->
+
+                                <form method="post" enctype="multipart/form-data">
+                                    {% csrf_token %}
+                                    
+                                    {{ form|crispy }}
+                    
+                    
+                                    <button type="submit" class="btn btn-primary">Add New Book</button>
+                                </form>
+
+
+                            </div>
+                        </div>
+                    </div>
+                    
+                </div>
+                <!-- [ Main Content ] end -->
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock content %}
+
+<!-- Specific Page JS goes HERE  -->
+{% block javascripts %}{% endblock javascripts %}

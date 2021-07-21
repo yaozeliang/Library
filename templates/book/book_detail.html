@@ -1,0 +1,96 @@
+{% extends "layouts/base.html" %}
+{% load crispy_forms_tags %}
+{% block title %} Storage{% endblock %} 
+
+<!-- Specific CSS goes HERE -->
+{% block stylesheets %}{% endblock stylesheets %}
+
+{% block content %}
+
+<div class="pcoded-content">
+    <div class="pcoded-inner-content">
+        <div class="page-header">
+            <div class="page-block">
+                <div class="row align-items-center">
+                    <div class="col-md-12">
+                        <div class="page-header-title">
+                            <h5 class="m-b-10">Book Management</h5>
+                        </div>
+                        <!-- <ul class="breadcrumb">
+                            <li class="breadcrumb-item"><a href="/"><i class="feather icon-home"></i></a></li>
+                            <li class="breadcrumb-item"><a href="javascript:">All Books</a></li>
+                            <li class="breadcrumb-item"><a href="javascript:">{{book.title}}</a></li>
+                        </ul> -->
+
+                    </div>
+                </div>
+            </div>
+        </div>
+        <br>
+        <!-- [ breadcrumb ] end -->
+        <div class="main-body">
+            <div class="page-wrapper">
+                <div class="row">
+                    <div class="col-xl-12">
+                        <div class="card">
+                            <div class="card-header">
+                                <h5>Detail : << {{book.title}} >> </h5>
+                            </div>
+
+                            <div class="card-block">
+                                <div class="col-sm-12">
+                                    <!-- <h5 class="mt-2">{{book.title}}</h5> -->
+                                    <!-- <hr> -->
+                                    <ul class="nav nav-pills mb-3" id="pills-tab" role="tablist">
+                                        <li class="nav-item">
+                                            <a class="nav-link active" id="pills-home-tab" data-toggle="pill" href="#pills-basic" role="tab" aria-controls="pills-basic" aria-selected="true">Summary</a>
+                                        </li>
+                                        <li class="nav-item">
+                                            <a class="nav-link" id="pills-profile-tab" data-toggle="pill" href="#pills-profile" role="tab" aria-controls="pills-profile" aria-selected="false">Description</a>
+                                        </li>
+                                        <li class="nav-item">
+                                            <a class="nav-link" id="pills-contact-tab" data-toggle="pill" href="#pills-contact" role="tab" aria-controls="pills-contact" aria-selected="false">Location</a>
+                                        </li>
+                                    </ul>
+                                    <div class="tab-content" id="pills-tabContent">
+                                        <div class="tab-pane fade show active" id="pills-basic" role="tabpanel" aria-labelledby="pills-home-tab">
+                                            <div class='row'>
+                                                <div class='col-6'>
+                                                    <p>Title: {{book.title}} </p>
+                                                    <p>Author: {{book.author}} </p>
+                                                    <p>Category: {{book.category}} </p>
+                                                    <p>Publisher: {{book.publisher}} </p>
+                                                </div>
+                                                <div class='col-6'>
+                                                    <p>Created at: {{book.created|date:"Y/m/d H:i"}} </p>
+                                                    <p>Updated at: {{book.updated|date:"Y/m/d H:i"}} </p>
+                                                    <p>Borrowed times: {{book.total_borrow_times}} </p>
+
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="tab-pane fade" id="pills-profile" role="tabpanel" aria-labelledby="pills-profile-tab">
+                                            <p class="mb-0">
+                                                {{book.description}}
+                                            </p>
+                                        </div>
+                                        <div class="tab-pane fade" id="pills-contact" role="tabpanel" aria-labelledby="pills-contact-tab">
+                                            <p> lcoation </p>
+                                        </div>
+                                    </div>
+                                </div>
+
+                            </div>
+                        </div>
+                    </div>
+                    
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock content %}
+
+<!-- Specific Page JS goes HERE  -->
+{% block javascripts %}{% endblock javascripts %}

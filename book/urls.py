@@ -1,0 +1,23 @@
+
+from django.contrib import admin
+from django.urls import path, include  # add this
+from .views import BookListView,BookCreateView,BookDeleteView,BookDetailView
+from .views import CategoryListView,CategoryCreateView,CategoryDeleteView
+from .views import PublisherListView,PublisherCreateView,PublisherDeleteView
+
+
+urlpatterns = [
+    path('book-list',BookListView.as_view(),name="book_list"),
+    path('book-create',BookCreateView.as_view(),name="book_create"),
+    path('book-delete/<int:pk>/',BookDeleteView.as_view(),name="book_delete"),
+    path('book-detail/<int:pk>/',BookDetailView.as_view(),name="book_detail"),
+    path('category-list',CategoryListView.as_view(),name="category_list"),
+    path('category-create',CategoryCreateView.as_view(),name="category_create"),  
+    path('category-delete/<int:pk>/',CategoryDeleteView.as_view(),name="category_delete"), 
+
+    # Publisher
+
+    path('publisher-list',PublisherListView.as_view(),name="publisher_list"),
+    path('publisher-create',PublisherCreateView.as_view(),name="publisher_create"),  
+    path('publisher-delete/<int:pk>/',PublisherDeleteView.as_view(),name="publisher_delete"), 
+]

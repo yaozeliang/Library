@@ -1,0 +1,153 @@
+{% extends "layouts/base.html" %}
+
+{% block title %} Storage {% endblock %} 
+
+{% block stylesheets %}{% endblock stylesheets %}
+
+{% block content %}
+
+<div class="pcoded-content">
+    <div class="pcoded-inner-content">
+        <div class="page-header">
+            <div class="page-block">
+                <div class="row align-items-center">
+                    <div class="col-md-12">
+                        <div class="page-header-title">
+                            <h5 class="m-b-10">Publisher Management</h5>
+
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+        <br>
+        <!-- [ breadcrumb ] end -->
+        <div class="main-body">
+            <div class="page-wrapper">
+                <!-- [ Main Content ] start -->
+                <div class="row">
+                    <!-- [ basic-table ] start -->
+                    <div class="col-xl-12">
+                        <div class="card">
+                            <div class="card-header">
+                                <h5>Total {{count_total}} publishers</h5>
+                            </div>
+                            {% if messages %}
+                            {% for message in messages %}
+                                {% if message.tags == "success" %}
+                                  <div class="alert alert-success" role="alert">
+                                    {{ message }}
+                                  </div>
+                                {% endif %}
+                                {% if message.tags == "error" %}
+                                  <div class="alert alert-danger">
+                                    {{ message }}
+                                  </div>
+                                {% endif %}
+                            {% endfor %}
+                            {% endif %}
+
+
+                            <div class="card-block ">
+                                <div class='row'>
+                                    <div class="col-6">
+                                        <b>Sort By : - </b>
+                                        <a href="{% url 'publisher_list' %}?search={{search}}&orderby=id">Id</a>  | 
+                                        <a href="{% url 'publisher_list' %}?search={{ search }}&orderby=name">Name</a> |  
+                                        <a href="{% url 'publisher_list' %}?search={{ search }}&orderby=city">City</a> | 
+                                        <a href="{% url 'publisher_list' %}?search={{ search }}&orderby=created">Created</a> 
+                                    </div>
+   
+                                    <div class="col-6">
+                                        <form class="form-inline mb-2">
+                                            <div class="form-group mx-sm-3 mb-2">
+                                                <input type="text" 
+                                                       class="form-control" 
+                                                       name="search",
+                                                       id='search',
+                                                       placeholder="Search category",
+                                                       value={{search}}
+                                                       >
+                                            </div>
+                                            <button type="submit" class="btn btn-success mb-2 btn-sm">Search</button>
+                                        </form>
+                                    </div>
+                                </div>
+
+                                <div class="table-responsive table-hover">
+                                    <table class="table">
+                                        <thead>
+                                            <tr>
+                                                <th>id</th>
+                                                <th>Name</th>
+                                                <th>City</th>
+                                                <th>Contact</th>
+                                                <th>Created</th>
+                                                <th>Operation</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            
+                                            {% for pub in publishers %}
+                                            <tr>
+                                                <th scope="row">{{pub.id}}</th>
+                                                <td>{{pub.name}}</td>
+                                                <td>{{pub.city}}</td>
+                                                <td>{{pub.contact}}</td>
+                                                <td>{{ pub.created|date:"Y-m-d H:i" }}  </td>
+                                                <td><a href="{% url 'publisher_delete' pub.pk %}" class="badge badge-warning">Delete</a></td>
+
+                                            </tr>
+                                            {% endfor %}
+
+
+                                        </tbody>
+                                    </table>
+                                </div>
+                                <div class="row">
+                                    <div class='col-6'>
+                                        <a href="{% url 'publisher_create' %}" class='btn btn-primary'>Add Publisher</a>
+                                    </div>
+                                    <div class='col-6'>
+                                        <ul class="pagination m-auto">
+
+                                          {% if publishers.has_previous %}
+
+                                          <li class="page-item "><a href="?page=1&order={{ order }}&search={{ search }}"><span class="page-link">First</span></a></li>
+                                          <li class="page-item"><a class="page-link" href="?page={{ categories.previous_page_number }}&order={{ order }}&search={{ search }}">{{ publishers.previous_page_number }}</a></li>
+                                          <li class="page-item active"><a class="page-link" href=""> {{ publishers.number }}</a></li>
+
+                                          {% else %}
+                                          <li class="page-item disabled"><a href="?page=1&order={{ order }}&search={{ search }}"><span class="page-link">First</span></a></li>
+                                          <li class="page-item active"><a class="page-link" href=""> {{ publishers.number }}</a></li>
+                                          {% endif %}
+
+                                          {% if publishers.has_next %}
+                                          <li class="page-item"><a class="page-link" href="?page={{ publishers.next_page_number }}&order={{ order }}&search={{ search }}">{{ publishers.next_page_number }}</a></li>
+                                          <li class="page-item"><a class="page-link" href="?page={{ publishers.paginator.num_pages }}&order={{ order }}&search={{ search }}">Last</a></li>
+                                          {% else %}
+                                          <li class="page-item disabled"><a href=""><span class="page-link">End</span></a></li>
+                                          {% endif %}
+
+                                        </ul>
+
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                </div>
+                <!-- [ Main Content ] end -->
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock content %}
+
+<!-- Specific Page JS goes HERE  -->
+{% block javascripts %}{% endblock javascripts %}

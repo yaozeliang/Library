@@ -1,0 +1,28 @@
+<!-- NOT IMPLEMENTED -->
+
+
+<nav class="navbar navbar-light bg-light  justify-content-between">
+        <div class='col-10'>
+            <form class="form-inline">
+                <input class="form-control mr-sm-2" type="search" placeholder="Search" aria-label="Search">
+                <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Search</button>
+              </form>
+        </div>
+         
+        <div class='col-2'>
+            <div class="nav-item dropdown">
+                <h6 class="nav-link dropdown-toggle" href="#" id="navbarDropdown"  data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                  Hi,{{user.username}}
+                </h5>
+                <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                  <a class="dropdown-item" href="#">Action</a>
+                  <a class="dropdown-item" href="#">Another action</a>
+                  <div class="dropdown-divider"></div>
+                  <a class="dropdown-item" href="{% url 'logout' %}">Logout</a>
+                
+            </div>
+        </div>
+    
+
+
+</nav>

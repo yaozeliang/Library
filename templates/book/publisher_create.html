@@ -1,0 +1,62 @@
+{% extends "layouts/base.html" %}
+
+{% block title %} Storage {% endblock %} 
+
+<!-- Specific CSS goes HERE -->
+{% block stylesheets %}{% endblock stylesheets %}
+
+{% block content %}
+
+<div class="pcoded-content">
+    <div class="pcoded-inner-content">
+        <div class="page-header">
+            <div class="page-block">
+                <div class="row align-items-center">
+                    <div class="col-md-12">
+                        <div class="page-header-title">
+                            <h5 class="m-b-10">Publisher Management</h5>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <br>
+        <div class="main-body">
+            <div class="page-wrapper">
+                <div class="row">
+                    <div class="col-xl-12">
+                        <div class="card">
+                            <div class="card-header">
+                                <h5>Add New Publisher</h5>
+                                <!-- <span class="d-block m-t-5">use class <code>table</code> inside table element</span> -->
+                            </div>
+                            <div class="card-block table-border-style">
+                                <form method="post" enctype="multipart/form-data">
+                                    {% csrf_token %}
+                                    {% for field in form %}
+                                    <div class="form-group">
+                                        <label>{{ field.label }}</label>
+                                        <input type="{{ field.field.widget.input_type }}" name={{ field.name}} id="{{ field.name }}" class="form-control">
+                                        {% if field.errors %}
+                                        <div class="alert alert-danger" style="margin:10px">
+                                            {{ field.errors }}
+                                        </div>
+                                        {% endif %}
+                                    </div>
+                                    {% endfor %}
+                                    <button type="submit" class="btn btn-dark ">Save</button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                    
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock content %}
+
+<!-- Specific Page JS goes HERE  -->
+{% block javascripts %}{% endblock javascripts %}
