@@ -27,7 +27,8 @@ from django.contrib.messages.views import messages
 from django.views.decorators.csrf import csrf_exempt
 from .forms import BookPostForm
 
-class BookListView(ListView):
+class BookListView(LoginRequiredMixin,ListView):
+    login_url = 'login'
     model=Book
     context_object_name = 'books'
     template_name = 'book/booklist.html'
@@ -62,17 +63,19 @@ class BookListView(ListView):
         context['order'] = self.order_field
         return context
 
-class BookDetailView(DetailView):
+class BookDetailView(LoginRequiredMixin,DetailView):
+    model = Book
     context_object_name = 'book'
     template_name = 'book/book_detail.html'
-    model = Book
+    login_url = 'login'
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         return context
 
-class BookCreateView(CreateView):
+class BookCreateView(LoginRequiredMixin,CreateView):
     model=Book
+    login_url = 'login'
     fields=['title','author','description','category','publisher','quantity','floor_number','bookshelf_number'] 
     template_name='book/book_create.html'
 
@@ -103,8 +106,8 @@ class BookUpdateView(LoginRequiredMixin,UpdateView):
 
 
 
-class BookDeleteView(View):
-
+class BookDeleteView(LoginRequiredMixin,View):
+    login_url = 'login'
     def get(self,request,*args,**kwargs):
         book_pk=kwargs["pk"]
         delete_book=Book.objects.get(pk=book_pk)
@@ -113,13 +116,13 @@ class BookDeleteView(View):
         return HttpResponseRedirect(reverse("book_list"))
 
 
-class CategoryListView(ListView):
+class CategoryListView(LoginRequiredMixin,ListView):
+    login_url = 'login'
     model=Category
     context_object_name = 'categories'
     template_name = 'book/categorylist.html'
     count_total = 0
     search_value = ''
-    # paginate_by=10
 
     def get_queryset(self):
         search =self.request.GET.get("search")  
@@ -152,7 +155,8 @@ class CategoryListView(ListView):
     #     fields=['name']
     #     template_name='book/category_create.html'
 
-class CategoryCreateView(CreateView):
+class CategoryCreateView(LoginRequiredMixin,CreateView):
+    login_url = 'login'
     model=Category
     fields=['name']
     template_name='book/category_create.html'
@@ -176,8 +180,8 @@ class CategoryCreateView(CreateView):
 #         obj = self.get_object()
 #         return super().dispatch(request, *args, **kwargs)
 
-class CategoryDeleteView(View):
-
+class CategoryDeleteView(LoginRequiredMixin,View):
+    login_url = 'login'
     def get(self,request,*args,**kwargs):
         cat_pk=kwargs["pk"]
         delete_cat=Category.objects.get(pk=cat_pk)
@@ -190,7 +194,8 @@ class CategoryDeleteView(View):
 
 
 # Publisher 
-class PublisherListView(ListView):
+class PublisherListView(LoginRequiredMixin,ListView):
+    login_url = 'login'
     model=Publisher
     context_object_name = 'publishers'
     template_name = 'book/publisherlist.html'
@@ -221,14 +226,16 @@ class PublisherListView(ListView):
         # context["all_table_fields"]=Categories._meta.get_fields()
         return context
 
-class PublisherCreateView(CreateView):
+class PublisherCreateView(LoginRequiredMixin,CreateView):
+    login_url = 'login'
     model=Publisher
     fields=['name','city','contact']
     # fields="__all__"
     template_name='book/publisher_create.html'
 
 
-class PublisherDeleteView(View):
+class PublisherDeleteView(LoginRequiredMixin,View):
+    login_url = 'login'
 
     def get(self,request,*args,**kwargs):
         pub_pk=kwargs["pk"]
