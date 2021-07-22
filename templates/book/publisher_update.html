@@ -27,24 +27,10 @@
                     <div class="col-xl-12">
                         <div class="card">
                             <div class="card-header">
-                                <h5>Add New Publisher</h5>
+                                <h5>Update Publisher</h5>
                             </div>
                             <div class="card-block table-border-style">
-                                <!-- <form method="post" enctype="multipart/form-data">
-                                    {% csrf_token %}
-                                    {% for field in form %}
-                                    <div class="form-group">
-                                        <label>{{ field.label }}</label>
-                                        <input type="{{ field.field.widget.input_type }}" name={{ field.name}} id="{{ field.name }}" class="form-control">
-                                        {% if field.errors %}
-                                        <div class="alert alert-danger" style="margin:10px">
-                                            {{ field.errors }}
-                                        </div>
-                                        {% endif %}
-                                    </div>
-                                    {% endfor %}
-                                    <button type="submit" class="btn btn-dark ">Save</button>
-                                </form> -->
+
 
                                 <form method="post" enctype="multipart/form-data">
                                     {% csrf_token %}
@@ -52,7 +38,7 @@
                                     {{ form|crispy }}
                     
                     
-                                    <button type="submit" class="btn btn-primary">Add</button>
+                                    <button type="submit" class="btn btn-primary">Update</button>
                                 </form>
                             </div>
                         </div>

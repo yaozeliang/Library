@@ -33,7 +33,10 @@ class Publisher(models.Model):
     name = models.CharField(max_length=50, blank=True)
     city = models.CharField(max_length=50, blank=True)
     contact = models.EmailField(max_length=50,blank=True)
-    created = models.DateTimeField(default=timezone.now)
+    # created_at = models.DateTimeField(auto_now_add=True)
+    created_at = models.DateTimeField(default=timezone.now)
+    updated_by=models.CharField(max_length=20,default='yaozeliang')
+    updated_at = models.DateTimeField(auto_now=True)
 
     def __str__(self):
         return self.name
@@ -46,14 +49,14 @@ class Book(models.Model):
     title = models.CharField('Title',max_length=100)
     description = models.TextField()
     created = models.DateTimeField('Created Time',default=timezone.now)
-    updated = models.DateTimeField('Modified Time',auto_now=True)
+    updated_at = models.DateTimeField(auto_now=True)
     total_borrow_times = models.PositiveIntegerField(default=0)
     quantity = models.PositiveIntegerField(default=10)
     category = models.ForeignKey(
         Category,
         null=True,
         blank=True,
-        on_delete=models.CASCADE,
+        on_delete=models.SET_NULL,
         related_name='category'
     )
 
@@ -61,19 +64,21 @@ class Book(models.Model):
         Publisher,
         null=True,
         blank=True,
-        on_delete=models.CASCADE,
+        on_delete=models.SET_NULL,
         related_name='publisher'
     )
 
     status=models.IntegerField(choices=BOOK_STATUS,default=1)
     floor_number=models.IntegerField(choices=FLOOR,default=1)
     bookshelf_number=models.CharField('Bookshelf Number',max_length=10,default='0001')
-
+    updated_by=models.CharField(max_length=20,default='yaozeliang')
     def get_absolute_url(self): 
         return reverse('book_list')
     
     def __str__(self):
         return self.title
+
+
 
 
 

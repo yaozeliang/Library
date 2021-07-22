@@ -113,18 +113,18 @@
 
                                           {% if categories.has_previous %}
 
-                                          <li class="page-item "><a href="?page=1&order={{ order }}&search={{ search }}"><span class="page-link">First</span></a></li>
-                                          <li class="page-item"><a class="page-link" href="?page={{ categories.previous_page_number }}&order={{ order }}&search={{ search }}">{{ categories.previous_page_number }}</a></li>
+                                          <li class="page-item "><a href="?page=1&orderby={{ order }}&search={{ search }}"><span class="page-link">First</span></a></li>
+                                          <li class="page-item"><a class="page-link" href="?page={{ categories.previous_page_number }}&orderby={{ order }}&search={{ search }}">{{ categories.previous_page_number }}</a></li>
                                           <li class="page-item active"><a class="page-link" href=""> {{ categories.number }}</a></li>
 
                                           {% else %}
-                                          <li class="page-item disabled"><a href="?page=1&order={{ order }}&search={{ search }}"><span class="page-link">First</span></a></li>
+                                          <li class="page-item disabled"><a href="?page=1&orderby={{ order }}&search={{ search }}"><span class="page-link">First</span></a></li>
                                           <li class="page-item active"><a class="page-link" href=""> {{ categories.number }}</a></li>
                                           {% endif %}
 
                                           {% if categories.has_next %}
-                                          <li class="page-item"><a class="page-link" href="?page={{ categories.next_page_number }}&order={{ order }}&search={{ search }}">{{ categories.next_page_number }}</a></li>
-                                          <li class="page-item"><a class="page-link" href="?page={{ categories.paginator.num_pages }}&order={{ order }}&search={{ search }}">Last</a></li>
+                                          <li class="page-item"><a class="page-link" href="?page={{ categories.next_page_number }}&orderby={{ order }}&search={{ search }}">{{ categories.next_page_number }}</a></li>
+                                          <li class="page-item"><a class="page-link" href="?page={{ categories.paginator.num_pages }}&orderby={{ order }}&search={{ search }}">Last</a></li>
                                           {% else %}
                                           <li class="page-item disabled"><a href=""><span class="page-link">End</span></a></li>
                                           {% endif %}

@@ -35,20 +35,13 @@
                             <div class="card-header">
                                 <h5>Total {{count_total}} publishers</h5>
                             </div>
+                            
                             {% if messages %}
                             {% for message in messages %}
-                                {% if message.tags == "success" %}
-                                  <div class="alert alert-success" role="alert">
-                                    {{ message }}
-                                  </div>
-                                {% endif %}
-                                {% if message.tags == "error" %}
-                                  <div class="alert alert-danger">
-                                    {{ message }}
-                                  </div>
-                                {% endif %}
+                            <div class="alert alert-{{ message.tags }}" role="alert">{{ message }}</div>
                             {% endfor %}
                             {% endif %}
+                            
 
 
                             <div class="card-block ">
@@ -58,7 +51,7 @@
                                         <a href="{% url 'publisher_list' %}?search={{search}}&orderby=id">Id</a>  | 
                                         <a href="{% url 'publisher_list' %}?search={{ search }}&orderby=name">Name</a> |  
                                         <a href="{% url 'publisher_list' %}?search={{ search }}&orderby=city">City</a> | 
-                                        <a href="{% url 'publisher_list' %}?search={{ search }}&orderby=created">Created</a> 
+                                        <a href="{% url 'publisher_list' %}?search={{ search }}&orderby=created_at">Created</a> 
                                     </div>
    
                                     <div class="col-6">
@@ -86,6 +79,7 @@
                                                 <th>City</th>
                                                 <th>Contact</th>
                                                 <th>Created</th>
+                                                <th>Updated By</th>
                                                 <th>Operation</th>
                                             </tr>
                                         </thead>
@@ -97,8 +91,11 @@
                                                 <td>{{pub.name}}</td>
                                                 <td>{{pub.city}}</td>
                                                 <td>{{pub.contact}}</td>
-                                                <td>{{ pub.created|date:"Y-m-d H:i" }}  </td>
-                                                <td><a href="{% url 'publisher_delete' pub.pk %}" class="badge badge-warning">Delete</a></td>
+                                                <td>{{ pub.created_at|date:"Y/m/d" }} </td>
+                                                <td>{{ pub.updated_by}} at {{ pub.updated_at|date:"Y-m-d H:i" }}  </td>
+                                                <td><a href="{% url 'publisher_delete' pub.pk %}" class="badge badge-warning">Delete</a>&nbsp;
+                                                    <a href="{% url 'publisher_update' pub.id%}" class="badge badge-info">Update</a>
+                                                </td>
 
                                             </tr>
                                             {% endfor %}
@@ -116,18 +113,18 @@
 
                                           {% if publishers.has_previous %}
 
-                                          <li class="page-item "><a href="?page=1&order={{ order }}&search={{ search }}"><span class="page-link">First</span></a></li>
-                                          <li class="page-item"><a class="page-link" href="?page={{ categories.previous_page_number }}&order={{ order }}&search={{ search }}">{{ publishers.previous_page_number }}</a></li>
+                                          <li class="page-item "><a href="?page=1&orderby={{ order }}&search={{ search }}"><span class="page-link">First</span></a></li>
+                                          <li class="page-item"><a class="page-link" href="?page={{ categories.previous_page_number }}&orderby={{ order }}&search={{ search }}">{{ publishers.previous_page_number }}</a></li>
                                           <li class="page-item active"><a class="page-link" href=""> {{ publishers.number }}</a></li>
 
                                           {% else %}
-                                          <li class="page-item disabled"><a href="?page=1&order={{ order }}&search={{ search }}"><span class="page-link">First</span></a></li>
+                                          <li class="page-item disabled"><a href="?page=1&orderby={{ order }}&search={{ search }}"><span class="page-link">First</span></a></li>
                                           <li class="page-item active"><a class="page-link" href=""> {{ publishers.number }}</a></li>
                                           {% endif %}
 
                                           {% if publishers.has_next %}
-                                          <li class="page-item"><a class="page-link" href="?page={{ publishers.next_page_number }}&order={{ order }}&search={{ search }}">{{ publishers.next_page_number }}</a></li>
-                                          <li class="page-item"><a class="page-link" href="?page={{ publishers.paginator.num_pages }}&order={{ order }}&search={{ search }}">Last</a></li>
+                                          <li class="page-item"><a class="page-link" href="?page={{ publishers.next_page_number }}&orderby={{ order }}&search={{ search }}">{{ publishers.next_page_number }}</a></li>
+                                          <li class="page-item"><a class="page-link" href="?page={{ publishers.paginator.num_pages }}&orderby={{ order }}&search={{ search }}">Last</a></li>
                                           {% else %}
                                           <li class="page-item disabled"><a href=""><span class="page-link">End</span></a></li>
                                           {% endif %}

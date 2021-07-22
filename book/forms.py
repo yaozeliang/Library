@@ -1,8 +1,8 @@
 from django import forms
-from .models import Book
+from .models import Book,Publisher
 
 
-class BookPostForm(forms.ModelForm):
+class BookCreateEditForm(forms.ModelForm):
     class Meta:
         model = Book
         fields = ('author',
@@ -13,3 +13,13 @@ class BookPostForm(forms.ModelForm):
                   'publisher',
                   'floor_number',
                   "bookshelf_number")
+
+
+class PubCreateEditForm(forms.ModelForm):
+    class Meta:
+        model = Publisher
+        fields = ('name',
+                  'city',
+                  'contact',
+                  )
+        # fields="__all__"

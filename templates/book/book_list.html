@@ -32,20 +32,13 @@
                                 <h5>Total {{count_total}} books</h5>
                                 <!-- <span class="d-block m-t-5">use class <code>table</code> inside table element</span> -->
                             </div>
+
                             {% if messages %}
                             {% for message in messages %}
-                                {% if message.tags == "success" %}
-                                  <div class="alert alert-success" role="alert">
-                                    {{ message }}
-                                  </div>
-                                {% endif %}
-                                {% if message.tags == "error" %}
-                                  <div class="alert alert-danger">
-                                    {{ message }}
-                                  </div>
-                                {% endif %}
+                            <div class="alert alert-{{ message.tags }}" role="alert">{{ message }}</div>
                             {% endfor %}
                             {% endif %}
+
                             <div class="card-block">
                                 <div class='row'>
                                     <div class="col-8">
@@ -83,6 +76,7 @@
                                                 <th>Status</th>
                                                 <th>Quantity</th>
                                                 <th>Location</th>
+                                                <th>Updated By</th>
                                                 <th>Operation</th>
                                             </tr>
                                         </thead>
@@ -98,6 +92,7 @@
                                                 <td>{{book.get_status_display}}</td>
                                                 <td>{{book.quantity}}</td>
                                                 <td>{{book.floor_number}}{{book.bookshelf_number}}</td>
+                                                <td>{{book.updated_by}}  </td>
                                                 <td>
                                                     <a href="{% url 'book_detail' book.id%}" class="badge badge-success">Detail</a>&nbsp;
                                                     <a href="{% url 'book_update' book.id%}" class="badge badge-info">Update</a>&nbsp;
