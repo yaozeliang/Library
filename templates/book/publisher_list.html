@@ -38,7 +38,11 @@
                             
                             {% if messages %}
                             {% for message in messages %}
-                            <div class="alert alert-{{ message.tags }}" role="alert">{{ message }}</div>
+                                {% if message.tags == "error" %}
+                                    <div class="alert alert-danger">{{ message }}</div>
+                                {% else %}
+                                    <div class="alert alert-{{ message.tags }}" role="alert">{{ message }}</div>
+                                {% endif %}
                             {% endfor %}
                             {% endif %}
                             
@@ -46,7 +50,7 @@
 
                             <div class="card-block ">
                                 <div class='row'>
-                                    <div class="col-6">
+                                    <div class="col-8">
                                         <b>Sort By : - </b>
                                         <a href="{% url 'publisher_list' %}?search={{search}}&orderby=id">Id</a>  | 
                                         <a href="{% url 'publisher_list' %}?search={{ search }}&orderby=name">Name</a> |  
@@ -54,18 +58,18 @@
                                         <a href="{% url 'publisher_list' %}?search={{ search }}&orderby=created_at">Created</a> 
                                     </div>
    
-                                    <div class="col-6">
+                                    <div class="col-4">
                                         <form class="form-inline mb-2">
-                                            <div class="form-group mx-sm-3 mb-2">
+                                            <div class="form-group  mb-2">
                                                 <input type="text" 
                                                        class="form-control" 
                                                        name="search",
                                                        id='search',
-                                                       placeholder="Search category",
+                                                       placeholder="Search...",
                                                        value={{search}}
                                                        >
                                             </div>
-                                            <button type="submit" class="btn btn-success mb-2 btn-sm">Search</button>
+                                            <button type="submit" class="btn btn-secondary mb-2 ml-2 btn-sm">Search</button>
                                         </form>
                                     </div>
                                 </div>

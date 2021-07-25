@@ -1,0 +1,156 @@
+{% extends "layouts/base.html" %}
+
+{% block title %} User Activity {% endblock %} 
+
+{% block stylesheets %}{% endblock stylesheets %}
+
+{% block content %}
+
+<div class="pcoded-content">
+    <div class="pcoded-inner-content">
+        <div class="page-header">
+            <div class="page-block">
+                <div class="row align-items-center">
+                    <div class="col-md-12">
+                        <div class="page-header-title">
+                            <h5 class="m-b-10">User Activity</h5>
+
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+        <br>
+        <div class="main-body">
+            <div class="page-wrapper">
+                <div class="row">
+                    <div class="col-xl-12">
+                        <div class="card">
+                            <div class="card-header">
+                                <h5>Total {{count_total}} activities</h5>
+                            </div>
+                            {% for message in messages %}
+                            {% if message.tags == "error" %}
+                                <div class="alert alert-danger">{{ message }}</div>
+                            {% else %}
+                                <div class="alert alert-{{ message.tags }}" role="alert">{{ message }}</div>
+                            {% endif %}
+                            {% endfor %}
+                            
+                            <div class="card-block ">
+                                <div class='row'>
+
+                                    <!-- Dropdown list -->
+                                    <div class="col-6">
+                                        <div class="btn-group ">
+                                            <button class="btn btn-light dropdown-toggle" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Select User </button>
+                                            <div class="dropdown-menu">
+                                                {% for user in user_list %}
+                                                <a class="dropdown-item" href="{% url 'user_activity_list' %}?user={{ user}}">{{user}}</a>
+                                                
+                                                {% endfor %}
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <!-- Search box -->
+                                    <div class="col-6">
+                                        <form class="form-inline mb-2">
+                                            <div class="form-group  mb-2">
+                                                <input type="text" 
+                                                       class="form-control" 
+                                                       name="search",
+                                                       id='search',
+                                                       placeholder="Search user or target",
+                                                       value={{search}}
+                                                       >
+                                            </div>
+                                            <button type="submit" class="btn btn-secondary ml-2 mb-2 btn-sm">Search</button>
+                                        </form>
+                                    </div>
+                                </div>
+
+                                <div class="table-responsive table-hover">
+                                    <table class="table">
+                                        <thead>
+                                            <tr>
+                                                <th>id</th>
+                                                <th>User</th>
+                                                <th>Activity</th>
+                                                <th>Target</th>
+                                                <th>At</th>
+                                                <th>Detail</th>
+                                                <th>#</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            
+                                            {% for activity in activities %}
+                                                <tr>
+                                                    <th scope="row">{{activity.id}}</th>
+                                                    <td >{{activity.created_by}}</td>
+                                                    {% if activity.operation_type == 1 %}
+                                                    <td class="table-success" >{{activity.get_operation_type_display}}  </td>
+                                                    {% elif activity.operation_type == 2 %}
+                                                    <td class="table-warning" >{{activity.get_operation_type_display}}  </td>
+                                                    {% elif activity.operation_type == 3 %}
+                                                    <td class="table-danger" >{{activity.get_operation_type_display}}  </td>
+                                                    {% endif %}
+
+                                                    <td >{{activity.target_model}}</td>
+                                                    <td >{{ activity.created_at|date:"Y-m-d H:i" }} </td>
+                                                    <td>{{ activity.detail}}  </td>
+                                                    <td><a href="{% url 'user_activity_delete' activity.pk %}" class="badge badge-warning">Delete</a></td>
+
+                                                </tr>
+                                                
+
+                                            {% endfor %}
+
+
+                                        </tbody>
+                                    </table>
+                                </div>
+                                <div class="row">
+
+                                    <div class='col-6'>
+                                        <ul class="pagination m-auto">
+
+                                          {% if activities.has_previous %}
+
+                                          <li class="page-item "><a href="?page=1&search={{ search }}"><span class="page-link">First</span></a></li>
+                                          <li class="page-item"><a class="page-link" href="?page={{ activities.previous_page_number }}&search={{ search }}">{{ activities.previous_page_number }}</a></li>
+                                          <li class="page-item active"><a class="page-link" href=""> {{ activities.number }}</a></li>
+
+                                          {% else %}
+                                          <li class="page-item disabled"><a href="?page=1&search={{ search }}}"><span class="page-link">First</span></a></li>
+                                          <li class="page-item active"><a class="page-link" href=""> {{ activities.number }}</a></li>
+                                          {% endif %}
+
+                                          {% if activities.has_next %}
+                                          <li class="page-item"><a class="page-link" href="?page={{ activities.next_page_number }}&search={{ search }}">{{ activities.next_page_number }}</a></li>
+                                          <li class="page-item"><a class="page-link" href="?page={{ activities.paginator.num_pages }}&search={{ search }}">Last</a></li>
+                                          {% else %}
+                                          <li class="page-item disabled"><a href=""><span class="page-link">End</span></a></li>
+                                          {% endif %}
+
+                                        </ul>
+
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                </div>
+                <!-- [ Main Content ] end -->
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock content %}
+
+{% block javascripts %}{% endblock javascripts %}

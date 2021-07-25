@@ -35,7 +35,11 @@
 
                             {% if messages %}
                             {% for message in messages %}
-                            <div class="alert alert-{{ message.tags }}" role="alert">{{ message }}</div>
+                                {% if message.tags == "error" %}
+                                    <div class="alert alert-danger">{{ message }}</div>
+                                {% else %}
+                                    <div class="alert alert-{{ message.tags }}" role="alert">{{ message }}</div>
+                                {% endif %}
                             {% endfor %}
                             {% endif %}
 
@@ -60,7 +64,7 @@
                                                        value={{search}}
                                                        >
                                             </div>
-                                            <button type="submit" class="btn btn-success mb-2 btn-sm">Search</button>
+                                            <button type="submit" class="btn btn-secondary mb-2 btn-sm">Search</button>
                                         </form>
                                     </div>
                                 </div>

@@ -68,6 +68,17 @@
                         class="nav-item {% if 'ui-tables' in segment %} active {% endif %}">
                         <a href="/ui-tables.html" class="nav-link "><span class="pcoded-micon"><i class="feather icon-server"></i></span><span class="pcoded-mtext">Table</span></a>
                     </li>
+
+                    <!-- User Logs -->
+                    <li class="nav-item pcoded-menu-caption">
+                        <label>User Activity</label>
+                    </li>
+                    <li  class="nav-item {% if 'ui-forms' in segment %} active {% endif %}">
+                        <a href="{% url 'user_activity_list' %}" class="nav-link "><span class="pcoded-micon"><i class="feather icon-file-text"></i></span><span class="pcoded-mtext">Logs</a>
+                    </li>
+
+
+
                     <li class="nav-item pcoded-menu-caption">
                         <label>Chart & Maps</label>
                     </li>

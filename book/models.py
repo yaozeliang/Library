@@ -13,9 +13,16 @@ BOOK_STATUS =(
 )
 
 FLOOR =(
-    (1, "1st "),
-    (2, "2nd "),
-    (3, "3rd "),
+    (1, "1st"),
+    (2, "2nd"),
+    (3, "3rd"),
+)
+
+OPERATION_TYPE =(
+    (0, ""),
+    (1, "Create"),
+    (2,"Update"),
+    (3,"Delete")
 )
 
 class Category(models.Model):
@@ -72,6 +79,7 @@ class Book(models.Model):
     floor_number=models.IntegerField(choices=FLOOR,default=1)
     bookshelf_number=models.CharField('Bookshelf Number',max_length=10,default='0001')
     updated_by=models.CharField(max_length=20,default='yaozeliang')
+
     def get_absolute_url(self): 
         return reverse('book_list')
     
@@ -79,6 +87,12 @@ class Book(models.Model):
         return self.title
 
 
+class UserActivity(models.Model):
+    created_by=models.CharField(default="",max_length=20)
+    created_at =models.DateTimeField(auto_now_add=True)
+    operation_type=models.IntegerField(choices=OPERATION_TYPE,default=0)
+    target_model = models.CharField(default="",max_length=20)
+    detail = models.CharField(default="",max_length=50)
 
-
-
+    def get_absolute_url(self): 
+        return reverse('user_activity_list')
