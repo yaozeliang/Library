@@ -6,6 +6,8 @@ from django.conf import settings
 from django.contrib.auth.models import User
 from django.urls import reverse
 from django.utils import timezone
+from phonenumber_field.modelfields import PhoneNumberField
+
 
 BOOK_STATUS =(
     (0, "On loan"),
@@ -19,10 +21,9 @@ FLOOR =(
 )
 
 OPERATION_TYPE =(
-    (0, ""),
-    (1, "Create"),
-    (2,"Update"),
-    (3,"Delete")
+    ("success", "Create"),
+    ("warning","Update"),
+    ("danger","Delete")
 )
 
 class Category(models.Model):
@@ -90,9 +91,16 @@ class Book(models.Model):
 class UserActivity(models.Model):
     created_by=models.CharField(default="",max_length=20)
     created_at =models.DateTimeField(auto_now_add=True)
-    operation_type=models.IntegerField(choices=OPERATION_TYPE,default=0)
+    operation_type=models.CharField(choices=OPERATION_TYPE,default="success",max_length=20)
     target_model = models.CharField(default="",max_length=20)
     detail = models.CharField(default="",max_length=50)
 
     def get_absolute_url(self): 
         return reverse('user_activity_list')
+
+class Member(models.Model):
+    name = models.CharField(max_length=50, blank=False)
+    age = models.PositiveIntegerField(default=0)
+    city = models.CharField(max_length=50, blank=False)
+    email = models.EmailField(max_length=50,blank=True)
+    phone = PhoneNumberField()

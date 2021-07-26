@@ -9,7 +9,7 @@ from django.views.generic.edit import CreateView,UpdateView
 from django.core.paginator import Paginator
 from django.db.models import Q
 from django.http import HttpResponse,HttpResponseRedirect
-from .models import Book,Category,Publisher,UserActivity
+from .models import Book,Category,Publisher,UserActivity,Member
 
 from django.contrib.auth.models import User
 from django.contrib.auth.decorators import login_required
@@ -80,9 +80,8 @@ class BookCreateView(LoginRequiredMixin,CreateView):
         new_book_name = request.POST['title']
         messages.success(request, f"New Book << {new_book_name} >> Added")
         UserActivity.objects.create(created_by=self.request.user.username,
-                    operation_type=1,
-                    target_model=self.model.__name__,
-                    detail =f"Create {self.model.__name__} << {new_book_name} >>")
+                                    target_model=self.model.__name__,
+                                    detail =f"Create {self.model.__name__} << {new_book_name} >>")
         return redirect('book_list')
 
 class BookUpdateView(LoginRequiredMixin,UpdateView):
@@ -96,7 +95,7 @@ class BookUpdateView(LoginRequiredMixin,UpdateView):
         current_book.updated_by=self.request.user.username
         current_book.save(update_fields=['updated_by'])
         UserActivity.objects.create(created_by=self.request.user.username,
-            operation_type=2,
+            operation_type="warning",
             target_model=self.model.__name__,
             detail =f"Update {self.model.__name__} << {current_book.title} >>")
         return super(BookUpdateView, self).post(request, *args, **kwargs)
@@ -115,7 +114,7 @@ class BookDeleteView(LoginRequiredMixin,View):
         messages.error(request, f"Book << {delete_book.title} >> Removed")
         delete_book.delete()
         UserActivity.objects.create(created_by=self.request.user.username,
-            operation_type=3,
+            operation_type="danger",
             target_model=model_name,
             detail =f"Delete {model_name} << {delete_book.title} >>")
         return HttpResponseRedirect(reverse("book_list"))
@@ -171,7 +170,6 @@ class CategoryCreateView(LoginRequiredMixin,CreateView):
         new_cat_name = request.POST['name']
         messages.success(request, f"Category << {new_cat_name} >> Added")
         UserActivity.objects.create(created_by=self.request.user.username,
-                                    operation_type=1,
                                     target_model=self.model.__name__,
                                     detail =f"Create {self.model.__name__} << {new_cat_name} >>")
         return redirect('category_list')
@@ -186,7 +184,7 @@ class CategoryDeleteView(LoginRequiredMixin,View):
         messages.error(request, f"Category << {delete_cat.name} >> Removed")
         delete_cat.delete()
         UserActivity.objects.create(created_by=self.request.user.username,
-                            operation_type=3,
+                            operation_type="danger",
                             target_model=model_name,
                             detail =f"Delete {model_name} << {delete_cat.name} >>")
         return HttpResponseRedirect(reverse("category_list"))
@@ -242,9 +240,8 @@ class PublisherCreateView(LoginRequiredMixin,CreateView):
         new_publisher_name = request.POST['name']
         messages.success(request, f"New Publisher << {new_publisher_name} >> Added")
         UserActivity.objects.create(created_by=self.request.user.username,
-                            operation_type=1,
-                            target_model=self.model.__name__,
-                            detail =f"Create {self.model.__name__} << {new_publisher_name} >>")
+                                    target_model=self.model.__name__,
+                                    detail =f"Create {self.model.__name__} << {new_publisher_name} >>")
         return redirect('publisher_list')
 
 class PublisherUpdateView(LoginRequiredMixin,UpdateView):
@@ -258,9 +255,9 @@ class PublisherUpdateView(LoginRequiredMixin,UpdateView):
         current_pub.updated_by=self.request.user.username
         current_pub.save(update_fields=['updated_by'])
         UserActivity.objects.create(created_by=self.request.user.username,
-            operation_type=2,
-            target_model=self.model.__name__,
-            detail =f"Update {self.model.__name__} << {current_pub.name} >>")
+                                    operation_type="warning",
+                                    target_model=self.model.__name__,
+                                    detail =f"Update {self.model.__name__} << {current_pub.name} >>")
         return super(PublisherUpdateView, self).post(request, *args, **kwargs)
 
     def form_valid(self, form):
@@ -278,7 +275,7 @@ class PublisherDeleteView(LoginRequiredMixin,View):
         messages.error(request, f"Publisher << {delete_pub.name} >> Removed")
         delete_pub.delete()
         UserActivity.objects.create(created_by=self.request.user.username,
-                    operation_type=3,
+                    operation_type="danger",
                     target_model=model_name,
                     detail =f"Delete {model_name} << {delete_pub.name} >>")
         return HttpResponseRedirect(reverse("publisher_list"))
@@ -307,9 +304,7 @@ class ActivityListView(LoginRequiredMixin,ListView):
             all_activities = UserActivity.objects.all().order_by(self.order_field).filter(created_by=filter_user)
 
         if search:
-            all_activities = all_activities.filter(
-                Q(created_by__icontains=search) | Q(target_model__icontains=search) 
-            )
+            all_activities = all_activities.filter(Q(target_model__icontains=search))
         else:
             search = ''
         self.search_value=search

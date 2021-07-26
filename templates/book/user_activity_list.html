@@ -63,7 +63,7 @@
                                                        class="form-control" 
                                                        name="search",
                                                        id='search',
-                                                       placeholder="Search user or target",
+                                                       placeholder="Search target",
                                                        value={{search}}
                                                        >
                                             </div>
@@ -91,22 +91,13 @@
                                                 <tr>
                                                     <th scope="row">{{activity.id}}</th>
                                                     <td >{{activity.created_by}}</td>
-                                                    {% if activity.operation_type == 1 %}
-                                                    <td class="table-success" >{{activity.get_operation_type_display}}  </td>
-                                                    {% elif activity.operation_type == 2 %}
-                                                    <td class="table-warning" >{{activity.get_operation_type_display}}  </td>
-                                                    {% elif activity.operation_type == 3 %}
-                                                    <td class="table-danger" >{{activity.get_operation_type_display}}  </td>
-                                                    {% endif %}
-
+                                                    <td class="table-{{activity.operation_type}}" >{{activity.get_operation_type_display}}  </td>
                                                     <td >{{activity.target_model}}</td>
                                                     <td >{{ activity.created_at|date:"Y-m-d H:i" }} </td>
                                                     <td>{{ activity.detail}}  </td>
                                                     <td><a href="{% url 'user_activity_delete' activity.pk %}" class="badge badge-warning">Delete</a></td>
-
                                                 </tr>
                                                 
-
                                             {% endfor %}
 
 

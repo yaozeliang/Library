@@ -20,10 +20,14 @@
                         class="nav-item {% if 'index' in segment %} active {% endif %}">
                         <a href="/" class="nav-link "><span class="pcoded-micon"><i class="feather icon-home"></i></span><span class="pcoded-mtext">Dashboard</span></a>
                     </li>
+
+
+                    <!-- Manage Books -->
+
                     <li class="nav-item pcoded-menu-caption">
                         <label>Storage</label>
                     </li>
-                    <li data-username="basic components Button Alert Badges breadcrumb Paggination progress Tooltip popovers Carousel Cards Collapse Tabs pills Modal Grid System Typography Extra Shadows Embeds" class="nav-item pcoded-hasmenu">
+                    <li class="nav-item pcoded-hasmenu {% if request.resolver_match.url_name == 'book_list' or request.resolver_match.url_name == 'book_create' or request.resolver_match.url_name == 'book_update' or request.resolver_match.url_name == 'book_delete' or request.resolver_match.url_name == 'book_detail' %} active pcoded-trigger {% endif %}">
                         <a href="javascript:" class="nav-link "><span class="pcoded-micon"><i class="feather icon-box"></i></span><span class="pcoded-mtext">Books</span></a>
                         <ul class="pcoded-submenu">
                             <li class=""><a href="/ui-button.html" class="">Button</a></li>
@@ -39,7 +43,10 @@
                     </li>
 
                     <!-- Management Category -->
-                    <li data-username="basic components Button Alert Badges breadcrumb Paggination progress Tooltip popovers Carousel Cards Collapse Tabs pills Modal Grid System Typography Extra Shadows Embeds" class="nav-item pcoded-hasmenu">
+                    {% url 'category_list' as category_list %}
+                    {% url 'category_create' as category_create %}
+                    {% url 'category_delete' as category_delete %}
+                    <li class="nav-item pcoded-hasmenu {% if request.path == category_list or request.path == category_create or request.path == publisher_update or request.path == category_delete %} active pcoded-trigger {% endif %}">
                         <a href="javascript:" class="nav-link "><span class="pcoded-micon"><i class="feather icon-box"></i></span><span class="pcoded-mtext">Categories</span></a>
                         <ul class="pcoded-submenu">
                             <li class=""><a href="{% url 'category_list' %}" class="">All Categories</a></li>
@@ -48,15 +55,25 @@
                     </li>
 
                     <!-- Management Publisher -->
-                    <li data-username="basic components Button Alert Badges breadcrumb Paggination progress Tooltip popovers Carousel Cards Collapse Tabs pills Modal Grid System Typography Extra Shadows Embeds" class="nav-item pcoded-hasmenu">
+
+                    <li class="nav-item pcoded-hasmenu {% if request.resolver_match.url_name == 'publisher_list' or request.resolver_match.url_name == 'publisher_create' or request.resolver_match.url_name == 'publisher_update' or request.resolver_match.url_name == 'publisher_delete' %} active pcoded-trigger {% endif %}">
                         <a href="javascript:" class="nav-link "><span class="pcoded-micon"><i class="feather icon-box"></i></span><span class="pcoded-mtext">Publishers</span></a>
                         <ul class="pcoded-submenu">
-                            <li class=""><a href="{% url 'publisher_list' %}" class="">All Publishers</a></li>
-                            <li class=""><a href="{% url 'publisher_create' %}" class="">Add Publisher</a></li>
+                            <li class=""><a href="{% url 'publisher_list' %}" >All Publishers</a></li>
+                            <li class=""><a href="{% url 'publisher_create' %}" >Add Publisher</a></li>
                         </ul>
                     </li>
+                    <!-- User Logs -->
+                    {% url 'user_activity_list' as user_activity_list %}
+                    {% url 'user_activity_delete' as user_activity_delete %}
+                    <li class="nav-item pcoded-menu-caption">
+                        <label>User Activity</label>
+                    </li>
+                    <li  class="nav-item {% if request.path == user_activity_list %} active {% endif %} {% if request.path == user_activity_delete %} active {% endif %}">
+                        <a href="{% url 'user_activity_list' %}" class="nav-link "><span class="pcoded-micon"><i class="feather icon-file-text"></i></span><span class="pcoded-mtext">Logs</a>
+                    </li>
 
-
+                    <!-- Form Table -->
                     <li class="nav-item pcoded-menu-caption">
                         <label>Forms & table</label>
                     </li>
@@ -69,16 +86,8 @@
                         <a href="/ui-tables.html" class="nav-link "><span class="pcoded-micon"><i class="feather icon-server"></i></span><span class="pcoded-mtext">Table</span></a>
                     </li>
 
-                    <!-- User Logs -->
-                    <li class="nav-item pcoded-menu-caption">
-                        <label>User Activity</label>
-                    </li>
-                    <li  class="nav-item {% if 'ui-forms' in segment %} active {% endif %}">
-                        <a href="{% url 'user_activity_list' %}" class="nav-link "><span class="pcoded-micon"><i class="feather icon-file-text"></i></span><span class="pcoded-mtext">Logs</a>
-                    </li>
 
-
-
+                    <!-- Chart Maps -->
                     <li class="nav-item pcoded-menu-caption">
                         <label>Chart & Maps</label>
                     </li>
