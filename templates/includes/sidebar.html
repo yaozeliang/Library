@@ -25,7 +25,7 @@
                     <!-- Manage Books -->
 
                     <li class="nav-item pcoded-menu-caption">
-                        <label>Storage</label>
+                        <label>Management</label>
                     </li>
                     <li class="nav-item pcoded-hasmenu {% if request.resolver_match.url_name == 'book_list' or request.resolver_match.url_name == 'book_create' or request.resolver_match.url_name == 'book_update' or request.resolver_match.url_name == 'book_delete' or request.resolver_match.url_name == 'book_detail' %} active pcoded-trigger {% endif %}">
                         <a href="javascript:" class="nav-link "><span class="pcoded-micon"><i class="feather icon-box"></i></span><span class="pcoded-mtext">Books</span></a>
@@ -46,7 +46,7 @@
                     {% url 'category_list' as category_list %}
                     {% url 'category_create' as category_create %}
                     {% url 'category_delete' as category_delete %}
-                    <li class="nav-item pcoded-hasmenu {% if request.path == category_list or request.path == category_create or request.path == publisher_update or request.path == category_delete %} active pcoded-trigger {% endif %}">
+                    <li class="nav-item pcoded-hasmenu {% if request.path == category_list or request.path == category_create or  request.path == category_delete %} active pcoded-trigger {% endif %}">
                         <a href="javascript:" class="nav-link "><span class="pcoded-micon"><i class="feather icon-box"></i></span><span class="pcoded-mtext">Categories</span></a>
                         <ul class="pcoded-submenu">
                             <li class=""><a href="{% url 'category_list' %}" class="">All Categories</a></li>
@@ -63,6 +63,18 @@
                             <li class=""><a href="{% url 'publisher_create' %}" >Add Publisher</a></li>
                         </ul>
                     </li>
+
+
+                    <!-- Membership  -->
+
+                    <li class="nav-item pcoded-hasmenu {% if request.resolver_match.url_name == member_list or request.resolver_match.url_name == member_create or request.resolver_match.url_name == member_update or request.resolver_match.url_name == member_delete %} active pcoded-trigger {% endif %}">
+                        <a href="javascript:" class="nav-link "><span class="pcoded-micon"><i class="feather icon-box"></i></span><span class="pcoded-mtext">Membership</span></a>
+                        <ul class="pcoded-submenu">
+                            <li class=""><a href="{% url 'member_list' %}" class="">All Members</a></li>
+                            <li class=""><a href="{% url 'member_create' %}" class="">Add Member</a></li>
+                        </ul>
+                    </li>
+
                     <!-- User Logs -->
                     {% url 'user_activity_list' as user_activity_list %}
                     {% url 'user_activity_delete' as user_activity_delete %}
@@ -72,6 +84,8 @@
                     <li  class="nav-item {% if request.path == user_activity_list %} active {% endif %} {% if request.path == user_activity_delete %} active {% endif %}">
                         <a href="{% url 'user_activity_list' %}" class="nav-link "><span class="pcoded-micon"><i class="feather icon-file-text"></i></span><span class="pcoded-mtext">Logs</a>
                     </li>
+
+
 
                     <!-- Form Table -->
                     <li class="nav-item pcoded-menu-caption">

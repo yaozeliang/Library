@@ -1,5 +1,5 @@
 from django import forms
-from .models import Book,Publisher
+from .models import Book,Publisher,Member
 
 
 class BookCreateEditForm(forms.ModelForm):
@@ -23,3 +23,13 @@ class PubCreateEditForm(forms.ModelForm):
                   'contact',
                   )
         # fields="__all__"
+
+class MemberCreateEditForm(forms.ModelForm):
+    class Meta:
+        model = Member
+        fields = ('name',
+                  'gender',
+                  'age',
+                  'email',
+                  'city', 
+                  'phone_number',)

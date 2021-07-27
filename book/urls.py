@@ -5,6 +5,7 @@ from .views import BookListView,BookCreateView,BookDeleteView,BookDetailView,Boo
 from .views import CategoryListView,CategoryCreateView,CategoryDeleteView
 from .views import PublisherListView,PublisherCreateView,PublisherDeleteView,PublisherUpdateView
 from .views import ActivityListView,ActivityDeleteView
+from .views import MemberCreateView,MemberUpdateView,MemberDeleteView,MemberListView,MemberDetailView
 urlpatterns = [
     # Book
     path('book-list',BookListView.as_view(),name="book_list"),
@@ -27,5 +28,12 @@ urlpatterns = [
     # User Activity
     path('user-activity-list',ActivityListView.as_view(),name="user_activity_list"),
     path('user-activity-list/<int:pk>/',ActivityDeleteView.as_view(),name="user_activity_delete"),
+
+    # Membership
+    path('member-list',MemberListView.as_view(),name="member_list"),
+    path('member-create',MemberCreateView.as_view(),name="member_create"),  
+    path('member-delete/<int:pk>/',MemberDeleteView.as_view(),name="member_delete"), 
+    path('member-update/<int:pk>/',MemberUpdateView.as_view(),name="member_update"),
+    path('member-detail/<int:pk>/',MemberDetailView.as_view(),name="member_detail"),
 
 ]

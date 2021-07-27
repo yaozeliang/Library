@@ -6,7 +6,10 @@ from django.conf import settings
 from django.contrib.auth.models import User
 from django.urls import reverse
 from django.utils import timezone
-from phonenumber_field.modelfields import PhoneNumberField
+# from phonenumber_field.modelfields import PhoneNumberField
+from datetime import datetime, timedelta
+from dateutil.relativedelta import relativedelta
+import uuid
 
 
 BOOK_STATUS =(
@@ -24,6 +27,11 @@ OPERATION_TYPE =(
     ("success", "Create"),
     ("warning","Update"),
     ("danger","Delete")
+)
+
+GENDER=(
+    ("m","Male"),
+    ("f","Female"),
 )
 
 class Category(models.Model):
@@ -100,7 +108,33 @@ class UserActivity(models.Model):
 
 class Member(models.Model):
     name = models.CharField(max_length=50, blank=False)
-    age = models.PositiveIntegerField(default=0)
-    city = models.CharField(max_length=50, blank=False)
+    age = models.PositiveIntegerField(default=20)
+    gender = models.CharField(max_length=10,choices=GENDER,default='m')
+
+    city = models.CharField(max_length=20, blank=False)
     email = models.EmailField(max_length=50,blank=True)
-    phone = PhoneNumberField()
+    phone_number = models.CharField(max_length=30,blank=False)
+
+    created_at= models.DateTimeField(default=timezone.now)
+    created_by = models.CharField(max_length=20,default="")
+    updated_by = models.CharField(max_length=20,default="")
+    updated_at = models.DateTimeField(auto_now=True)
+
+    card_id = models.UUIDField(unique=True, default=uuid.uuid4, editable=False)
+    card_number = models.CharField(max_length=8,default="")
+    expired_at = models.DateTimeField(default=datetime.now()+relativedelta(years=1))
+
+    def get_absolute_url(self): 
+        return reverse('member_list')
+    
+    def save(self, *args, **kwargs):
+
+        self.card_number = str(self.card_id)[:8]
+        return super(Member, self).save(*args, **kwargs)
+
+    # def save(self, *args, **kwargs):
+    #     ''' On save, update timestamps '''
+    #     if not self.id:
+    #         self.created_at = timezone.now()
+    #     self.modified_at = timezone.now()
+    #     return super(User, self).save(*args, **kwargs)

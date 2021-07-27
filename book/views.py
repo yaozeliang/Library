@@ -19,7 +19,7 @@ from django.contrib.messages.views import SuccessMessageMixin
 from django.core.files.storage import FileSystemStorage
 from django.contrib.messages.views import messages
 from django.views.decorators.csrf import csrf_exempt
-from .forms import BookCreateEditForm,PubCreateEditForm
+from .forms import BookCreateEditForm,PubCreateEditForm,MemberCreateEditForm
 
 # Book
 
@@ -281,6 +281,7 @@ class PublisherDeleteView(LoginRequiredMixin,View):
         return HttpResponseRedirect(reverse("publisher_list"))
 
 
+# User Logs
 
 class ActivityListView(LoginRequiredMixin,ListView):
     login_url = 'login'
@@ -322,8 +323,8 @@ class ActivityListView(LoginRequiredMixin,ListView):
         context['user_list']= self.user_list
         return context
 
-
 class ActivityDeleteView(LoginRequiredMixin,View):
+
     login_url = 'login'
 
     def get(self,request,*args,**kwargs):
@@ -333,3 +334,104 @@ class ActivityDeleteView(LoginRequiredMixin,View):
         delete_log.delete()
 
         return HttpResponseRedirect(reverse("user_activity_list"))
+
+
+# Member Ship
+class MemberListView(LoginRequiredMixin,ListView):
+    login_url = 'login'
+    model= Member
+    context_object_name = 'members'
+    template_name = 'book/member_list.html'
+    count_total = 0
+    search_value = ''
+    order_field="-created_at"
+
+    def get_queryset(self):
+        search =self.request.GET.get("search")  
+        order_by=self.request.GET.get("orderby")
+        if order_by:
+            all_members = Member.objects.all().order_by(order_by)
+            self.order_field=order_by
+        else:
+            all_members = Member.objects.all().order_by(self.order_field)
+        if search:
+            all_members = all_members.filter(
+                Q(name__icontains=search)  
+            )
+        else:
+            search = ''
+        self.search_value=search
+        self.count_total = all_members.count()
+        paginator = Paginator(all_members, 6)
+        page = self.request.GET.get('page')
+        members = paginator.get_page(page)
+        return members
+
+    def get_context_data(self, *args, **kwargs):
+        context = super(MemberListView, self).get_context_data(*args, **kwargs)
+        context['count_total'] = self.count_total
+        context['search'] = self.search_value
+        return context
+
+class MemberCreateView(LoginRequiredMixin,CreateView):
+    model=Member
+    login_url = 'login'
+    form_class=MemberCreateEditForm
+    template_name='book/member_create.html'
+
+    def post(self,request, *args, **kwargs):
+        super(MemberCreateView,self).post(request)
+        new_member_name = request.POST['name']
+        messages.success(request, f"New Member << {new_member_name} >> Added")
+        UserActivity.objects.create(created_by=self.request.user.username,
+                                    target_model=self.model.__name__,
+                                    detail =f"Create {self.model.__name__} << {new_member_name} >>")
+        return redirect('member_list')
+
+    def form_valid(self, form):
+        self.object = form.save()
+        self.object.created_by = self.request.user.username
+        self.object.save(update_fields=['created_by'])
+        return HttpResponseRedirect(self.get_success_url())
+
+
+    # def form_valid(self, form):
+    #     response = super(CourseCreate, self).form_valid(form)
+    #     # do something with self.object
+    #     return response
+
+class MemberUpdateView(LoginRequiredMixin,UpdateView):
+    pass
+
+class MemberDeleteView(LoginRequiredMixin,View):
+    login_url = 'login'
+
+    def get(self,request,*args,**kwargs):
+        member_pk=kwargs["pk"]
+        delete_member=Member.objects.get(pk=member_pk)
+        model_name = delete_member.__class__.__name__
+        messages.error(request, f"Publisher << {delete_member.name} >> Removed")
+        delete_member.delete()
+        UserActivity.objects.create(created_by=self.request.user.username,
+                    operation_type="danger",
+                    target_model=model_name,
+                    detail =f"Delete {model_name} << {delete_member.name} >>")
+        return HttpResponseRedirect(reverse("member_list"))
+
+
+class MemberDetailView(LoginRequiredMixin,DetailView):
+    model = Member
+    context_object_name = 'member'
+    template_name = 'book/member_detail.html'
+    login_url = 'login'
+
+    # def get_context_data(self, **kwargs):
+    #     context = super().get_context_data(**kwargs)
+    #     context["card_number"] = str(self.get_object().card_id)[:8]
+    #     return context
+
+
+
+
+
+

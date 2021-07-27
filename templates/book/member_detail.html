@@ -1,0 +1,106 @@
+{% extends "layouts/base.html" %}
+{% load crispy_forms_tags %}
+{% block title %} Management{% endblock %} 
+
+{% block stylesheets %}
+<!-- <link rel="stylesheet" href="/static/assets/css/card.css"> -->
+
+{% endblock stylesheets %}
+
+{% block content %}
+
+<div class="pcoded-content">
+    <div class="pcoded-inner-content">
+        <div class="page-header">
+            <div class="page-block">
+                <div class="row align-items-center">
+                    <div class="col-md-12">
+                        <div class="page-header-title">
+                            <h5 class="m-b-10">Membership Management</h5>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <br>
+        <!-- [ breadcrumb ] end -->
+        <div class="main-body">
+            <div class="page-wrapper">
+                <div class="row">
+                    <div class="col-xl-12">
+                        <div class="card">
+                            <div class="card-header">
+                                <h5><i class="fas fa-user-tie"></i> Member Info  </h5>
+                            </div>
+
+                            <div class="card-block">
+                                <div class="col-md-12">
+                                    <h5 class="mt-2">{{member.name}}</h5>
+                                    <hr>
+                                    <div class="row">
+                                        <div class="col-md-3 col-sm-12">
+                                            <ul class="nav flex-column nav-pills" id="v-pills-tab" role="tablist" aria-orientation="vertical">
+                                                <li><a class="nav-link text-left active" id="basic-info-tab" data-toggle="pill" href="#basic-info" role="tab" aria-controls="basic-info" aria-selected="true">Profile</a></li>
+                                                <!-- <li><a class="nav-link text-left" id="contact-tab" data-toggle="pill" href="#contact" role="tab" aria-controls="contact" aria-selected="false">Contact</a></li> -->
+                                                <li><a class="nav-link text-left" id="card-tab" data-toggle="pill" href="#card" role="tab" aria-controls="card" aria-selected="false">Card</a></li>
+                                                <li><a class="nav-link text-left" id="audit-trail-tab" data-toggle="pill" href="#audit-trail" role="tab" aria-controls="audit-trail" aria-selected="false">Audit Trail</a></li>
+                                            </ul>
+                                        </div>
+                                        <div class="col-md-9 col-sm-12">
+                                            <div class="tab-content" id="v-pills-tabContent">
+                                                <div class="tab-pane fade show active" id="basic-info" role="tabpanel">
+                                                    <div class='row'>
+                                                        <div class='col-6'>
+                                                            <p>Name: {{member.name}} </p>
+                                                            <p>Gender: {{member.get_gender_display}} </p>
+                                                            <p>Age: {{member.age}} </p>
+                                                            <p>City: {{member.city}} </p>
+                                                        </div>
+                                                        <div class='col-6'>
+                                                            <p>Phone Number: {{member.phone_number}} </p>
+                                                            <p>Email: {{member.email}} </p>
+                                                        </div>
+                                                    </div>                                                
+                                                </div>
+                                                <!-- <div class="tab-pane fade" id="contact" role="tabpanel" aria-labelledby="contact-tab">
+                                                    <p class="mb-0">Culpa dolor voluptate do laboris laboris irure reprehenderit id incididunt duis pariatur mollit aute magna pariatur consectetur. Eu veniam duis non ut dolor deserunt commodo et minim in quis laboris ipsum velit id veniam. Quis ut consectetur adipisicing officia excepteur non sit. Ut et elit aliquip labore Lorem enim eu. Ullamco mollit occaecat dolore ipsum id officia mollit qui esse anim eiusmod do sint minim consectetur qui.</p>
+                                                </div> -->
+
+                                                <div class="tab-pane fade" id="card" role="tabpanel" aria-labelledby="card-tab">
+                                                    <p>Card ID: {{member.card_id}}</p>
+                                                    <p>Card Number: {{member.card_number}}</p>
+                                                    <p>Created at: {{member.created_at| date:"Y/m"}} </p>
+                                                    <p>Expired at: {{member.expired_at| date:"Y/m"}}</p>
+                                                
+                                                </div>
+                                                <div class="tab-pane fade" id="audit-trail" role="tabpanel" aria-labelledby="audit-trail-tab">
+                                                    <p>Created at : {{member.created_at| date:"Y-m-d H:i"}} </p>
+                                                    <p>Created by : {{member.created_by}} </p>
+                                                    <br>
+                                                    <p>Updated at : {{member.updated_at | date:"Y-m-d H:i"}}</p>
+                                                    <p>Updated by : {{member.updated_by}} </p>
+
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                            </div>
+                            
+
+                        </div>
+                        <a href="{% url 'member_list' %}" class='btn btn-dark'>Return List</a>
+                        <a href="{% url 'member_update' member.pk %}" class='btn btn-dark'>Update</a>
+                    </div>
+                    
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock content %}
+
+<!-- Specific Page JS goes HERE  -->
+{% block javascripts %}{% endblock javascripts %}

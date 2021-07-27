@@ -1,0 +1,154 @@
+{% extends "layouts/base.html" %}
+
+{% block title %} Management {% endblock %} 
+
+{% block stylesheets %}{% endblock stylesheets %}
+
+{% block content %}
+
+<div class="pcoded-content">
+    <div class="pcoded-inner-content">
+        <div class="page-header">
+            <div class="page-block">
+                <div class="row align-items-center">
+                    <div class="col-md-12">
+                        <div class="page-header-title">
+                            <h5 class="m-b-10">Membership Management</h5>
+
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+        <br>
+        <!-- [ breadcrumb ] end -->
+        <div class="main-body">
+            <div class="page-wrapper">
+                <!-- [ Main Content ] start -->
+                <div class="row">
+                    <!-- [ basic-table ] start -->
+                    <div class="col-xl-12">
+                        <div class="card">
+                            <div class="card-header">
+                                <h5>Total {{count_total}} members</h5>
+                            </div>
+                            {% if messages %}
+                            {% for message in messages %}
+                                {% if message.tags == "error" %}
+                                    <div class="alert alert-danger">{{ message }}</div>
+                                {% else %}
+                                    <div class="alert alert-{{ message.tags }}" role="alert">{{ message }}</div>
+                                {% endif %}
+                            {% endfor %}
+                            {% endif %}
+
+
+                            <div class="card-block ">
+                                <div class='row'>
+                                    <div class="col-6">
+                                        <b>Sort By : - </b>
+                                        <a href="{% url 'member_list' %}?search={{search}}&orderby=id">Id</a>  | 
+                                        <a href="{% url 'member_list' %}?search={{ search }}&orderby=name">Name</a> |  
+                                        <a href="{% url 'member_list' %}?search={{ search }}&orderby=city">City</a> 
+                                    </div>
+   
+                                    <div class="col-6">
+                                        <form class="form-inline mb-2">
+                                            <div class="form-group  mb-2">
+                                                <input type="text" 
+                                                       class="form-control" 
+                                                       name="search",
+                                                       id='search',
+                                                       placeholder="Search name",
+                                                       value={{search}}
+                                                       >
+                                            </div>
+                                            <button type="submit" class="btn btn-secondary mb-2 ml-2 btn-sm">Search</button>
+                                        </form>
+                                    </div>
+                                </div>
+
+                                <div class="table-responsive table-hover">
+                                    <table class="table">
+                                        <thead>
+                                            <tr>
+                                                <th>Name</th>
+                                                <th>Sex</th>
+                                                <th>Phone</th>
+                                                <th>Card</th>
+                                                <th>Email</th>
+                                                <th>City</th>
+                                                <th>Created At</th>
+                                                <th>Expired At</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            
+                                            {% for member in members %}
+                                            <tr>
+                                                <td><a href="{% url 'member_detail' member.pk %}" class='badge badge-secondary '>{{member.name}}</a></td>                                                                
+                                                <td>{{member.gender|upper}}</td>
+                                                <td>{{member.phone_number}}</td>
+                                                <td>{{member.card_number}}</td>
+                                                <td>{{member.city}}</td>
+                                                <td>{{member.email}}</td>
+                                                <td>{{ member.created_at|date:"Y-m-d" }} by {{member.created_by}} </td>
+                                                <td>{{ member.expired_at|date:"Y-m-d" }} </td>
+                                                <td>
+                                                    <a href="{% url 'member_update' member.pk %}" class="badge badge-info">Update</a>&nbsp;
+                                                    <a href="{% url 'member_delete' member.pk %}" class="badge badge-warning">Delete</a></td>
+
+                                            </tr>
+                                            {% endfor %}
+
+
+                                        </tbody>
+                                    </table>
+                                </div>
+                                <div class="row">
+                                    <div class='col-6'>
+                                        <a href="{% url 'member_create' %}" class='btn btn-primary'>Add New Member</a>
+                                    </div>
+                                    <div class='col-6'>
+                                        <ul class="pagination m-auto">
+
+                                          {% if members.has_previous %}
+
+                                          <li class="page-item "><a href="?page=1&orderby={{ order }}&search={{ search }}"><span class="page-link">First</span></a></li>
+                                          <li class="page-item"><a class="page-link" href="?page={{ members.previous_page_number }}&orderby={{ order }}&search={{ search }}">{{ members.previous_page_number }}</a></li>
+                                          <li class="page-item active"><a class="page-link" href=""> {{ members.number }}</a></li>
+
+                                          {% else %}
+                                          <li class="page-item disabled"><a href="?page=1&orderby={{ order }}&search={{ search }}"><span class="page-link">First</span></a></li>
+                                          <li class="page-item active"><a class="page-link" href=""> {{ members.number }}</a></li>
+                                          {% endif %}
+
+                                          {% if members.has_next %}
+                                          <li class="page-item"><a class="page-link" href="?page={{ members.next_page_number }}&orderby={{ order }}&search={{ search }}">{{ members.next_page_number }}</a></li>
+                                          <li class="page-item"><a class="page-link" href="?page={{ members.paginator.num_pages }}&orderby={{ order }}&search={{ search }}">Last</a></li>
+                                          {% else %}
+                                          <li class="page-item disabled"><a href=""><span class="page-link">End</span></a></li>
+                                          {% endif %}
+
+                                        </ul>
+
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                </div>
+                <!-- [ Main Content ] end -->
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock content %}
+
+<!-- Specific Page JS goes HERE  -->
+{% block javascripts %}{% endblock javascripts %}

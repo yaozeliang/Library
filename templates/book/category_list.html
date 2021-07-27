@@ -1,6 +1,6 @@
 {% extends "layouts/base.html" %}
 
-{% block title %} Storage {% endblock %} 
+{% block title %} Management {% endblock %} 
 
 {% block stylesheets %}{% endblock stylesheets %}
 
@@ -88,8 +88,6 @@
                                                 <th scope="row">{{cat.id}}</th>
                                                 <td>{{cat.name}}</td>
                                                 <td>{{ cat.created|date:"Y-m-d H:i" }}  </td>
-                                                <!-- <td><a href="{% url 'category_delete' cat.pk %}" class='btn btn-danger btn-xs'>Delete</a>
-                                                </td> -->
                                                 <td><a href="{% url 'category_delete' cat.pk %}" class="badge badge-warning">Delete</a></td>
 
                                             </tr>
