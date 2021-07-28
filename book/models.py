@@ -128,7 +128,6 @@ class Member(models.Model):
         return reverse('member_list')
     
     def save(self, *args, **kwargs):
-
         self.card_number = str(self.card_id)[:8]
         return super(Member, self).save(*args, **kwargs)
 

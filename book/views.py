@@ -344,7 +344,7 @@ class MemberListView(LoginRequiredMixin,ListView):
     template_name = 'book/member_list.html'
     count_total = 0
     search_value = ''
-    order_field="-created_at"
+    order_field="-updated_at"
 
     def get_queryset(self):
         search =self.request.GET.get("search")  
@@ -401,7 +401,25 @@ class MemberCreateView(LoginRequiredMixin,CreateView):
     #     return response
 
 class MemberUpdateView(LoginRequiredMixin,UpdateView):
-    pass
+    model = Member
+    login_url = 'login'
+    form_class=MemberCreateEditForm
+    template_name = 'book/member_update.html'
+
+    def post(self, request, *args, **kwargs):
+        current_member = self.get_object()
+        current_member.updated_by=self.request.user.username
+        current_member.save(update_fields=['updated_by'])
+        UserActivity.objects.create(created_by=self.request.user.username,
+            operation_type="warning",
+            target_model=self.model.__name__,
+            detail =f"Update {self.model.__name__} << {current_member.name} >>")
+        return super(MemberUpdateView, self).post(request, *args, **kwargs)
+
+    def form_valid(self, form):
+        member_name=form.cleaned_data['name']      
+        messages.warning(self.request, f"Update << {member_name} >> success")
+        return super().form_valid(form)
 
 class MemberDeleteView(LoginRequiredMixin,View):
     login_url = 'login'
@@ -410,7 +428,7 @@ class MemberDeleteView(LoginRequiredMixin,View):
         member_pk=kwargs["pk"]
         delete_member=Member.objects.get(pk=member_pk)
         model_name = delete_member.__class__.__name__
-        messages.error(request, f"Publisher << {delete_member.name} >> Removed")
+        messages.error(request, f"Member << {delete_member.name} >> Removed")
         delete_member.delete()
         UserActivity.objects.create(created_by=self.request.user.username,
                     operation_type="danger",
