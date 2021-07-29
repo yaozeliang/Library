@@ -1,28 +1,59 @@
 <!-- NOT IMPLEMENTED -->
+<!-- {% load static %} -->
+<nav class="navbar navbar-light bg-light justify-content-between">
+  <div class="col-9">
+    <form class="form-inline">
+      <input
+        class="form-control mr-sm-2"
+        type="search"
+        placeholder="Search"
+        aria-label="Search"
+      />
+      <button class="btn btn-light my-2 my-sm-0" type="submit">Search</button>
+    </form>
+  </div>
 
+  <div class="col-2 ">
 
-<nav class="navbar navbar-light bg-light  justify-content-between">
-        <div class='col-10'>
-            <form class="form-inline">
-                <input class="form-control mr-sm-2" type="search" placeholder="Search" aria-label="Search">
-                <button class="btn btn-primary my-2 my-sm-0" type="submit">Search</button>
-              </form>
-        </div>
-         
-        <div class='col-2'>
-            <div class="nav-item dropdown">
-                <h6 class="nav-link dropdown-toggle" href="#" id="navbarDropdown"  data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                  Hi,{{user.username}}
-                </h5>
-                <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-                  <a class="dropdown-item" href="#">Action</a>
-                  <a class="dropdown-item" href="#">Another action</a>
-                  <div class="dropdown-divider"></div>
-                  <a class="dropdown-item" href="{% url 'logout' %}">Logout</a>
-                
-            </div>
-        </div>
-    
+    <div class="nav-item dropdown float-right">
+        
+      {% if user.is_authenticated %}
+      <h6
+        class="nav-link dropdown-toggle"
+        href="#"
+        id="navbarDropdown"
+        data-toggle="dropdown"
+        aria-haspopup="true"
+        aria-expanded="false"
+      >
+      {% if user.profile.profile_pic %}
+      <img src="{{user.profile.profile_pic.url}}" style="width:30px;height:30px;border-radius:50%;"> 
+      {%else%}
+      <img src="{% static 'assets/images/user/avatar-2.jpg' %} "style="width:30px;height:30px;border-radius:50%;" alt="">
+      {% endif %}
 
+      {{user.username}}
+      </h6>
+      
+      <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+        {% if request.user.profile.id %}
+        <a
+          class="dropdown-item"
+          href="{% url 'profile_detail' request.user.profile.id %}"
+          >My Profile</a
+        >
+        {% else %}
+        <a class="dropdown-item" href="{% url 'profile_create' %}"
+          >Create Profile</a
+        >
+        {% endif %}
+        <div class="dropdown-divider"></div>
+        <a class="dropdown-item" href="{% url 'logout' %}">Logout</a>
+      </div>
 
+      {% else %}
+      <a class="btn btn-primary" href="{% url 'login' %}"> Login </a>
+      {% endif %}
+    </div>
+  </div>
 </nav>

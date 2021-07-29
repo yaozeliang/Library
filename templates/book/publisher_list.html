@@ -97,8 +97,8 @@
                                                 <td>{{pub.contact}}</td>
                                                 <td>{{ pub.created_at|date:"Y/m/d" }} </td>
                                                 <td>{{ pub.updated_by}} at {{ pub.updated_at|date:"Y-m-d H:i" }}  </td>
-                                                <td><a href="{% url 'publisher_delete' pub.pk %}" class="badge badge-warning">Delete</a>&nbsp;
-                                                    <a href="{% url 'publisher_update' pub.id%}" class="badge badge-info">Update</a>
+                                                <td><a href="{% url 'publisher_delete' pub.pk %}" class="badge badge-danger"><i class="feather icon-trash-2"></i>&nbsp;Delete</a>&nbsp;
+                                                    <a href="{% url 'publisher_update' pub.id%}" class="badge badge-info"><i class="feather icon-edit"></i>&nbsp;Update</a>
                                                 </td>
 
                                             </tr>

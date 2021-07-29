@@ -88,7 +88,7 @@
                                                 <th scope="row">{{cat.id}}</th>
                                                 <td>{{cat.name}}</td>
                                                 <td>{{ cat.created|date:"Y-m-d H:i" }}  </td>
-                                                <td><a href="{% url 'category_delete' cat.pk %}" class="badge badge-warning">Delete</a></td>
+                                                <td><a href="{% url 'category_delete' cat.pk %}" class="badge badge-danger"><i class="feather icon-trash-2"></i>&nbsp;Delete</a></td>
 
                                             </tr>
                                             {% endfor %}

@@ -62,7 +62,7 @@
                                                        class="form-control" 
                                                        name="search",
                                                        id='search',
-                                                       placeholder="Search name",
+                                                       placeholder="name or card number",
                                                        value={{search}}
                                                        >
                                             </div>
@@ -79,17 +79,19 @@
                                                 <th>Sex</th>
                                                 <th>Phone</th>
                                                 <th>Card</th>
-                                                <th>Email</th>
+                                                
                                                 <th>City</th>
+                                                <th>Email</th>
                                                 <th>Created At</th>
                                                 <th>Expired At</th>
+                                                <th>#</th>
                                             </tr>
                                         </thead>
                                         <tbody>
                                             
                                             {% for member in members %}
                                             <tr>
-                                                <td><a href="{% url 'member_detail' member.pk %}" class='badge badge-secondary '>{{member.name}}</a></td>                                                                
+                                                <td><a href="{% url 'member_detail' member.pk %}" class='badge badge-secondary '><i class="feather icon-user"></i>&nbsp;{{member.name}}</a></td>                                                                
                                                 <td>{{member.gender|upper}}</td>
                                                 <td>{{member.phone_number}}</td>
                                                 <td>{{member.card_number}}</td>
@@ -98,9 +100,9 @@
                                                 <td>{{ member.created_at|date:"Y-m-d" }} by {{member.created_by}} </td>
                                                 <td>{{ member.expired_at|date:"Y-m-d" }} </td>
                                                 <td>
-                                                    <a href="{% url 'member_update' member.pk %}" class="badge badge-info">Update</a>&nbsp;
-                                                    <a href="{% url 'member_delete' member.pk %}" class="badge badge-warning">Delete</a></td>
-
+                                                    <a href="{% url 'member_update' member.pk %}" class="badge badge-info"><i class="feather icon-edit"></i>&nbsp;Edit</a>&nbsp;
+                                                    <a href="{% url 'member_delete' member.pk %}" class="badge badge-danger"><i class="feather icon-trash-2"></i>&nbsp;Delete</a></td>
+                                                    
                                             </tr>
                                             {% endfor %}
 

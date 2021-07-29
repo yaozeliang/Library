@@ -89,7 +89,7 @@
                                             {% for book in books %}
                                             <tr>
                                                 <th scope="row">{{book.id}}</th>
-                                                <td>{{book.title}}</td>
+                                                <td>{{book.title|slice:'10'}}</td>
                                                 <td>{{book.author}}</td>
                                                 <td>{{book.category}}</td>
                                                 <!-- <td>{{book.updated|date:"Y/m/d H:i" }}</td> -->
@@ -97,10 +97,10 @@
                                                 <td>{{book.quantity}}</td>
                                                 <td>{{book.floor_number}}{{book.bookshelf_number}}</td>
                                                 <td>{{book.updated_by}}  </td>
-                                                <td>
-                                                    <a href="{% url 'book_detail' book.id%}" class="badge badge-success">Detail</a>&nbsp;
-                                                    <a href="{% url 'book_update' book.id%}" class="badge badge-info">Update</a>&nbsp;
-                                                    <a href="{% url 'book_delete' book.id%}" class="badge badge-warning">Delete</a>&nbsp;
+                                                <td>                                
+                                                    <a href="{% url 'book_detail' book.id%}" class="badge badge-warning"><i class="feather icon-eye"></i></a>
+                                                    <a href="{% url 'book_update' book.id%}" class="badge badge-info"><i class="feather icon-edit"></i>&nbsp;Update</a>&nbsp;
+                                                    <a href="{% url 'book_delete' book.id%}" class="badge badge-danger"><i class="feather icon-trash-2"></i>&nbsp;Delete</a>&nbsp;
                                                 </td>
 
                                             </tr>

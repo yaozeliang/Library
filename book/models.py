@@ -10,6 +10,7 @@ from django.utils import timezone
 from datetime import datetime, timedelta
 from dateutil.relativedelta import relativedelta
 import uuid
+from PIL import Image
 
 
 BOOK_STATUS =(
@@ -95,7 +96,6 @@ class Book(models.Model):
     def __str__(self):
         return self.title
 
-
 class UserActivity(models.Model):
     created_by=models.CharField(default="",max_length=20)
     created_at =models.DateTimeField(auto_now_add=True)
@@ -131,9 +131,40 @@ class Member(models.Model):
         self.card_number = str(self.card_id)[:8]
         return super(Member, self).save(*args, **kwargs)
 
+    def __str__(self):
+        return self.name
     # def save(self, *args, **kwargs):
     #     ''' On save, update timestamps '''
     #     if not self.id:
     #         self.created_at = timezone.now()
     #     self.modified_at = timezone.now()
     #     return super(User, self).save(*args, **kwargs)
+
+# UserProfile
+class Profile(models.Model):
+    user = models.OneToOneField(User,null=True,on_delete=models.CASCADE)
+    bio = models.TextField()
+    profile_pic = models.ImageField(upload_to="profile/%Y%m%d/", blank=True,null=True)
+    phone_number = models.CharField(max_length=30,blank=True)
+    email = models.EmailField(max_length=50,blank=True)
+
+    def save(self, *args, **kwargs):
+        # 调用原有的 save() 的功能
+        profile = super(Profile, self).save(*args, **kwargs)
+
+        # 固定宽度缩放图片大小
+        if self.profile_pic and not kwargs.get('update_fields'):
+            image = Image.open(self.profile_pic)
+            (x, y) = image.size
+            new_x = 400
+            new_y = int(new_x * (y / x))
+            resized_image = image.resize((new_x, new_y), Image.ANTIALIAS)
+            resized_image.save(self.profile_pic.path)
+
+        return profile
+
+    def __str__(self):
+        return str(self.user)
+
+    def get_absolute_url(self): 
+        return reverse('home')

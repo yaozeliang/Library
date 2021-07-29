@@ -1,12 +1,22 @@
 
 from django.contrib import admin
 from django.urls import path, include  # add this
-from .views import BookListView,BookCreateView,BookDeleteView,BookDetailView,BookUpdateView
+from .views import HomeView,BookListView,BookCreateView,BookDeleteView,BookDetailView,BookUpdateView
 from .views import CategoryListView,CategoryCreateView,CategoryDeleteView
 from .views import PublisherListView,PublisherCreateView,PublisherDeleteView,PublisherUpdateView
 from .views import ActivityListView,ActivityDeleteView
 from .views import MemberCreateView,MemberUpdateView,MemberDeleteView,MemberListView,MemberDetailView
+from .views import ProfileDetailView,ProfileCreateView,ProfileUpdateView
+from django.conf import settings
+from django.conf.urls.static import static
+
+
+
+
 urlpatterns = [
+
+    # HomePage
+    path("",HomeView.as_view(), name='home'),
     # Book
     path('book-list',BookListView.as_view(),name="book_list"),
     path('book-create',BookCreateView.as_view(),name="book_create"),
@@ -36,4 +46,12 @@ urlpatterns = [
     path('member-update/<int:pk>/',MemberUpdateView.as_view(),name="member_update"),
     path('member-detail/<int:pk>/',MemberDetailView.as_view(),name="member_detail"),
 
+    # UserProfile
+    path('user/profile-create/',ProfileCreateView.as_view(),name="profile_create"),
+    path('user/<int:pk>/profile/',ProfileDetailView.as_view(),name="profile_detail"),
+    path('user/<int:pk>/profile-update/',ProfileUpdateView.as_view(),name="profile_update"),
+
 ]
+
+
+

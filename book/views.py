@@ -4,12 +4,12 @@ from django.urls import  reverse_lazy,reverse
 from django.contrib.auth import get_user_model
 from django.contrib.auth.models import User
 from django.views.decorators.csrf import csrf_protect
-from django.views.generic import ListView,DetailView,DeleteView,View
+from django.views.generic import ListView,DetailView,DeleteView,View,TemplateView
 from django.views.generic.edit import CreateView,UpdateView
 from django.core.paginator import Paginator
 from django.db.models import Q
 from django.http import HttpResponse,HttpResponseRedirect
-from .models import Book,Category,Publisher,UserActivity,Member
+from .models import Book,Category,Publisher,UserActivity,Member,Profile
 
 from django.contrib.auth.models import User
 from django.contrib.auth.decorators import login_required
@@ -19,7 +19,13 @@ from django.contrib.messages.views import SuccessMessageMixin
 from django.core.files.storage import FileSystemStorage
 from django.contrib.messages.views import messages
 from django.views.decorators.csrf import csrf_exempt
-from .forms import BookCreateEditForm,PubCreateEditForm,MemberCreateEditForm
+from .forms import BookCreateEditForm,PubCreateEditForm,MemberCreateEditForm,ProfileForm
+
+
+# HomePage
+
+class HomeView(TemplateView):
+    template_name = "index.html"
 
 # Book
 
@@ -336,7 +342,7 @@ class ActivityDeleteView(LoginRequiredMixin,View):
         return HttpResponseRedirect(reverse("user_activity_list"))
 
 
-# Member Ship
+# Membership
 class MemberListView(LoginRequiredMixin,ListView):
     login_url = 'login'
     model= Member
@@ -356,7 +362,7 @@ class MemberListView(LoginRequiredMixin,ListView):
             all_members = Member.objects.all().order_by(self.order_field)
         if search:
             all_members = all_members.filter(
-                Q(name__icontains=search)  
+                Q(name__icontains=search) |  Q(card_number__icontains=search)
             )
         else:
             search = ''
@@ -436,7 +442,6 @@ class MemberDeleteView(LoginRequiredMixin,View):
                     detail =f"Delete {model_name} << {delete_member.name} >>")
         return HttpResponseRedirect(reverse("member_list"))
 
-
 class MemberDetailView(LoginRequiredMixin,DetailView):
     model = Member
     context_object_name = 'member'
@@ -449,7 +454,64 @@ class MemberDetailView(LoginRequiredMixin,DetailView):
     #     return context
 
 
+# Profile View
+
+class ProfileDetailView(LoginRequiredMixin,DetailView):
+    model = Profile
+    context_object_name = 'profile'
+    template_name = 'profile/profile_detail.html'
+    login_url = 'login'
 
 
+    def get_context_data(self, *args, **kwargs):
+        current_user= get_object_or_404(Profile,pk=self.kwargs['pk'])
+        # current_user= Profile.get(pk=kwargs['pk'])
+        context = super(ProfileDetailView, self).get_context_data(*args, **kwargs)
+        context['current_user'] = current_user
+        return context
 
+
+class ProfileCreateView(LoginRequiredMixin,CreateView):
+    model = Profile
+    template_name = 'profile/profile_create.html'
+    login_url = 'login'
+    form_class= ProfileForm
+
+    def form_valid(self,form) -> HttpResponse:
+        form.instance.user = self.request.user
+        return super().form_valid(form)
+
+class ProfileUpdateView(LoginRequiredMixin,UpdateView):
+    model = Profile
+    login_url = 'login'
+    form_class=ProfileForm
+    template_name = 'profile/profile_update.html'
+
+
+# Handle Errors
+
+def page_not_found(request, exception):
+    context = {}
+    response = render(request, "errors/404.html", context=context)
+    response.status_code = 404
+    return response
+    
+def server_error(request, exception=None):
+    context = {}
+    response = render(request, "errors/500.html", context=context)
+    response.status_code = 500
+    return response
+    
+
+def permission_denied(request, exception=None):
+    context = {}
+    response = render(request, "errors/403.html", context=context)
+    response.status_code = 403
+    return response
+    
+def bad_request(request, exception=None):
+    context = {}
+    response = render(request, "errors/400.html", context=context)
+    response.status_code = 400
+    return response
 
