@@ -12,7 +12,7 @@ urlpatterns = [
     path('admin/', admin.site.urls),          # Django admin route
     path("auth/", include("authentication.urls")), # Auth routes - login / register
     path("", include("book.urls")),
-    # path("app/", include("app.urls")) ,  
+    path("app/", include("app.urls")) ,  
     
 ]
 

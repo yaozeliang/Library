@@ -1,4 +1,5 @@
-
+import os
+import pandas as pd
 from django.shortcuts import render,get_object_or_404,redirect
 from django.urls import  reverse_lazy,reverse
 from django.contrib.auth import get_user_model
@@ -9,7 +10,10 @@ from django.views.generic.edit import CreateView,UpdateView
 from django.core.paginator import Paginator
 from django.db.models import Q
 from django.http import HttpResponse,HttpResponseRedirect
-from .models import Book,Category,Publisher,UserActivity,Member,Profile
+from .models import Book,Category,Publisher,UserActivity,Profile,Member
+from django.apps import apps
+from django.conf import settings
+
 
 from django.contrib.auth.models import User
 from django.contrib.auth.decorators import login_required
@@ -21,11 +25,28 @@ from django.contrib.messages.views import messages
 from django.views.decorators.csrf import csrf_exempt
 from .forms import BookCreateEditForm,PubCreateEditForm,MemberCreateEditForm,ProfileForm
 
+from .utils import get_n_days_ago,create_clean_dir,change_col_format
+
+
+
 
 # HomePage
 
-class HomeView(TemplateView):
+class HomeView(LoginRequiredMixin,TemplateView):
+    login_url = 'login'
     template_name = "index.html"
+
+    data_count = {"book":Book.objects.all().count,
+                  "member":Member.objects.all().count,
+                  "category":Category.objects.all().count,
+                  "publisher":Publisher.objects.all().count,}
+    context={}
+
+    def get(self,request, *args, **kwargs):
+        
+        self.context['data_count']=self.data_count
+        return render(request, self.template_name, self.context)
+
 
 # Book
 
@@ -486,6 +507,52 @@ class ProfileUpdateView(LoginRequiredMixin,UpdateView):
     login_url = 'login'
     form_class=ProfileForm
     template_name = 'profile/profile_update.html'
+
+
+# Download File
+
+# class DownloadFileView(LoginRequiredMixin,TemplateView):
+#     table_names = ['Category','Book','Member','Publisher','UserActivity']
+#     template_name = "book/download_data.html"
+#     time_stamp = get_n_days_ago(0,"%Y%m%d")
+#     base_dir = settings.BASE_DIR
+#     data_url=settings.DATA_URL
+#     target_path = str(base_dir)+str(data_url)
+
+
+#     # def get(self,request, *args, **kwargs):
+#         # dataset= {m.capitalize():m+'.xlsx'for m in self.app_models if m not in self.sys_tables}
+#         # dataset= {m:m+'.xlsx'for m in self.table_names}
+#         # context = {        
+#         # 'dataset':dataset,
+#         # 'base':self.base_dir,     
+#         # 'data_url':self.data_url,              
+#         # 'time_stamp':self.time_stamp
+#         # }
+
+#         # # print(self.target_path)
+#         # os.chdir(self.target_path)
+#         # create_clean_dir(self.time_stamp)
+#         # messages.info(request, f"Refreshing Data ...")
+#         # for m in self.table_names:
+#         #     df = pd.DataFrame(list(apps.get_model(app_label='book', model_name=m).objects.all().values()))
+#         #     change_col_format(df,str)   
+#         #     df.to_excel(m+'.xlsx',index=False)
+
+#         # messages.success(request, f"Finish")
+#         # super(DownloadFileView,self).get(request)
+#         # return render(request, self.template_name, context)
+
+#     # def get_context_data(self, *args, **kwargs):
+
+#     #     context = super(DownloadFileView, self).get_context_data(*args, **kwargs)
+#     #     data_set = {m.capitalize():m+'.xlsx'for m in self.app_models if m not in self.sys_tables}
+#     #     context['data']= data_set
+#     #     print(data_set)
+#     #     context['target_path']= self.target_path
+#     #     return context
+
+
 
 
 # Handle Errors

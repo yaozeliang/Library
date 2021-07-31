@@ -122,23 +122,19 @@ class Member(models.Model):
 
     card_id = models.UUIDField(unique=True, default=uuid.uuid4, editable=False)
     card_number = models.CharField(max_length=8,default="")
-    expired_at = models.DateTimeField(default=datetime.now()+relativedelta(years=1))
+    expired_at = models.DateTimeField(default=timezone.now)
 
     def get_absolute_url(self): 
         return reverse('member_list')
     
     def save(self, *args, **kwargs):
         self.card_number = str(self.card_id)[:8]
+        self.expired_at = datetime.now()+relativedelta(years=1)
         return super(Member, self).save(*args, **kwargs)
 
     def __str__(self):
         return self.name
-    # def save(self, *args, **kwargs):
-    #     ''' On save, update timestamps '''
-    #     if not self.id:
-    #         self.created_at = timezone.now()
-    #     self.modified_at = timezone.now()
-    #     return super(User, self).save(*args, **kwargs)
+
 
 # UserProfile
 class Profile(models.Model):

@@ -78,21 +78,19 @@
                     <!-- User Logs -->
                     {% url 'user_activity_list' as user_activity_list %}
                     {% url 'user_activity_delete' as user_activity_delete %}
-                    {% url 'profile_detail' as profile %}
-                    {% url 'profile_update' as profile_update %}
                     {% url 'profile_create' as profile_create %}
                     <li class="nav-item pcoded-menu-caption">
                         <label>User Admin</label>
                     </li>
                     {% if request.user.profile.id %}
-                    <li  class="nav-item {% if request.path == profile %} active {% endif %} {% if request.path == profile_update %} active {% endif %}">
+                    <li  class="nav-item {% if request.resolver_match.url_name == 'profile_detail' %} active  {% endif %}">
                         <a href="{% url 'profile_detail' request.user.profile.id %}" class="nav-link "><span class="pcoded-micon"><i class="feather icon-file-text"></i></span><span class="pcoded-mtext">My Profile</a>
                     </li>
-                    <li  class="nav-item {% if request.path == profile %} active {% endif %} {% if request.path == profile_update %} active {% endif %}">
-                        <a href="{% url 'profile_detail' request.user.profile.id %}" class="nav-link "><span class="pcoded-micon"><i class="feather icon-file-text"></i></span><span class="pcoded-mtext">Update Profile</a>
+                    <li  class="nav-item {% if request.resolver_match.url_name == 'profile_update' %} active {% endif %}">
+                        <a href="{% url 'profile_update' request.user.profile.pk %}" class="nav-link "><span class="pcoded-micon"><i class="feather icon-file-text"></i></span><span class="pcoded-mtext">Update Profile</a>
                     </li>
                     {% else %}
-                    <li  class="nav-item {% if request.path == profile_create %} active  {% endif %}">
+                    <li  class="nav-item {% if request.resolver_match.url_name == 'profile_create' %} active  {% endif %}">
                         <a href="{% url 'profile_create' %}" class="nav-link "><span class="pcoded-micon"><i class="feather icon-file-text"></i></span><span class="pcoded-mtext">Create Profile</a>
                     </li>
 
@@ -101,7 +99,6 @@
                     <li  class="nav-item {% if request.path == user_activity_list %} active {% endif %} {% if request.path == user_activity_delete %} active {% endif %}">
                         <a href="{% url 'user_activity_list' %}" class="nav-link "><span class="pcoded-micon"><i class="feather icon-file-text"></i></span><span class="pcoded-mtext">Logs</a>
                     </li>
-
 
 
                     <!-- Form Table -->

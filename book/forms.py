@@ -35,7 +35,6 @@ class MemberCreateEditForm(forms.ModelForm):
                   'phone_number',)
 
 
-
 class ProfileForm(forms.ModelForm):
     class Meta:
         model = Profile
