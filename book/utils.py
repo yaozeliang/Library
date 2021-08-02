@@ -9,7 +9,6 @@ from copy import deepcopy
 from datetime import datetime,timedelta,date
 
 
-
 def get_n_days_ago(n=0,time_format="%d-%m-%Y"):
     time_stamp = datetime.now()-timedelta(days=n)
     return time_stamp.strftime(time_format)

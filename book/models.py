@@ -129,7 +129,7 @@ class Member(models.Model):
     
     def save(self, *args, **kwargs):
         self.card_number = str(self.card_id)[:8]
-        self.expired_at = datetime.now()+relativedelta(years=1)
+        self.expired_at = timezone.now()+relativedelta(years=1)
         return super(Member, self).save(*args, **kwargs)
 
     def __str__(self):
@@ -164,3 +164,10 @@ class Profile(models.Model):
 
     def get_absolute_url(self): 
         return reverse('home')
+
+
+
+# Borrow Record
+
+
+

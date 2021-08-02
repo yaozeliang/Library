@@ -26,8 +26,7 @@ from django.views.decorators.csrf import csrf_exempt
 from .forms import BookCreateEditForm,PubCreateEditForm,MemberCreateEditForm,ProfileForm
 
 from .utils import get_n_days_ago,create_clean_dir,change_col_format
-
-
+from .custom_filter import get_item
 
 
 # HomePage
@@ -35,16 +34,27 @@ from .utils import get_n_days_ago,create_clean_dir,change_col_format
 class HomeView(LoginRequiredMixin,TemplateView):
     login_url = 'login'
     template_name = "index.html"
-
-    data_count = {"book":Book.objects.all().count,
-                  "member":Member.objects.all().count,
-                  "category":Category.objects.all().count,
-                  "publisher":Publisher.objects.all().count,}
     context={}
 
     def get(self,request, *args, **kwargs):
         
-        self.context['data_count']=self.data_count
+        data_count = {"book":Book.objects.all().count,
+                    "member":Member.objects.all().count,
+                    "category":Category.objects.all().count,
+                    "publisher":Publisher.objects.all().count,}
+
+        user_activities= UserActivity.objects.order_by("-created_at")[:5]
+        user_avatar = { e.created_by:Profile.objects.get(user__username=e.created_by).profile_pic.url for e in user_activities}
+
+        short_inventory =Book.objects.order_by('quantity')[:5]
+        new_members = Member.objects.order_by('-created_at')[:5]
+
+        self.context['data_count']=data_count
+        self.context['recent_user_activities']=user_activities
+        self.context['user_avatar']=user_avatar
+        self.context['short_inventory']=short_inventory
+        self.context['new_members']=new_members
+ 
         return render(request, self.template_name, self.context)
 
 
@@ -509,49 +519,18 @@ class ProfileUpdateView(LoginRequiredMixin,UpdateView):
     template_name = 'profile/profile_update.html'
 
 
-# Download File
 
-# class DownloadFileView(LoginRequiredMixin,TemplateView):
-#     table_names = ['Category','Book','Member','Publisher','UserActivity']
-#     template_name = "book/download_data.html"
-#     time_stamp = get_n_days_ago(0,"%Y%m%d")
-#     base_dir = settings.BASE_DIR
-#     data_url=settings.DATA_URL
-#     target_path = str(base_dir)+str(data_url)
+# class BorrowRecordCreateView(LoginRequiredMixin,CreateView):
+#     template_name = 'borrow_records/create.html'
+#     login_url = 'login'
 
+#     def form_valid(self,form):
+#         self.object = form.save()
+#         return super().form_valid(form)
 
-#     # def get(self,request, *args, **kwargs):
-#         # dataset= {m.capitalize():m+'.xlsx'for m in self.app_models if m not in self.sys_tables}
-#         # dataset= {m:m+'.xlsx'for m in self.table_names}
-#         # context = {        
-#         # 'dataset':dataset,
-#         # 'base':self.base_dir,     
-#         # 'data_url':self.data_url,              
-#         # 'time_stamp':self.time_stamp
-#         # }
-
-#         # # print(self.target_path)
-#         # os.chdir(self.target_path)
-#         # create_clean_dir(self.time_stamp)
-#         # messages.info(request, f"Refreshing Data ...")
-#         # for m in self.table_names:
-#         #     df = pd.DataFrame(list(apps.get_model(app_label='book', model_name=m).objects.all().values()))
-#         #     change_col_format(df,str)   
-#         #     df.to_excel(m+'.xlsx',index=False)
-
-#         # messages.success(request, f"Finish")
-#         # super(DownloadFileView,self).get(request)
-#         # return render(request, self.template_name, context)
-
-#     # def get_context_data(self, *args, **kwargs):
-
-#     #     context = super(DownloadFileView, self).get_context_data(*args, **kwargs)
-#     #     data_set = {m.capitalize():m+'.xlsx'for m in self.app_models if m not in self.sys_tables}
-#     #     context['data']= data_set
-#     #     print(data_set)
-#     #     context['target_path']= self.target_path
-#     #     return context
-
+# class BorrowRecordListView(LoginRequiredMixin,CreateView):
+#     template_name = 'borrow_records/list.html'
+#     login_url = 'login'
 
 
 

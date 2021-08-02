@@ -9,6 +9,7 @@ from .views import MemberCreateView,MemberUpdateView,MemberDeleteView,MemberList
 from .views import ProfileDetailView,ProfileCreateView,ProfileUpdateView
 from django.conf import settings
 from django.conf.urls.static import static
+# from .views import BorrowRecordCreateView,BorrowRecordListView
 
 
 
@@ -51,6 +52,10 @@ urlpatterns = [
     path('user/<int:pk>/profile/',ProfileDetailView.as_view(),name="profile_detail"),
     path('user/<int:pk>/profile-update/',ProfileUpdateView.as_view(),name="profile_update"),
 
+
+    # BorrowRecords
+    # path('record-create/',BorrowRecordCreateView.as_view(),name="record_create"),
+    # path('record-list/',BorrowRecordListView.as_view(),name="record_list"),
 
 ]
 
