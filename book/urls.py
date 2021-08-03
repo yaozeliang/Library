@@ -9,9 +9,10 @@ from .views import MemberCreateView,MemberUpdateView,MemberDeleteView,MemberList
 from .views import ProfileDetailView,ProfileCreateView,ProfileUpdateView
 from django.conf import settings
 from django.conf.urls.static import static
-# from .views import BorrowRecordCreateView,BorrowRecordListView
+from .views import BorrowRecordListView,BorrowRecordCreateView,BorrowRecordDeleteView,auto_member,auto_book
 
 
+# BorrowRecordCreateView
 
 
 urlpatterns = [
@@ -54,8 +55,11 @@ urlpatterns = [
 
 
     # BorrowRecords
-    # path('record-create/',BorrowRecordCreateView.as_view(),name="record_create"),
-    # path('record-list/',BorrowRecordListView.as_view(),name="record_list"),
+    path('record-create/',BorrowRecordCreateView.as_view(),name="record_create"),
+    path('record-create-autocomplete-member-name/',auto_member,name="auto_member_name"),
+    path('record-create-autocomplete-book-name/',auto_book,name="auto_book_name"),
+    path('record-list/',BorrowRecordListView.as_view(),name="record_list"),
+    path('record-delete/<int:pk>/',BorrowRecordDeleteView.as_view(),name="record_delete"),
 
 ]
 

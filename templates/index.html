@@ -23,7 +23,6 @@
                                 <div class="card-block">
                                     <div class="row d-flex align-items-center">
                                         <div class="col-auto">
-                                            <!-- <i class="feather icon-map-pin f-30 text-c-blue"></i> -->
                                             <i class="fas fa-book f-40 text-c-blue "></i>
                                         </div>
                                         <div class="col">
@@ -182,22 +181,22 @@
                                 <div class="card-block border-bottom">
                                     <div class="row d-flex align-items-center">
                                         <div class="col-auto">
-                                            <i class="feather icon-zap f-30 text-c-green"></i>
+                                            <i class="fas fa-user f-30 "></i>
                                         </div>
                                         <div class="col">
-                                            <h3 class="f-w-300">235</h3>
-                                            <span class="d-block text-uppercase">TOTAL IDEAS</span>
+                                            <h3 class="mt-2 f-w-300">{{new_members_thisweek}} <sub class="text-muted f-15 ">New Members</sub></h3>
+                                            <span class="d-block text-uppercase">THIS WEEK</span>
                                         </div>
                                     </div>
                                 </div>
                                 <div class="card-block">
                                     <div class="row d-flex align-items-center">
                                         <div class="col-auto">
-                                            <i class="feather icon-map-pin f-30 text-c-blue"></i>
+                                            <i class="fas fa-book f-30 text-c-blue "></i>
                                         </div>
                                         <div class="col">
-                                            <h3 class="f-w-300">26</h3>
-                                            <span class="d-block text-uppercase">TOTAL LOCATIONS</span>
+                                            <h3 class="mt-2 f-w-300">{{lent_books_thisweek}} <sub class="text-muted f-15 ">Books Lent</sub></h3>
+                                            <span class="d-block text-uppercase">THIS WEEK</span>
                                         </div>
                                     </div>
                                 </div>
@@ -351,7 +350,7 @@
                                                 <tr>   
                                                     <td><img class="rounded-circle  m-r-10" style="width:30px;" src="{{user_avatar|get_item:log.created_by}}" >{{log.created_by}}</td>
                                                     <td> {{log.detail}} </td>
-                                                    <td>{{log.created_at |date:"Y-m-d H:i"}}</td>
+                                                    <td>{{log.created_at |date:"Y-m-d"}}</td>
                                                     <td>{{log.get_operation_type_display}} </td>
 
                                                     {% ifequal log.operation_type "success" %}

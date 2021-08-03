@@ -35,6 +35,16 @@ GENDER=(
     ("f","Female"),
 )
 
+BORROW_RECORD_STATUS=(
+    (0,'Open'),
+    (1,'Closed')
+)
+
+RETURN_STATUS=(
+    (True,'On Time'),
+    (False,'Delayed')
+)
+
 class Category(models.Model):
     
     name = models.CharField(max_length=50, blank=True)
@@ -166,8 +176,60 @@ class Profile(models.Model):
         return reverse('home')
 
 
-
 # Borrow Record
+
+class BorrowRecord(models.Model):
+
+    # borrower = models.ForeignKey(
+    #     Member,
+    #     null=False,
+    #     blank=False,
+    #     on_delete=models.DO_NOTHING,
+    #     related_name='borrower'
+    # )
+
+    # book = models.ForeignKey(
+    #     Book,
+    #     null=False,
+    #     blank=False,
+    #     on_delete=models.DO_NOTHING,
+    #     related_name='book_borrowed')
+
+    borrower = models.CharField(blank=False,max_length=20)
+    borrower_card = models.CharField(max_length=8,blank=True)
+    borrower_email = models.EmailField(max_length=50,blank=True)
+    borrower_phone_number  = models.CharField(max_length=30,blank=True)
+    
+    book = models.CharField(blank=False,max_length=20)
+
+    quantity = models.PositiveIntegerField(default=1)
+
+    start_day = models.DateTimeField(default=timezone.now)
+    end_day = models.DateTimeField(default=timezone.now()+timedelta(days=14))
+
+    status = models.IntegerField(choices=BORROW_RECORD_STATUS,default=0)
+    return_on_time = models.BooleanField(choices=RETURN_STATUS,default=True)
+    delay_days = models.IntegerField(default=0)
+
+    created_at= models.DateTimeField(default=timezone.now)
+    created_by = models.CharField(max_length=20,blank=True)
+    updated_by = models.CharField(max_length=20,default="")
+    updated_at = models.DateTimeField(auto_now=True)
+
+    def get_absolute_url(self): 
+        return reverse('record_list')
+
+    def __str__(self):
+        return self.borrower+"->"+self.book_name
+    
+    # def save(self, *args, **kwargs):
+    #     self.card_number = str(self.card_id)[:8]
+    #     self.expired_at = timezone.now()+relativedelta(years=1)
+    #     return super(Member, self).save(*args, **kwargs)
+
+
+
+
 
 
 

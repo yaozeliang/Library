@@ -4,12 +4,14 @@ Copyright (c) 2019 - present AppSeed.us
 """
 from django.conf import settings
 from django.conf.urls.static import static
+from ajax_select import urls as ajax_select_urls
 from django.contrib import admin
 from django.urls import path, include  # add this
 # from django.conf.urls import handler400, handler403, handler404, handler500
 
 urlpatterns = [
-    path('admin/', admin.site.urls),          # Django admin route
+    path('ajax_select/', include(ajax_select_urls)),
+    path('admin/', admin.site.urls),          
     path("auth/", include("authentication.urls")), # Auth routes - login / register
     path("", include("book.urls")),
     # path("app/", include("app.urls")) ,  

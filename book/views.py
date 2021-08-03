@@ -1,5 +1,7 @@
 import os
 import pandas as pd
+import json
+
 from django.shortcuts import render,get_object_or_404,redirect
 from django.urls import  reverse_lazy,reverse
 from django.contrib.auth import get_user_model
@@ -8,9 +10,9 @@ from django.views.decorators.csrf import csrf_protect
 from django.views.generic import ListView,DetailView,DeleteView,View,TemplateView
 from django.views.generic.edit import CreateView,UpdateView
 from django.core.paginator import Paginator
-from django.db.models import Q
-from django.http import HttpResponse,HttpResponseRedirect
-from .models import Book,Category,Publisher,UserActivity,Profile,Member
+from django.db.models import Q,Sum
+from django.http import HttpResponse,HttpResponseRedirect,JsonResponse
+from .models import Book,Category,Publisher,UserActivity,Profile,Member,BorrowRecord
 from django.apps import apps
 from django.conf import settings
 
@@ -23,11 +25,12 @@ from django.contrib.messages.views import SuccessMessageMixin
 from django.core.files.storage import FileSystemStorage
 from django.contrib.messages.views import messages
 from django.views.decorators.csrf import csrf_exempt
-from .forms import BookCreateEditForm,PubCreateEditForm,MemberCreateEditForm,ProfileForm
+from .forms import BookCreateEditForm,PubCreateEditForm,MemberCreateEditForm,ProfileForm,BorrowRecordCreateForm
 
 from .utils import get_n_days_ago,create_clean_dir,change_col_format
 from .custom_filter import get_item
-
+from datetime import date,timedelta
+from dal import autocomplete
 
 # HomePage
 
@@ -37,23 +40,35 @@ class HomeView(LoginRequiredMixin,TemplateView):
     context={}
 
     def get(self,request, *args, **kwargs):
+
+        book_count = Book.objects.aggregate(Sum('quantity'))['quantity__sum']
         
-        data_count = {"book":Book.objects.all().count,
-                    "member":Member.objects.all().count,
-                    "category":Category.objects.all().count,
-                    "publisher":Publisher.objects.all().count,}
+        data_count = {"book":book_count,
+                    "member":Member.objects.all().count(),
+                    "category":Category.objects.all().count(),
+                    "publisher":Publisher.objects.all().count(),}
 
         user_activities= UserActivity.objects.order_by("-created_at")[:5]
         user_avatar = { e.created_by:Profile.objects.get(user__username=e.created_by).profile_pic.url for e in user_activities}
 
         short_inventory =Book.objects.order_by('quantity')[:5]
+         
         new_members = Member.objects.order_by('-created_at')[:5]
+        current_week = date.today().isocalendar()[1]
+        new_members_thisweek = Member.objects.filter(created_at__week=current_week).count()
+        lent_books_thisweek = BorrowRecord.objects.filter(created_at__week=current_week).count()
+
+        # print(new_members_thisweek)
+       
 
         self.context['data_count']=data_count
         self.context['recent_user_activities']=user_activities
         self.context['user_avatar']=user_avatar
         self.context['short_inventory']=short_inventory
         self.context['new_members']=new_members
+        self.context['new_members_thisweek']=new_members_thisweek
+        self.context['lent_books_thisweek']=lent_books_thisweek
+ 
  
         return render(request, self.template_name, self.context)
 
@@ -501,7 +516,6 @@ class ProfileDetailView(LoginRequiredMixin,DetailView):
         context['current_user'] = current_user
         return context
 
-
 class ProfileCreateView(LoginRequiredMixin,CreateView):
     model = Profile
     template_name = 'profile/profile_create.html'
@@ -518,20 +532,121 @@ class ProfileUpdateView(LoginRequiredMixin,UpdateView):
     form_class=ProfileForm
     template_name = 'profile/profile_update.html'
 
+# Borrow Records 
+
+class BorrowRecordCreateView(LoginRequiredMixin,CreateView):
+    model = BorrowRecord
+    template_name = 'borrow_records/create.html'
+    form_class=BorrowRecordCreateForm
+    login_url = 'login'
+
+    def form_valid(self, form):
+        selected_member= get_object_or_404(Member,name = form.cleaned_data['borrower'] )
+
+        form.instance.borrower_card = selected_member.card_number
+        form.instance.borrower_email = selected_member.email
+        form.instance.borrower_phone_number = selected_member.phone_number
+        form.instance.created_by = self.request.user.username
+        # form.save()
+        return super(BorrowRecordCreateView,self).form_valid(form)
+
+ 
+    def post(self,request, *args, **kwargs):
+        super(BorrowRecordCreateView,self).post(request)
+        selected_member= Member.objects.get(name=request.POST['borrower'])
+        selected_book = Book.objects.get(title=request.POST['book'])
+  
+        # Change field on Model Book
+        selected_book.status=0
+        selected_book.total_borrow_times+=1
+        selected_book.quantity-=int(request.POST['quantity'])
+        selected_book.save()
+
+        # Create Log 
+        borrower_name = selected_member.name
+        book_name = selected_book.title
+        messages.success(request, f" '{borrower_name}' borrowed <<{book_name}>>")
+        UserActivity.objects.create(created_by=self.request.user.username,
+                                    target_model=self.model.__name__,
+                                    detail =f" '{borrower_name}' borrowed <<{book_name}>>")
+        return redirect('record_list')
 
 
-# class BorrowRecordCreateView(LoginRequiredMixin,CreateView):
-#     template_name = 'borrow_records/create.html'
-#     login_url = 'login'
+def auto_member(request):
+    if request.is_ajax():
+        query = request.GET.get("term", "")
+        member_names = Member.objects.filter(name__icontains=query)
+        results = []
+        for m in member_names:
+            results.append(m.name)
+        data = json.dumps(results)
+    mimetype = "application/json"
+    return HttpResponse(data, mimetype)
 
-#     def form_valid(self,form):
-#         self.object = form.save()
-#         return super().form_valid(form)
 
-# class BorrowRecordListView(LoginRequiredMixin,CreateView):
-#     template_name = 'borrow_records/list.html'
-#     login_url = 'login'
+def auto_book(request):
+    if request.is_ajax():
+        query = request.GET.get("term", "")
+        book_names = Book.objects.filter(title__icontains=query)
+        results = [b.title for b in book_names]
+        data = json.dumps(results)
+    mimetype = "application/json"
+    return HttpResponse(data, mimetype)
 
+
+
+class BorrowRecordListView(LoginRequiredMixin,ListView):
+    model = BorrowRecord
+    template_name = 'borrow_records/list.html'
+    login_url = 'login'
+    context_object_name = 'records'
+    count_total = 0
+    search_value = ''
+    order_field="-created_at"
+
+    def get_queryset(self):
+        search =self.request.GET.get("search")  
+        order_by=self.request.GET.get("orderby")
+        if order_by:
+            all_records = BorrowRecord.objects.all().order_by(order_by)
+            self.order_field=order_by
+        else:
+            all_records = BorrowRecord.objects.all().order_by(self.order_field)
+        if search:
+            all_records = BorrowRecord.filter(
+                Q(borrower__icontains=search) 
+            )
+        else:
+            search = ''
+        self.search_value=search
+        self.count_total = all_records.count()
+        paginator = Paginator(all_records, 6)
+        page = self.request.GET.get('page')
+        records = paginator.get_page(page)
+        return records
+
+    def get_context_data(self, *args, **kwargs):
+        context = super(BorrowRecordListView, self).get_context_data(*args, **kwargs)
+        context['count_total'] = self.count_total
+        context['search'] = self.search_value
+        return context
+
+
+
+class BorrowRecordDeleteView(LoginRequiredMixin,View):
+    login_url = 'login'
+
+    def get(self,request,*args,**kwargs):
+        record_pk=kwargs["pk"]
+        delete_record=BorrowRecord.objects.get(pk=record_pk)
+        model_name = delete_record.__class__.__name__
+        messages.error(request, f"Record {delete_record.borrower} => {delete_record.book} Removed")
+        delete_record.delete()
+        UserActivity.objects.create(created_by=self.request.user.username,
+                    operation_type="danger",
+                    target_model=model_name,
+                    detail =f"Delete {model_name} {delete_record.borrower}")
+        return HttpResponseRedirect(reverse("record_list"))
 
 
 # Handle Errors
@@ -548,7 +663,6 @@ def server_error(request, exception=None):
     response.status_code = 500
     return response
     
-
 def permission_denied(request, exception=None):
     context = {}
     response = render(request, "errors/403.html", context=context)

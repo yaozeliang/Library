@@ -13,7 +13,7 @@
                 <div class="row align-items-center">
                     <div class="col-md-12">
                         <div class="page-header-title">
-                            <h5 class="m-b-10">All Records</h5>
+                            <h5 class="m-b-10">All Borrow Records</h5>
 
                         </div>
 
@@ -27,10 +27,10 @@
         <div class="main-body">
             <div class="page-wrapper">
                 <div class="row">
-                    <!-- <div class="col-xl-12">
+                    <div class="col-xl-12">
                         <div class="card">
                             <div class="card-header">
-                                <h5>Total {{count_total}} members</h5>
+                                <h5>Total {{count_total}} records</h5>
                             </div>
                             {% if messages %}
                             {% for message in messages %}
@@ -47,9 +47,9 @@
                                 <div class='row'>
                                     <div class="col-6">
                                         <b>Sort By : - </b>
-                                        <a href="{% url 'member_list' %}?search={{search}}&orderby=id">Id</a>  | 
-                                        <a href="{% url 'member_list' %}?search={{ search }}&orderby=name">Name</a> |  
-                                        <a href="{% url 'member_list' %}?search={{ search }}&orderby=city">City</a> 
+                                        <a href="{% url 'record_list' %}?search={{search}}&orderby=id">Id</a>  | 
+                                        <a href="{% url 'record_list' %}?search={{ search }}&orderby=name">Name</a> |  
+                                        <a href="{% url 'record_list' %}?search={{ search }}&orderby=city">City</a> 
                                     </div>
    
                                     <div class="col-6">
@@ -73,32 +73,43 @@
                                         <thead>
                                             <tr>
                                                 <th>Name</th>
-                                                <th>Sex</th>
-                                                <th>Phone</th>
                                                 <th>Card</th>
-                                                
-                                                <th>City</th>
+                                                <th>Phone</th>
                                                 <th>Email</th>
-                                                <th>Created At</th>
-                                                <th>Expired At</th>
+                                                <th>Book</th>
+                                                <th>Num</th>
+                                                <th>Borrow date</th>
+                                                <th>Return date</th>
+                                                <th>Status</th>
+                                                <th>Delayed </th>
+                                                <!-- <th>Created By</th> -->
                                                 <th>#</th>
                                             </tr>
                                         </thead>
                                         <tbody>
                                             
-                                            {% for member in members %}
+                                            {% for record in records %}
                                             <tr>
-                                                <td><a href="{% url 'member_detail' member.pk %}" class='badge badge-secondary '><i class="feather icon-user"></i>&nbsp;{{member.name}}</a></td>                                                                
-                                                <td>{{member.gender|upper}}</td>
-                                                <td>{{member.phone_number}}</td>
-                                                <td>{{member.card_number}}</td>
-                                                <td>{{member.city}}</td>
-                                                <td>{{member.email}}</td>
-                                                <td>{{ member.created_at|date:"Y-m-d" }} by {{member.created_by}} </td>
-                                                <td>{{ member.expired_at|date:"Y-m-d" }} </td>
+                                                <td>{{record.borrower}}</a></td>  
+                                                <td>{{record.borrower_card}}</a></td>  
+                                                <td>{{record.borrower_phone_number}}</a></td>   
+                                                <td>{{record.borrower_email}}</a></td>                                                            
+                                                <td>{{record.book}}</td>
+                                                <td>{{record.quantity}}</td>
+                                                <td>{{record.start_day|date:"Y-m-d"}}</td>
+                                                <td>{{record.end_day|date:"Y-m-d"}}</td>
+                                                <td>{{record.get_status_display}}</td>
+                                                {% if record.delay_days == 0 %}
+                                                <td>No</td>
+                                                {% else %}
+                                                <td>{{record.delay_days}} days</td>
+                                                {% endif %}
+                                                
+                                                <!-- <td> {{record.created_by}} </td> -->
+                                                
                                                 <td>
-                                                    <a href="{% url 'member_update' member.pk %}" class="badge badge-info"><i class="feather icon-edit"></i>&nbsp;Edit</a>&nbsp;
-                                                    <a href="{% url 'member_delete' member.pk %}" class="badge badge-danger"><i class="feather icon-trash-2"></i>&nbsp;Delete</a></td>
+                                                    <a href="{% url 'record_delete' record.pk %}" class="badge badge-danger"><i class="feather icon-trash-2"></i>&nbsp;Delete</a>
+                                                </td>
                                                     
                                             </tr>
                                             {% endfor %}
@@ -109,25 +120,25 @@
                                 </div>
                                 <div class="row">
                                     <div class='col-6'>
-                                        <a href="{% url 'member_create' %}" class='btn btn-primary'>Add New Member</a>
+                                        <a href="{% url 'record_create' %}" class='btn btn-primary'>Add New record</a>
                                     </div>
                                     <div class='col-6'>
                                         <ul class="pagination m-auto">
 
-                                          {% if members.has_previous %}
+                                          {% if records.has_previous %}
 
                                           <li class="page-item "><a href="?page=1&orderby={{ order }}&search={{ search }}"><span class="page-link">First</span></a></li>
-                                          <li class="page-item"><a class="page-link" href="?page={{ members.previous_page_number }}&orderby={{ order }}&search={{ search }}">{{ members.previous_page_number }}</a></li>
-                                          <li class="page-item active"><a class="page-link" href=""> {{ members.number }}</a></li>
+                                          <li class="page-item"><a class="page-link" href="?page={{ records.previous_page_number }}&orderby={{ order }}&search={{ search }}">{{ records.previous_page_number }}</a></li>
+                                          <li class="page-item active"><a class="page-link" href=""> {{ records.number }}</a></li>
 
                                           {% else %}
                                           <li class="page-item disabled"><a href="?page=1&orderby={{ order }}&search={{ search }}"><span class="page-link">First</span></a></li>
-                                          <li class="page-item active"><a class="page-link" href=""> {{ members.number }}</a></li>
+                                          <li class="page-item active"><a class="page-link" href=""> {{ records.number }}</a></li>
                                           {% endif %}
 
-                                          {% if members.has_next %}
-                                          <li class="page-item"><a class="page-link" href="?page={{ members.next_page_number }}&orderby={{ order }}&search={{ search }}">{{ members.next_page_number }}</a></li>
-                                          <li class="page-item"><a class="page-link" href="?page={{ members.paginator.num_pages }}&orderby={{ order }}&search={{ search }}">Last</a></li>
+                                          {% if records.has_next %}
+                                          <li class="page-item"><a class="page-link" href="?page={{ records.next_page_number }}&orderby={{ order }}&search={{ search }}">{{ records.next_page_number }}</a></li>
+                                          <li class="page-item"><a class="page-link" href="?page={{ records.paginator.num_pages }}&orderby={{ order }}&search={{ search }}">Last</a></li>
                                           {% else %}
                                           <li class="page-item disabled"><a href=""><span class="page-link">End</span></a></li>
                                           {% endif %}
@@ -138,7 +149,7 @@
                                 </div>
                             </div>
                         </div>
-                    </div> -->
+                    </div>
                     
                 </div>
             </div>

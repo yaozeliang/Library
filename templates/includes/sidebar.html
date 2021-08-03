@@ -96,12 +96,21 @@
 
                     {% endif %}
 
-                    <li  class="nav-item {% if request.path == user_activity_list %} active {% endif %} {% if request.path == user_activity_delete %} active {% endif %}">
+                    <li  class="nav-item {% if request.resolver_match.url_name == user_activity_list %} active {% endif %} {% if request.resolver_match.url_name == user_activity_delete %} active {% endif %}">
                         <a href="{% url 'user_activity_list' %}" class="nav-link "><span class="pcoded-micon"><i class="feather icon-file-text"></i></span><span class="pcoded-mtext">Logs</a>
                     </li>
 
                     <!-- Borrow List -->
-  
+                    <li class="nav-item pcoded-menu-caption">
+                        <label>Borrow records</label>
+                    </li>
+                    <li class="nav-item {% if request.resolver_match.url_name == 'record_list' %} active {% endif %}">
+                        <a href="{% url 'record_list' %}" class="nav-link "><span class="pcoded-micon"><i class="feather icon-file-text"></i></span><span class="pcoded-mtext">All Records</span></a>
+                    </li>
+
+                    <li   class="nav-item {% if request.resolver_match.url_name == 'record_create' %} active {% endif %}">
+                    <a href="{% url 'record_create' %}" class="nav-link "><span class="pcoded-micon"><i class="feather icon-file-text"></i></span><span class="pcoded-mtext">Add Record</span></a>
+                </li>
 
                     <!-- Form Table -->
                     <li class="nav-item pcoded-menu-caption">

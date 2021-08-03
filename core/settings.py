@@ -26,6 +26,9 @@ ALLOWED_HOSTS = ['localhost', '127.0.0.1', config('SERVER', default='127.0.0.1')
 # Application definition
 
 INSTALLED_APPS = [
+    'dal',
+    'dal_select2',
+    'dal_legacy_static',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -36,6 +39,7 @@ INSTALLED_APPS = [
     'book',
     'crispy_forms',
     'phonenumber_field',
+    'ajax_select',
 ]
 
 MIDDLEWARE = [
