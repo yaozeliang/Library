@@ -342,27 +342,37 @@ class ActivityListView(LoginRequiredMixin,ListView):
     template_name = 'book/user_activity_list.html'
     count_total = 0
     search_value=''
+    created_by=''
     order_field="-created_at"
-    
     all_users = User.objects.values()
     user_list = [x['username'] for x in all_users] 
 
+    # def post(self,request,*args,**kwargs):
+    #     print(request.POST.get('user'))
+    #     self.created_by = request.POST.get('user')
+    #     return redirect('user_activity_list')
+        
 
     def get_queryset(self):
+        data = self.request.GET.copy()
+   
         search =self.request.GET.get("search")
         filter_user=self.request.GET.get("user") 
+
         all_activities = UserActivity.objects.all().order_by(self.order_field)
+  
 
         if filter_user:
-            all_activities = UserActivity.objects.all().order_by(self.order_field).filter(created_by=filter_user)
+            self.created_by = filter_user
+            all_activities = UserActivity.objects.all().order_by(self.order_field).filter(created_by=self.created_by)
 
         if search:
+            self.search_value = search
             all_activities = all_activities.filter(Q(target_model__icontains=search))
-        else:
-            search = ''
+   
         self.search_value=search
         self.count_total = all_activities.count()
-        paginator = Paginator(all_activities, 7)
+        paginator = Paginator(all_activities, 10)
         page = self.request.GET.get('page')
         activities = paginator.get_page(page)
         return activities
@@ -373,6 +383,7 @@ class ActivityListView(LoginRequiredMixin,ListView):
         context['count_total'] = self.count_total
         context['search'] = self.search_value
         context['user_list']= self.user_list
+        context['created_by'] = self.created_by
         return context
 
 class ActivityDeleteView(LoginRequiredMixin,View):
@@ -540,6 +551,10 @@ class BorrowRecordCreateView(LoginRequiredMixin,CreateView):
     form_class=BorrowRecordCreateForm
     login_url = 'login'
 
+    def get_form(self):
+        form = super().get_form()
+        return form
+
     def form_valid(self, form):
         selected_member= get_object_or_404(Member,name = form.cleaned_data['borrower'] )
 
@@ -613,8 +628,8 @@ class BorrowRecordListView(LoginRequiredMixin,ListView):
         else:
             all_records = BorrowRecord.objects.all().order_by(self.order_field)
         if search:
-            all_records = BorrowRecord.filter(
-                Q(borrower__icontains=search) 
+            all_records = BorrowRecord.objects.filter(
+                Q(borrower__icontains=search) | Q(book__icontains=search) | Q(borrower_card__icontains=search)
             )
         else:
             search = ''

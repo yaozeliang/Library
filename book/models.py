@@ -180,20 +180,6 @@ class Profile(models.Model):
 
 class BorrowRecord(models.Model):
 
-    # borrower = models.ForeignKey(
-    #     Member,
-    #     null=False,
-    #     blank=False,
-    #     on_delete=models.DO_NOTHING,
-    #     related_name='borrower'
-    # )
-
-    # book = models.ForeignKey(
-    #     Book,
-    #     null=False,
-    #     blank=False,
-    #     on_delete=models.DO_NOTHING,
-    #     related_name='book_borrowed')
 
     borrower = models.CharField(blank=False,max_length=20)
     borrower_card = models.CharField(max_length=8,blank=True)
@@ -205,7 +191,8 @@ class BorrowRecord(models.Model):
     quantity = models.PositiveIntegerField(default=1)
 
     start_day = models.DateTimeField(default=timezone.now)
-    end_day = models.DateTimeField(default=timezone.now()+timedelta(days=14))
+    end_day = models.DateTimeField(default=timezone.now()+timedelta(days=7))
+    periode = models.PositiveIntegerField(default=0)
 
     status = models.IntegerField(choices=BORROW_RECORD_STATUS,default=0)
     return_on_time = models.BooleanField(choices=RETURN_STATUS,default=True)
@@ -222,10 +209,10 @@ class BorrowRecord(models.Model):
     def __str__(self):
         return self.borrower+"->"+self.book_name
     
-    # def save(self, *args, **kwargs):
-    #     self.card_number = str(self.card_id)[:8]
-    #     self.expired_at = timezone.now()+relativedelta(years=1)
-    #     return super(Member, self).save(*args, **kwargs)
+    def save(self, *args, **kwargs):
+        # profile = super(Profile, self).save(*args, **kwargs)
+        self.periode =(self.end_day - self.start_day).days
+        return super(BorrowRecord, self).save(*args, **kwargs)
 
 
 

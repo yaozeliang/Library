@@ -61,3 +61,7 @@ class BorrowRecordCreateForm(forms.ModelForm):
         model = BorrowRecord
         fields=['borrower','book','quantity','start_day','end_day']
 
+        # widgets = {
+        #     'start_day': DateTimePickerInput(format='%Y-%m-%d'),
+        #     'end_day': DateTimePickerInput(format='%Y-%m-%d'),
+        # }

@@ -39,7 +39,8 @@ INSTALLED_APPS = [
     'book',
     'crispy_forms',
     'phonenumber_field',
-    'ajax_select',
+    'bootstrap4',
+    'bootstrap_datepicker_plus',
 ]
 
 MIDDLEWARE = [

@@ -6,6 +6,7 @@
 <!-- Specific CSS goes HERE -->
 {% block stylesheets %}
 <link rel="stylesheet" href="https://ajax.googleapis.com/ajax/libs/jqueryui/1.11.4/themes/smoothness/jquery-ui.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery-datetimepicker/2.5.20/jquery.datetimepicker.min.css" integrity="sha256-DOS9W6NR+NFe1fUhEE0PGKY/fubbUCnOfTje2JMDw3Y=" crossorigin="anonymous" />
 
 {% endblock stylesheets %}
 
@@ -37,8 +38,8 @@
                             <div class="card-block table-border-style">
                                 <form method="post" enctype="multipart/form-data">
                                     {% csrf_token %}
-                                   {{form| crispy}}
-
+                                   {{form | crispy}}
+                                   {{form.media}}
                                     <button type="submit" class="btn btn-success">Add</button>
                                     <a href="{% url 'record_list' %} " class="btn btn-secondary">Cancel</a>
                                 </form>
@@ -58,6 +59,8 @@
 {% block javascripts %}
 <script src="https://code.jquery.com/jquery-1.12.4.js"></script>
 <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-datetimepicker/2.5.20/jquery.datetimepicker.full.min.js" integrity="sha256-FEqEelWI3WouFOo2VWP/uJfs1y8KJ++FLh2Lbqc8SJk=" crossorigin="anonymous"></script>
+
 <script>
 $( function() {
 
@@ -69,7 +72,13 @@ $( function() {
     source: "{% url 'auto_book_name' %}",
   });
 
+  $("#id_start_day").datetimepicker( {
+         format:'Y-m-d',
+    });
 
+   $("#id_end_day").datetimepicker( {
+         format:'Y-m-d',
+    });
 } );
 </script>
 {% endblock javascripts %}
