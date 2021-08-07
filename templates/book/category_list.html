@@ -1,5 +1,5 @@
 {% extends "layouts/base.html" %}
-
+{% load book_extras %}
 {% block title %} Management {% endblock %} 
 
 {% block stylesheets %}{% endblock stylesheets %}
@@ -10,6 +10,7 @@
     <div class="pcoded-inner-content">
         <div class="page-header">
             <div class="page-block">
+                <!-- Title -->
                 <div class="row align-items-center">
                     <div class="col-md-12">
                         <div class="page-header-title">
@@ -35,26 +36,19 @@
                             <div class="card-header">
                                 <h5>Total {{count_total}} categories</h5>
                             </div>
-                            {% if messages %}
-                            {% for message in messages %}
-                                {% if message.tags == "error" %}
-                                    <div class="alert alert-danger">{{ message }}</div>
-                                {% else %}
-                                    <div class="alert alert-{{ message.tags }}" role="alert">{{ message }}</div>
-                                {% endif %}
-                            {% endfor %}
-                            {% endif %}
-
+                            
+                            {% show_messages %}
 
                             <div class="card-block ">
                                 <div class='row'>
+                                    <!-- Sort by -->
                                     <div class="col-6">
                                         <b>Sort By : - </b>
                                         <a href="{% url 'category_list' %}?search={{search}}&orderby=id">Id</a>  | 
                                         <a href="{% url 'category_list' %}?search={{ search }}&orderby=name">Name</a> |  
                                         <a href="{% url 'category_list' %}?search={{ search }}&orderby=created">Created</a> 
                                     </div>
-   
+                                     <!-- Search box -->
                                     <div class="col-6">
                                         <form class="form-inline mb-2">
                                             <div class="form-group mx-sm-3 mb-2">
@@ -70,8 +64,9 @@
                                         </form>
                                     </div>
                                 </div>
-
+                                
                                 <div class="table-responsive table-hover">
+                                    <!-- Table -->
                                     <table class="table">
                                         <thead>
                                             <tr>
@@ -98,32 +93,13 @@
                                     </table>
                                 </div>
                                 <div class="row">
+                                    <!-- Add button -->
                                     <div class='col-6'>
                                         <a href="{% url 'category_create' %}" class='btn btn-primary'>Add Category</a>
                                     </div>
+                                    <!-- Paginations -->
                                     <div class='col-6'>
-                                        <ul class="pagination m-auto">
-
-                                          {% if categories.has_previous %}
-
-                                          <li class="page-item "><a href="?page=1&orderby={{ order }}&search={{ search }}"><span class="page-link">First</span></a></li>
-                                          <li class="page-item"><a class="page-link" href="?page={{ categories.previous_page_number }}&orderby={{ order }}&search={{ search }}">{{ categories.previous_page_number }}</a></li>
-                                          <li class="page-item active"><a class="page-link" href=""> {{ categories.number }}</a></li>
-
-                                          {% else %}
-                                          <li class="page-item disabled"><a href="?page=1&orderby={{ order }}&search={{ search }}"><span class="page-link">First</span></a></li>
-                                          <li class="page-item active"><a class="page-link" href=""> {{ categories.number }}</a></li>
-                                          {% endif %}
-
-                                          {% if categories.has_next %}
-                                          <li class="page-item"><a class="page-link" href="?page={{ categories.next_page_number }}&orderby={{ order }}&search={{ search }}">{{ categories.next_page_number }}</a></li>
-                                          <li class="page-item"><a class="page-link" href="?page={{ categories.paginator.num_pages }}&orderby={{ order }}&search={{ search }}">Last</a></li>
-                                          {% else %}
-                                          <li class="page-item disabled"><a href=""><span class="page-link">End</span></a></li>
-                                          {% endif %}
-
-                                        </ul>
-
+                                        {% show_pagination %}
                                     </div>
                                 </div>
                             </div>

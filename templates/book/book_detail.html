@@ -37,62 +37,101 @@
                                 <h5><i class="fas fa-book"></i> Detail : << {{book.title}} >> </h5>
                             </div>
 
-                            <div class="card-block">
-                                <div class="col-md-12">
-                                    <!-- <h5 class="mt-2">{{book.title}}</h5> -->
-                                    <!-- <hr> -->
-                                    <ul class="nav nav-pills mb-3" id="pills-tab" role="tablist">
-                                        <li class="nav-item">
-                                            <a class="nav-link active" id="pills-home-tab" data-toggle="pill" href="#pills-basic" role="tab" aria-controls="pills-basic" aria-selected="true">Summary</a>
-                                        </li>
-                                        <li class="nav-item">
-                                            <a class="nav-link" id="pills-profile-tab" data-toggle="pill" href="#pills-profile" role="tab" aria-controls="pills-profile" aria-selected="false">Description</a>
-                                        </li>
-                                        <li class="nav-item">
-                                            <a class="nav-link" id="pills-contact-tab" data-toggle="pill" href="#pills-contact" role="tab" aria-controls="pills-contact" aria-selected="false">Location</a>
-                                        </li>
-                                    </ul>
-                                    <div class="tab-content" id="pills-tabContent">
-                                        <div class="tab-pane fade show active" id="pills-basic" role="tabpanel" aria-labelledby="pills-home-tab">
-                                            <div class='row'>
-                                                <div class='col-6'>
-                                                    <p>Title: {{book.title}} </p>
-                                                    <p>Author: {{book.author}} </p>
-                                                    <p>Category: {{book.category}} </p>
-                                                    <p>Publisher: {{book.publisher}} </p>
-                                                </div>
-                                                <div class='col-6'>
-                                                    <p>Created at: {{book.created|date:"Y/m/d H:i"}} </p>
-                                                    <p>Last updated by: <span class="badge badge-secondary">{{book.updated_by}}</span> at {{book.updated_at|date:"Y/m/d H:i"}} </p>
-                                                    <p>Borrowed times: {{book.total_borrow_times}} </p>
+                <div class="card-block">
+                    <div class="col-md-12">
+                        <!-- <h5 class="mt-2">{{book.title}}</h5> -->
+                        <!-- <hr> -->
+                        <ul class="nav nav-pills mb-3" id="pills-tab" role="tablist">
+                            <li class="nav-item">
+                                <a class="nav-link active" id="pills-home-tab" data-toggle="pill" href="#pills-basic" role="tab" aria-controls="pills-basic" aria-selected="true">Summary</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" id="pills-profile-tab" data-toggle="pill" href="#pills-profile" role="tab" aria-controls="pills-profile" aria-selected="false">Description</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" id="pills-contact-tab" data-toggle="pill" href="#pills-contact" role="tab" aria-controls="pills-contact" aria-selected="false">Location</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" id="pills-contact-tab" data-toggle="pill" href="#pills-record" role="tab" aria-controls="pills-record" aria-selected="false">Borrow History</a>
+                            </li>
+                        </ul>
+                        <div class="tab-content" id="pills-tabContent">
+                            <!-- Summary -->
+                            <div class="tab-pane fade show active" id="pills-basic" role="tabpanel" aria-labelledby="pills-home-tab">
+                                <div class='row'>
+                                    <div class='col-6'>
+                                        <p>Title: {{book.title}} </p>
+                                        <p>Author: {{book.author}} </p>
+                                        <p>Category: {{book.category}} </p>
+                                        <p>Publisher: {{book.publisher}} </p>
+                                    </div>
+                                    <div class='col-6'>
+                                        <p>Created at: {{book.created|date:"Y/m/d H:i"}} </p>
+                                        <p>Last updated by: <span class="badge badge-secondary">{{book.updated_by}}</span> at {{book.updated_at|date:"Y/m/d H:i"}} </p>
+                                        <p>Borrowed times: {{book.total_borrow_times}} </p>
 
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div class="tab-pane fade" id="pills-profile" role="tabpanel" aria-labelledby="pills-profile-tab">
-                                            <p class="mb-0">
-                                                {{book.description}}
-                                            </p>
-                                        </div>
-                                        <div class="tab-pane fade" id="pills-contact" role="tabpanel" aria-labelledby="pills-contact-tab">
-                                            <div class='row'>
-                                                <div class='col-6'>
-                                                    <p> Location Id: {{book.floor_number}}{{book.bookshelf_number}}</p>
-                                                    <p> Floor: {{book.get_floor_number_display}} floor </p>
-                                                    <p> Bookshelf: {{book.bookshelf_number}} </p>
-                                                 
-                                                </div>
- 
-                                            </div>
-                                        </div>
                                     </div>
                                 </div>
-                                
                             </div>
-                            
+                            <!-- Description -->
+                            <div class="tab-pane fade" id="pills-profile" role="tabpanel" aria-labelledby="pills-profile-tab">
+                                <p class="mb-0">
+                                    {{book.description}}
+                                </p>
+                            </div>
+                            <div class="tab-pane fade" id="pills-contact" role="tabpanel" aria-labelledby="pills-contact-tab">
+                                <div class='row'>
+                                    <div class='col-6'>
+                                        <p> Location Id: {{book.floor_number}}{{book.bookshelf_number}}</p>
+                                        <p> Floor: {{book.get_floor_number_display}} floor </p>
+                                        <p> Bookshelf: {{book.bookshelf_number}} </p>
+                                        
+                                    </div>
 
+                                </div>
+                            </div>
+
+                            <div class="tab-pane fade" id="pills-record" role="tabpanel" aria-labelledby="pills-record-tab">
+                             <h5 class='mb-3'>Borrow History</h5>
+                             {% if related_records %}
+                             <table class="table table-sm">
+                                <thead>
+                                  <tr>
+                                    <th scope="col">Borrower</th>
+                                    <th scope="col">Card</th>
+                                    <th scope="col">Start at</th>
+                                    <th scope="col">Return at</th>
+                                    <th scope="col">Status</th>
+                                  </tr>
+                                </thead>
+                                <tbody>
+                                 
+                                 {% for record in related_records%}
+                                  <tr>
+                                    <td>{{record.borrower}} </td>
+                                    <td>{{record.borrower_card}}</td>
+                                    <td>{{record.start_day | date:"Y-m-d H:i"}}</td>
+                                    <td>{{record.end_day | date:"Y-m-d H:i"}}</td>
+                                    <td>{{record.get_status_display}}</td>
+                                  </tr>
+               
+                                {% endfor %}
+                                {% else %}
+                                <h4 class="text-center">No Records</h4>
+                                {% endif  %}
+                                </tbody>
+                              </table>
+
+                            </div>
+                            </div>
                         </div>
-                        <a href="{% url 'book_list' %}" class='btn btn-dark'>Return List</a>
+                    </div>
+                    
+                </div>
+                
+                <a href="{% url 'book_list' %}" class='btn btn-dark'>Return List</a>
+                        </div>
+                       
                     </div>
                     
                 </div>

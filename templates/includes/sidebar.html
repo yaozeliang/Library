@@ -76,8 +76,7 @@
                     </li>
 
                     <!-- User Logs -->
-                    {% url 'user_activity_list' as user_activity_list %}
-                    {% url 'user_activity_delete' as user_activity_delete %}
+   
                     {% url 'profile_create' as profile_create %}
                     <li class="nav-item pcoded-menu-caption">
                         <label>User Admin</label>
@@ -96,7 +95,7 @@
 
                     {% endif %}
 
-                    <li  class="nav-item {% if request.resolver_match.url_name == user_activity_list %} active {% endif %} {% if request.resolver_match.url_name == user_activity_delete %} active {% endif %}">
+                    <li  class="nav-item {% if request.resolver_match.url_name == 'user_activity_list' %} active {% endif %} {% if request.resolver_match.url_name == 'user_activity_delete' %} active {% endif %}">
                         <a href="{% url 'user_activity_list' %}" class="nav-link "><span class="pcoded-micon"><i class="feather icon-file-text"></i></span><span class="pcoded-mtext">Logs</a>
                     </li>
 

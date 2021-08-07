@@ -1,5 +1,5 @@
 {% extends "layouts/base.html" %}
-
+{% load book_extras %}
 {% block title %} Dashboard {% endblock %} 
 
 <!-- Specific CSS goes HERE -->
@@ -203,7 +203,7 @@
                             </div>
                         </div>
                         <!-- [ statistics year chart ] end -->
-                        <!--[social-media section] start-->
+          
   
                         <!--[social-media section] end-->
                         <!-- [ rating list ] starts-->
@@ -288,7 +288,7 @@
                                                 {% endif %}
                                                 <td>{{member.age}}</td>     
                                                 <td>{{member.card_number}}</td>  
-                                                <td>{{member.created_at|date:"Y-m-d"}}</td>
+                                                <td>{{member.created_at| timesince}}</td>
                                                 <td>{{member.created_by}}</td>                     
      
                                             </tr>
@@ -350,7 +350,8 @@
                                                 <tr>   
                                                     <td><img class="rounded-circle  m-r-10" style="width:30px;" src="{{user_avatar|get_item:log.created_by}}" >{{log.created_by}}</td>
                                                     <td> {{log.detail}} </td>
-                                                    <td>{{log.created_at |date:"Y-m-d"}}</td>
+                                                    <!-- <td>{{log.created_at |date:"Y-m-d"}}</td> -->
+                                                    <td>{{ log.created_at | timesince }}</td>
                                                     <td>{{log.get_operation_type_display}} </td>
 
                                                     {% ifequal log.operation_type "success" %}

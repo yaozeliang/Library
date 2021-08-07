@@ -1,7 +1,7 @@
 {% extends "layouts/base.html" %}
+{% load book_extras %}
 
-{% block title %} Borrow Records {% endblock %} 
-
+{% block title %} Borrow Records {% endblock %} }
 {% block stylesheets %}{% endblock stylesheets %}
 
 {% block content %}
@@ -14,7 +14,6 @@
                     <div class="col-md-12">
                         <div class="page-header-title">
                             <h5 class="m-b-10">All Borrow Records</h5>
-
                         </div>
 
                     </div>
@@ -32,15 +31,7 @@
                             <div class="card-header">
                                 <h5>Total {{count_total}} records</h5>
                             </div>
-                            {% if messages %}
-                            {% for message in messages %}
-                                {% if message.tags == "error" %}
-                                    <div class="alert alert-danger">{{ message }}</div>
-                                {% else %}
-                                    <div class="alert alert-{{ message.tags }}" role="alert">{{ message }}</div>
-                                {% endif %}
-                            {% endfor %}
-                            {% endif %}
+                            {% show_messages %}
 
 
                             <div class="card-block ">
@@ -124,28 +115,8 @@
                                         <a href="{% url 'record_create' %}" class='btn btn-primary'>Add New record</a>
                                     </div>
                                     <div class='col-6'>
-                                        <ul class="pagination m-auto">
-
-                                          {% if records.has_previous %}
-
-                                          <li class="page-item "><a href="?page=1&orderby={{ order }}&search={{ search }}"><span class="page-link">First</span></a></li>
-                                          <li class="page-item"><a class="page-link" href="?page={{ records.previous_page_number }}&orderby={{ order }}&search={{ search }}">{{ records.previous_page_number }}</a></li>
-                                          <li class="page-item active"><a class="page-link" href=""> {{ records.number }}</a></li>
-
-                                          {% else %}
-                                          <li class="page-item disabled"><a href="?page=1&orderby={{ order }}&search={{ search }}"><span class="page-link">First</span></a></li>
-                                          <li class="page-item active"><a class="page-link" href=""> {{ records.number }}</a></li>
-                                          {% endif %}
-
-                                          {% if records.has_next %}
-                                          <li class="page-item"><a class="page-link" href="?page={{ records.next_page_number }}&orderby={{ order }}&search={{ search }}">{{ records.next_page_number }}</a></li>
-                                          <li class="page-item"><a class="page-link" href="?page={{ records.paginator.num_pages }}&orderby={{ order }}&search={{ search }}">Last</a></li>
-                                          {% else %}
-                                          <li class="page-item disabled"><a href=""><span class="page-link">End</span></a></li>
-                                          {% endif %}
-
-                                        </ul>
-
+      
+                                        {% show_pagination %}
                                     </div>
                                 </div>
                             </div>

@@ -15,6 +15,7 @@ from django.http import HttpResponse,HttpResponseRedirect,JsonResponse
 from .models import Book,Category,Publisher,UserActivity,Profile,Member,BorrowRecord
 from django.apps import apps
 from django.conf import settings
+from django.core.paginator import EmptyPage, PageNotAnInteger
 
 
 from django.contrib.auth.models import User
@@ -30,7 +31,14 @@ from .forms import BookCreateEditForm,PubCreateEditForm,MemberCreateEditForm,Pro
 from .utils import get_n_days_ago,create_clean_dir,change_col_format
 from .custom_filter import get_item
 from datetime import date,timedelta
-from dal import autocomplete
+
+
+from django.core.paginator import Paginator
+
+
+
+PAGINATOR_NUMBER = 5
+
 
 # HomePage
 
@@ -99,7 +107,7 @@ class BookListView(LoginRequiredMixin,ListView):
             )
             self.search_value=search
         self.count_total = all_books.count()
-        paginator = Paginator(all_books, 6)
+        paginator = Paginator(all_books, PAGINATOR_NUMBER)
         page = self.request.GET.get('page')
         books = paginator.get_page(page)
         return books
@@ -108,7 +116,8 @@ class BookListView(LoginRequiredMixin,ListView):
         context = super(BookListView, self).get_context_data(*args, **kwargs)
         context['count_total'] = self.count_total
         context['search'] = self.search_value
-        context['order'] = self.order_field
+        context['orderby'] = self.order_field
+        context['objects'] = self.get_queryset()
         return context
 
 class BookDetailView(LoginRequiredMixin,DetailView):
@@ -117,8 +126,15 @@ class BookDetailView(LoginRequiredMixin,DetailView):
     template_name = 'book/book_detail.html'
     login_url = 'login'
 
+    # def get_object(self, queryset=None):
+    #     obj = super(BookDetailView, self).get_object(queryset=queryset)
+    #     return obj
+
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
+        current_book_name = self.get_object().title
+        related_records = BorrowRecord.objects.filter(book=current_book_name)
+        context['related_records'] = related_records
         return context
 
 class BookCreateView(LoginRequiredMixin,CreateView):
@@ -195,11 +211,10 @@ class CategoryListView(LoginRequiredMixin,ListView):
             all_categories = all_categories.filter(
                 Q(name__icontains=search)  
             )
-        else:
-            search = ''
-        self.search_value=search
+            self.search_value=search
+
         self.count_total = all_categories.count()
-        paginator = Paginator(all_categories, 6)
+        paginator = Paginator(all_categories, PAGINATOR_NUMBER)
         page = self.request.GET.get('page')
         categories = paginator.get_page(page)
         return categories
@@ -208,6 +223,8 @@ class CategoryListView(LoginRequiredMixin,ListView):
         context = super(CategoryListView, self).get_context_data(*args, **kwargs)
         context['count_total'] = self.count_total
         context['search'] = self.search_value
+        context['orderby'] = self.order_field
+        context['objects'] = self.get_queryset()
         return context
 
 class CategoryCreateView(LoginRequiredMixin,CreateView):
@@ -269,7 +286,7 @@ class PublisherListView(LoginRequiredMixin,ListView):
             search = ''
         self.search_value=search
         self.count_total = all_publishers.count()
-        paginator = Paginator(all_publishers, 6)
+        paginator = Paginator(all_publishers, PAGINATOR_NUMBER)
         page = self.request.GET.get('page')
         publishers = paginator.get_page(page)
         return publishers
@@ -278,7 +295,8 @@ class PublisherListView(LoginRequiredMixin,ListView):
         context = super(PublisherListView, self).get_context_data(*args, **kwargs)
         context['count_total'] = self.count_total
         context['search'] = self.search_value
-        # context["all_table_fields"]=Categories._meta.get_fields()
+        context['orderby'] = self.order_field  
+        context['objects'] = self.get_queryset()      
         return context
 
 class PublisherCreateView(LoginRequiredMixin,CreateView):
@@ -347,35 +365,43 @@ class ActivityListView(LoginRequiredMixin,ListView):
     all_users = User.objects.values()
     user_list = [x['username'] for x in all_users] 
 
-    # def post(self,request,*args,**kwargs):
-    #     print(request.POST.get('user'))
-    #     self.created_by = request.POST.get('user')
-    #     return redirect('user_activity_list')
-        
 
     def get_queryset(self):
         data = self.request.GET.copy()
    
         search =self.request.GET.get("search")
-        filter_user=self.request.GET.get("user") 
+        filter_user=self.request.GET.get("created_by") 
 
-        all_activities = UserActivity.objects.all().order_by(self.order_field)
+        all_activities = UserActivity.objects.all()
   
 
         if filter_user:
             self.created_by = filter_user
-            all_activities = UserActivity.objects.all().order_by(self.order_field).filter(created_by=self.created_by)
+            all_activities = all_activities.filter(created_by=self.created_by)
 
         if search:
             self.search_value = search
             all_activities = all_activities.filter(Q(target_model__icontains=search))
+                
+
+        # if filter_user and search:
+
+        # all_activities = all_activities.filter(created_by=self.created_by).filter(Q(target_model__icontains=search))
+
    
         self.search_value=search
         self.count_total = all_activities.count()
-        paginator = Paginator(all_activities, 10)
+        paginator = Paginator(all_activities,PAGINATOR_NUMBER)
         page = self.request.GET.get('page')
-        activities = paginator.get_page(page)
-        return activities
+        # activities = paginator.get_page(page)
+
+        try:
+            response = paginator.get_page(page)
+        except PageNotAnInteger:
+            response = paginator.get_page(1)
+        except EmptyPage:
+            response = paginator.get_page(paginator.num_pages)
+        return response
 
     
     def get_context_data(self, *args, **kwargs):
@@ -425,7 +451,7 @@ class MemberListView(LoginRequiredMixin,ListView):
             search = ''
         self.search_value=search
         self.count_total = all_members.count()
-        paginator = Paginator(all_members, 6)
+        paginator = Paginator(all_members, PAGINATOR_NUMBER)
         page = self.request.GET.get('page')
         members = paginator.get_page(page)
         return members
@@ -434,6 +460,8 @@ class MemberListView(LoginRequiredMixin,ListView):
         context = super(MemberListView, self).get_context_data(*args, **kwargs)
         context['count_total'] = self.count_total
         context['search'] = self.search_value
+        context['orderby'] = self.order_field
+        context['objects'] = self.get_queryset()
         return context
 
 class MemberCreateView(LoginRequiredMixin,CreateView):
@@ -635,7 +663,7 @@ class BorrowRecordListView(LoginRequiredMixin,ListView):
             search = ''
         self.search_value=search
         self.count_total = all_records.count()
-        paginator = Paginator(all_records, 6)
+        paginator = Paginator(all_records, PAGINATOR_NUMBER)
         page = self.request.GET.get('page')
         records = paginator.get_page(page)
         return records
@@ -644,6 +672,8 @@ class BorrowRecordListView(LoginRequiredMixin,ListView):
         context = super(BorrowRecordListView, self).get_context_data(*args, **kwargs)
         context['count_total'] = self.count_total
         context['search'] = self.search_value
+        context['orderby'] = self.order_field
+        context['objects'] = self.get_queryset()
         return context
 
 

@@ -1,5 +1,5 @@
 {% extends "layouts/base.html" %}
-
+{% load book_extras %}
 {% block title %} Management {% endblock %} 
 
 <!-- Specific CSS goes HERE -->
@@ -30,18 +30,9 @@
                         <div class="card">
                             <div class="card-header">
                                 <h5>Total {{count_total}} books</h5>
-                                <!-- <span class="d-block m-t-5">use class <code>table</code> inside table element</span> -->
                             </div>
 
-                            {% if messages %}
-                            {% for message in messages %}
-                                {% if message.tags == "error" %}
-                                    <div class="alert alert-danger">{{ message }}</div>
-                                {% else %}
-                                    <div class="alert alert-{{ message.tags }}" role="alert">{{ message }}</div>
-                                {% endif %}
-                            {% endfor %}
-                            {% endif %}
+                            {% show_messages %}
 
                             <div class="card-block">
                                 <div class='row'>
@@ -111,32 +102,11 @@
                                     </table>
                                 </div>
                                 <div class="row">
-                                    <div class='col-6'>
+                                    <div class='col-4'>
                                         <a href="{% url 'book_create' %}" class='btn btn-primary'>Add book</a>
                                     </div>
-                                    <div class='col-6'>
-                                        <ul class="pagination m-auto">
-
-                                          {% if books.has_previous %}
-
-                                          <li class="page-item "><a href="?page=1&orderby={{ order }}&search={{ search }}"><span class="page-link">First</span></a></li>
-                                          <li class="page-item"><a class="page-link" href="?page={{ books.previous_page_number }}&orderby={{ order }}&search={{ search }}">{{ books.previous_page_number }}</a></li>
-                                          <li class="page-item active"><a class="page-link" href=""> {{ books.number }}</a></li>
-
-                                          {% else %}
-                                          <li class="page-item disabled"><a href="?page=1&orderby={{ order }}&search={{ search }}"><span class="page-link">First</span></a></li>
-                                          <li class="page-item active"><a class="page-link" href=""> {{ books.number }}</a></li>
-                                          {% endif %}
-
-                                          {% if books.has_next %}
-                                          <li class="page-item"><a class="page-link" href="?page={{ books.next_page_number }}&orderby={{ order }}&search={{ search }}">{{ books.next_page_number }}</a></li>
-                                          <li class="page-item"><a class="page-link" href="?page={{ books.paginator.num_pages }}&orderby={{ order }}&search={{ search }}">Last</a></li>
-                                          {% else %}
-                                          <li class="page-item disabled"><a href=""><span class="page-link">End</span></a></li>
-                                          {% endif %}
-
-                                        </ul>
-
+                                    <div class='col-8'>
+                                        {% show_pagination %}
                                     </div>
                                 </div>
                             </div>
@@ -144,7 +114,6 @@
                     </div>
                     
                 </div>
-                <!-- [ Main Content ] end -->
             </div>
         </div>
     </div>
@@ -152,5 +121,4 @@
 
 {% endblock content %}
 
-<!-- Specific Page JS goes HERE  -->
 {% block javascripts %}{% endblock javascripts %}

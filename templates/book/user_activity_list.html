@@ -1,6 +1,6 @@
 {% extends "layouts/base.html" %}
 {% load book_extras %}
-{% block title %} User Activity {% endblock %} 
+{% block title %} User Activity {% endblock %}
 {% block stylesheets %}{% endblock stylesheets %}
 
 {% block content %}
@@ -13,9 +13,7 @@
                     <div class="col-md-12">
                         <div class="page-header-title">
                             <h5 class="m-b-10">User Activity</h5>
-
                         </div>
-
                     </div>
                 </div>
             </div>
@@ -31,26 +29,29 @@
                             <div class="card-header">
                                 <h5>Total {{count_total}} activities</h5>
                             </div>
-                            {% for message in messages %}
-                            {% if message.tags == "error" %}
-                                <div class="alert alert-danger">{{ message }}</div>
-                            {% else %}
-                                <div class="alert alert-{{ message.tags }}" role="alert">{{ message }}</div>
-                            {% endif %}
-                            {% endfor %}
-                            
+                            {% show_messages %}
                             <div class="card-block ">
                                 <div class='row'>
 
                                     <!-- Dropdown list -->
                                     <div class="col-6">
                                         <div class="btn-group ">
-                                            <button class="btn btn-light dropdown-toggle" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Select User </button>
-                                          
+                                            {% if created_by == '' %}
+                                            <button class="btn btn-light dropdown-toggle" type="button"
+                                                data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Select
+                                                User </button>
+                                            {% else %}
+                                            <button class="btn btn-light dropdown-toggle" type="button"
+                                                data-toggle="dropdown" aria-haspopup="true"
+                                                aria-expanded="false">{{created_by}} </button>
+
+                                            {% endif %}
+
                                             <div class="dropdown-menu">
                                                 {% for user in user_list %}
-                                                <a class="dropdown-item" href="{% url 'user_activity_list' %}?user={{ user}}">{{user}}</a>
-                                                
+                                                <a class="dropdown-item"
+                                                    href="{% url 'user_activity_list' %}?created_by={{user}}&search={{search}}">{{user}}</a>
+
                                                 {% endfor %}
                                             </div>
                                         </div>
@@ -59,15 +60,13 @@
                                     <div class="col-6">
                                         <form class="form-inline mb-2">
                                             <div class="form-group  mb-2">
-                                                <input type="text" 
-                                                       class="form-control" 
-                                                       name="search",
-                                                       id='search',
-                                                       placeholder="Search target",
-                                                       value={{search}}
-                                                       >
+                                                <input type="text" class="form-control" name="search" , id='search' ,
+                                                    placeholder="Search target" , value="">
                                             </div>
-                                            <button type="submit" class="btn btn-secondary ml-2 mb-2 btn-sm">Search</button>
+
+                                            <!-- <input type="hidden" name="created_by" id="created_by" value={{created_by}}> -->
+                                            <button type="submit"
+                                                class="btn btn-secondary ml-2 mb-2 btn-sm">Search</button>
                                         </form>
                                     </div>
                                 </div>
@@ -86,18 +85,20 @@
                                             </tr>
                                         </thead>
                                         <tbody>
-                                            
+
                                             {% for activity in activities %}
-                                                <tr>
-                                                    <th scope="row">{{activity.id}}</th>
-                                                    <td >{{activity.created_by}}</td>
-                                                    <td class="table-{{activity.operation_type}}" >{{activity.get_operation_type_display}}  </td>
-                                                    <td >{{activity.target_model}}</td>
-                                                    <td >{{ activity.created_at|date:"Y-m-d H:i" }} </td>
-                                                    <td>{{ activity.detail}}  </td>
-                                                    <td><a href="{% url 'user_activity_delete' activity.pk %}" class="badge badge-warning">Delete</a></td>
-                                                </tr>
-                                                
+                                            <tr>
+                                                <th scope="row">{{activity.id}}</th>
+                                                <td>{{activity.created_by}}</td>
+                                                <td class="table-{{activity.operation_type}}">
+                                                    {{activity.get_operation_type_display}} </td>
+                                                <td>{{activity.target_model}}</td>
+                                                <td>{{ activity.created_at|date:"Y-m-d H:i" }} </td>
+                                                <td>{{ activity.detail}} </td>
+                                                <td><a href="{% url 'user_activity_delete' activity.pk %}"
+                                                        class="badge badge-warning">Delete</a></td>
+                                            </tr>
+
                                             {% endfor %}
 
 
@@ -106,14 +107,64 @@
                                 </div>
                                 <div class="row">
 
-                                    <div class='col-6'>
-                                        {% show_logs_pagination %}
+                                    <div class='col-10'>
+
+                                        <ul class="pagination">
+                                            {% if activities.has_previous %}
+                                            <li class="page-item"><a class="page-link"
+                                                    href="?{% param_replace page=1 %}">First</a>
+                                            </li>
+                                            {% else %}
+                                            <li class="page-item disabled"><a href=""><span
+                                                        class="page-link">First</span></a></li>
+
+                                            {% endif %}
+
+                                            {% if activities.number|add:'-4' > 1 %}
+                                            <li class="page-item"><a class="page-link"
+                                                    href="?{% param_replace page=activities.number|add:'-5'  %}">&hellip;</a>
+                                            </li>
+                                            {% endif %}
+
+                                            {% for i in activities.paginator.page_range %}
+                                            {% if activities.number == i %}
+                                            <li class="page-item active"><a class="page-link" href=""> ({{i}})</a></li>
+                                            {% elif i > activities.number|add:'-5' and i < activities.number|add:'5' %}
+                                                <li class="page-item"><a class="page-link"
+                                                    href="?{% param_replace page=i %}">{{ i }}</a></li>
+                                                {% endif %}
+                                                {% endfor %}
+
+                                                {% if activities.paginator.num_pages > activities.number|add:'4' %}
+                                                <li class="page-item"><a class="page-link"
+                                                        href="?{% param_replace page=activities.number|add:'5'  %}">&hellip;</a>
+                                                </li>
+                                                {% endif %}
+
+
+
+
+                                                {% if page_objects.has_next %}
+
+                                                <li class="page-item"><a class="page-link"
+                                                        href="?{% param_replace page=activities.paginator.num_pages %}">Last&nbsp;<i
+                                                            class="fa fa-chevron-right" aria-hidden="true"></i></a></li>
+                                                {% else %}
+                                                <li class="page-item disabled"><a href=""><span
+                                                            class="page-link">End</span></a></li>
+                                                {% endif %}
+
+                                        </ul>
+                                    </div>
+
+                                    <div class='col-2 mr-0'>
+                                        <h6>Page {{ activities.number }} of {{ activities.paginator.num_pages }} </h6>
                                     </div>
                                 </div>
                             </div>
                         </div>
                     </div>
-                    
+
                 </div>
             </div>
         </div>
