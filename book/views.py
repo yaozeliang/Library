@@ -20,7 +20,7 @@ from django.core.paginator import EmptyPage, PageNotAnInteger
 
 from django.contrib.auth.models import User
 from django.contrib.auth.decorators import login_required
-from django.core.exceptions import PermissionDenied # new
+from django.core.exceptions import PermissionDenied 
 from django.contrib.auth.mixins import LoginRequiredMixin 
 from django.contrib.messages.views import SuccessMessageMixin
 from django.core.files.storage import FileSystemStorage
@@ -30,14 +30,20 @@ from .forms import BookCreateEditForm,PubCreateEditForm,MemberCreateEditForm,Pro
 
 from .utils import get_n_days_ago,create_clean_dir,change_col_format
 from .custom_filter import get_item
-from datetime import date,timedelta
+from datetime import date,timedelta,datetime
 
 
 from django.core.paginator import Paginator
 
 
 
+TODAY=get_n_days_ago(0,"%Y%m%d")
 PAGINATOR_NUMBER = 5
+
+
+allowed_models = ['Category','Publisher','Book','Member','UserActivity','BorrowRecord']
+# data = {  model.__name__:model.objects.all() for model in apps.get_models() if model.__name__ in allowed_models}
+
 
 
 # HomePage
@@ -677,7 +683,6 @@ class BorrowRecordListView(LoginRequiredMixin,ListView):
         return context
 
 
-
 class BorrowRecordDeleteView(LoginRequiredMixin,View):
     login_url = 'login'
 
@@ -694,6 +699,38 @@ class BorrowRecordDeleteView(LoginRequiredMixin,View):
         return HttpResponseRedirect(reverse("record_list"))
 
 
+# Data center
+
+class DataCenterView(LoginRequiredMixin,TemplateView):
+    template_name = 'book/download_data.html'
+    login_url = 'login'
+    data = {m.objects.model._meta.db_table:
+            {"source":pd.DataFrame(list(m.objects.all().values())) ,
+             "path":f"{str(settings.BASE_DIR)}/datacenter/{m.__name__}_{TODAY}.csv",
+             "file_name":f"{m.__name__}_{TODAY}.csv"}
+              for m in apps.get_models() if m.__name__ in allowed_models}
+
+    print(data['book_category']['source'])
+    def get(self,request,*args, **kwargs):
+        count_total = {k: v['source'].shape[0] for k,v in self.data.items()}
+        return render(request,self.template_name,context={'model_list':count_total})
+
+def download_data(request,model_name):
+
+    download =DataCenterView.data
+
+    download[model_name]['source'].to_csv(download[model_name]['path'],index=False,encoding='utf-8')
+    download_file=pd.read_csv(download[model_name]['path'],encoding='utf-8')
+    print(download_file)
+    response = HttpResponse(download_file,content_type="text/csv")
+    response = HttpResponse(open(download[model_name]['path'],'r',encoding='utf-8'),content_type="text/csv")
+    # response = HttpResponse(content_type="text/csv")
+    
+    response['Content-Disposition'] = f"attachment;filename={download[model_name]['file_name']}"
+    return response
+
+
+    
 # Handle Errors
 
 def page_not_found(request, exception):

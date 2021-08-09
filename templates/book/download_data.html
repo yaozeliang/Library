@@ -1,0 +1,81 @@
+{% extends "layouts/base.html" %}
+{% load book_extras %}
+{% block title %} User Admin {% endblock %} 
+
+{% block stylesheets %}{% endblock stylesheets %}
+
+{% block content %}
+
+<div class="pcoded-content">
+    <div class="pcoded-inner-content">
+        <div class="page-header">
+            <!-- <div class="page-block">
+                <div class="row align-items-center">
+                    <div class="col-md-12">
+                        <div class="page-header-title">
+                            <h5 class="m-b-10">Data Center</h5>
+                        </div>
+
+                    </div>
+                </div>
+            </div> -->
+
+        </div>
+
+        
+        <div class="main-body">
+            <div class="page-wrapper">
+                <div class="row">
+                    <div class="col-xl-12">
+                        <div class="card">
+                            {% show_messages %}
+                            <div class="card-header">
+                                <h5>Download data</h5>
+                            </div>
+                            <div class="card-block ">
+                                <div class='row'>
+  
+                                    <div class="table-responsive table-hover">
+                                        <table class="table">
+                                            <thead>
+                                                <tr>
+                                                    <th>Dataset</th>
+                                                    <th>Volume</th>
+                                                    <th>#</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                {% for model_name,volume in model_list.items %}
+                                                <tr>
+                                                    <td>{{model_name | upper}}</td>
+                                                    <td>{{volume}}</td>
+                                                    <td><a href="{% url 'data_download' model_name%}" class="text-center" ><span><i class="fas fa-download"></i>&nbsp;&nbsp;Download</span></a></td>
+
+                                                </tr>
+
+                                                {% endfor %}
+
+                                            </tbody>
+                                        </table>
+                                    </div>
+
+
+                                </div>
+
+
+
+                            </div>
+                        </div>
+                    </div>
+                    
+                </div>
+                <!-- [ Main Content ] end -->
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock content %}
+
+<!-- Specific Page JS goes HERE  -->
+{% block javascripts %}{% endblock javascripts %}

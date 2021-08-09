@@ -10,7 +10,7 @@ from .views import ProfileDetailView,ProfileCreateView,ProfileUpdateView
 from django.conf import settings
 from django.conf.urls.static import static
 from .views import BorrowRecordListView,BorrowRecordCreateView,BorrowRecordDeleteView,auto_member,auto_book
-
+from .views import DataCenterView,download_data
 
 # BorrowRecordCreateView
 
@@ -60,6 +60,11 @@ urlpatterns = [
     path('record-create-autocomplete-book-name/',auto_book,name="auto_book_name"),
     path('record-list/',BorrowRecordListView.as_view(),name="record_list"),
     path('record-delete/<int:pk>/',BorrowRecordDeleteView.as_view(),name="record_delete"),
+
+
+    # Data center
+    path('data-center/',DataCenterView.as_view(),name="data_center"),
+    path('data-download/<str:model_name>/',download_data,name="data_download"),
 
 ]
 

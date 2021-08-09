@@ -75,6 +75,7 @@
                                                 <th>Duration</th>
                                                 <th>Status</th>
                                                 <th>Delayed </th>
+                                                <th>P </th>
                                                 <th>#</th>
                                             </tr>
                                         </thead>
@@ -96,7 +97,7 @@
                                                 {% else %}
                                                 <td>{{record.delay_days}} days</td>
                                                 {% endif %}
-                                                
+                                                <td>{{record.return_status}}</td>
                                                 <!-- <td> {{record.created_by}} </td> -->
                                                 
                                                 <td>

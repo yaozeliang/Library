@@ -207,7 +207,7 @@
   
                         <!--[social-media section] end-->
                         <!-- [ rating list ] starts-->
-                        <div class="col-xl-4 col-md-6">
+                        <!-- <div class="col-xl-4 col-md-6">
                             <div class="card user-list">
                                 <div class="card-header">
                                     <h5>Rating</h5>
@@ -247,138 +247,147 @@
                                     </div>
                                 </div>
                             </div>
-                        </div>
+                        </div> -->
                         <!-- [ rating list ] end-->
-                        <div class="col-xl-8 col-md-12 m-b-30">
-                            <ul class="nav nav-tabs" id="myTab" role="tablist">
-                                <li class="nav-item">
-                                    <a class="nav-link active show" id="home-tab" data-toggle="tab" href="#new_member" role="tab" aria-controls="home" aria-selected="false">New Member</a>
-                                </li>
-                                <li class="nav-item">
-                                    <a class="nav-link " id="profile-tab" data-toggle="tab" href="#stock" role="tab" aria-controls="profile" aria-selected="false">Short inventory</a>
-                                </li>
-                                <li class="nav-item">
-                                    <a class="nav-link" id="contact-tab" data-toggle="tab" href="#logs" role="tab" aria-controls="contact" aria-selected="false">Recent Logs </a>
-                                </li>
-                            </ul>
-                            <div class="tab-content" id="myTabContent">
-                                <!-- New members -->
-                                <div class="tab-pane fade active show" id="new_member" role="tabpanel" aria-labelledby="home-tab">
-                                    <table class="table table-hover">
-                                        <thead>
-                                            <tr>
-                                                <th>Name</th>
-                                                <th>Sex</th>
-                                                <th>Age</th>
-                                                <th>Card N </th>
-                                                <th>Joined at</th>
-                                                <th>Created by</th>
-                                                
-                                                <th class="text-right"></th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                            {% for member in new_members %}
-                                            <tr>
-                                                <td>{{member.name}}</td>
-                                                {% if member.gender == 'm' %}
-                                                <td><i class="fas fa-mars "></i></td>
-                                                {% else %}
-                                                <td><i class="fas fa-venus"></i></td>
-                                                {% endif %}
-                                                <td>{{member.age}}</td>     
-                                                <td>{{member.card_number}}</td>  
-                                                <td>{{member.created_at| timesince}}</td>
-                                                <td>{{member.created_by}}</td>                     
-     
-                                            </tr>
-
-                                            {% endfor %}
-  
-
- 
-                                        </tbody>
-                                    </table>
-
-                                </div>
-                                <!-- Book inventory -->
-                                <div class="tab-pane fade " id="stock" role="tabpanel" aria-labelledby="profile-tab">
-                                    <table class="table table-hover">
-                                        <thead>
-                                            <tr>
-                                                <th>Title</th>
-                                                <th>Author</th>
-                                                <th>Quantity</th>
-                                                <th>Location</th>
-                                                <th class="text-right"></th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-
-                                            {% for book in short_inventory %}
-                                            <tr>
-                                                <td>{{book.title}}</td>
-                                                <td>{{book.author}}</td>
-                                                <td>{{book.quantity}}</td>     
-                                                <td>{{book.floor_number}}{{book.bookshelf_number}}</td>                       
-                                                {% if book.quantity < 5 %}
-                                                <td class="text-center"><i class="fas fa-exclamation-circle text-c-red f-20"></i></td>
-                                                {% elif  book.quantity > 5 and book.quantity <= 10 %}
-                                                <td class="text-center"><i class="fas fa-exclamation-circle text-c-purple f-20"></i></td>
-                                                {% endif %}
-                                            </tr>
-
-                                            {% endfor %}
-                                        </tbody>
-                                    </table>
-
-                                </div>
-                                <!-- Recent Logs -->
-                                <div class="tab-pane fade" id="logs" role="tabpanel" aria-labelledby="contact-tab">
-                                    <table class="table table-hover">
-                                        <thead>
-                                            <tr>
-                                                <th>User</th>
-                                                <th>Activity</th>
-                                                <th>At</th>
-                                                <th>Type</th>
-                                                <th class="text-right"></th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                            {% for log in recent_user_activities %}
-                                                <tr>   
-                                                    <td><img class="rounded-circle  m-r-10" style="width:30px;" src="{{user_avatar|get_item:log.created_by}}" >{{log.created_by}}</td>
-                                                    <td> {{log.detail}} </td>
-                                                    <!-- <td>{{log.created_at |date:"Y-m-d"}}</td> -->
-                                                    <td>{{ log.created_at | timesince }}</td>
-                                                    <td>{{log.get_operation_type_display}} </td>
-
-                                                    {% ifequal log.operation_type "success" %}
-                                                        <td class="text-right"><i class="fas fa-circle text-c-green f-10"></i></td>
-                                                    {% endifequal %}
-
-                                                    {% ifequal log.operation_type "warning" %}
-                                                        <td class="text-right"><i class="fas fa-circle text-c-yellow f-10"></i></td>
-                                                    {% endifequal %}
-
-                                                    {% ifequal log.operation_type "danger" %}
-                                                        <td class="text-right"><i class="fas fa-circle text-c-red f-10"></i></td>
-                                                    {% endifequal %}
-
+                        <div class="col-xl-12 col-md-12 m-b-30">
+                        <div class="card">
+                            <div class="card-header">
+                                <h5>Recent Events</h5>
+                            </div>
+                            <div class="card-block ">
+                                <ul class="nav nav-tabs" id="myTab" role="tablist">
+                                    <li class="nav-item">
+                                        <a class="nav-link active show" id="home-tab" data-toggle="tab" href="#new_member" role="tab" aria-controls="home" aria-selected="false">New Member</a>
+                                    </li>
+                                    <li class="nav-item">
+                                        <a class="nav-link " id="profile-tab" data-toggle="tab" href="#stock" role="tab" aria-controls="profile" aria-selected="false">Short inventory</a>
+                                    </li>
+                                    <li class="nav-item">
+                                        <a class="nav-link" id="contact-tab" data-toggle="tab" href="#logs" role="tab" aria-controls="contact" aria-selected="false">Recent Logs </a>
+                                    </li>
+                                </ul>
+                                <div class="tab-content" id="myTabContent">
+                                    <!-- New members -->
+                                    <div class="tab-pane fade active show" id="new_member" role="tabpanel" aria-labelledby="home-tab">
+                                        <table class="table table-hover">
+                                            <thead>
+                                                <tr>
+                                                    <th>Name</th>
+                                                    <th>Sex</th>
+                                                    <th>Age</th>
+                                                    <th>Card N </th>
+                                                    <th>Joined at</th>
+                                                    <th>Created by</th>
+                                                    
+                                                    <th class="text-right"></th>
                                                 </tr>
-
-                                            {% endfor %}
-
-   
-                                        </tbody>
-                                    </table>
+                                            </thead>
+                                            <tbody>
+                                                {% for member in new_members %}
+                                                <tr>
+                                                    <td>{{member.name}}</td>
+                                                    {% if member.gender == 'm' %}
+                                                    <td><i class="fas fa-mars "></i></td>
+                                                    {% else %}
+                                                    <td><i class="fas fa-venus"></i></td>
+                                                    {% endif %}
+                                                    <td>{{member.age}}</td>     
+                                                    <td>{{member.card_number}}</td>  
+                                                    <td>{{member.created_at| timesince}}</td>
+                                                    <td>{{member.created_by}}</td>                     
+         
+                                                </tr>
+    
+                                                {% endfor %}
+      
+    
+     
+                                            </tbody>
+                                        </table>
+    
+                                    </div>
+                                    <!-- Book inventory -->
+                                    <div class="tab-pane fade " id="stock" role="tabpanel" aria-labelledby="profile-tab">
+                                        <table class="table table-hover">
+                                            <thead>
+                                                <tr>
+                                                    <th>Title</th>
+                                                    <th>Author</th>
+                                                    <th>Quantity</th>
+                                                    <th>Location</th>
+                                                    <th class="text-right"></th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+    
+                                                {% for book in short_inventory %}
+                                                <tr>
+                                                    <td>{{book.title}}</td>
+                                                    <td>{{book.author}}</td>
+                                                    <td>{{book.quantity}}</td>     
+                                                    <td>{{book.floor_number}}{{book.bookshelf_number}}</td>                       
+                                                    {% if book.quantity < 5 %}
+                                                    <td class="text-center"><i class="fas fa-exclamation-circle text-c-red f-20"></i></td>
+                                                    {% elif  book.quantity > 5 and book.quantity <= 10 %}
+                                                    <td class="text-center"><i class="fas fa-exclamation-circle text-c-purple f-20"></i></td>
+                                                    {% endif %}
+                                                </tr>
+    
+                                                {% endfor %}
+                                            </tbody>
+                                        </table>
+    
+                                    </div>
+                                    <!-- Recent Logs -->
+                                    <div class="tab-pane fade" id="logs" role="tabpanel" aria-labelledby="contact-tab">
+                                        <table class="table table-hover">
+                                            <thead>
+                                                <tr>
+                                                    <th>User</th>
+                                                    <th>Activity</th>
+                                                    <th>At</th>
+                                                    <th>Type</th>
+                                                    <th class="text-right"></th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                {% for log in recent_user_activities %}
+                                                    <tr>   
+                                                        <td><img class="rounded-circle  m-r-10" style="width:30px;" src="{{user_avatar|get_item:log.created_by}}" >{{log.created_by}}</td>
+                                                        <td> {{log.detail}} </td>
+                                                        <!-- <td>{{log.created_at |date:"Y-m-d"}}</td> -->
+                                                        <td>{{ log.created_at | timesince }}</td>
+                                                        <td>{{log.get_operation_type_display}} </td>
+    
+                                                        {% ifequal log.operation_type "success" %}
+                                                            <td class="text-right"><i class="fas fa-circle text-c-green f-10"></i></td>
+                                                        {% endifequal %}
+    
+                                                        {% ifequal log.operation_type "warning" %}
+                                                            <td class="text-right"><i class="fas fa-circle text-c-yellow f-10"></i></td>
+                                                        {% endifequal %}
+    
+                                                        {% ifequal log.operation_type "danger" %}
+                                                            <td class="text-right"><i class="fas fa-circle text-c-red f-10"></i></td>
+                                                        {% endifequal %}
+    
+                                                    </tr>
+    
+                                                {% endfor %}
+    
+       
+                                            </tbody>
+                                        </table>
+                                    </div>
                                 </div>
                             </div>
+                        
+
+
+                        </div>
                         </div>
 
-                    </div>
-                    <!-- [ Main Content ] end -->
+ 
                 </div>
             </div>
         </div>

@@ -1,0 +1,11 @@
+id,author,title,description,created,updated_at,total_borrow_times,quantity,category_id,publisher_id,status,floor_number,bookshelf_number,updated_by
+1,B1,T1,"is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s,",2021-07-31 18:22:29.835365+00:00,2021-08-03 20:44:06.668299+00:00,1,2,2,2,0,1,A004,yaozeliang
+2,B2,T2,"is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s,",2021-07-31 18:22:50.489077+00:00,2021-08-02 18:23:17.334439+00:00,0,28,3,1,0,3,C099,yaozeliang
+3,B3,T3,"is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s,",2021-07-31 18:23:14.800909+00:00,2021-07-31 18:23:14.804930+00:00,0,46,6,4,1,2,B012,yaozeliang
+4,Jk.Rowling,MarkdownTestA,ADDADFADFASFS,2021-07-31 18:23:39.506959+00:00,2021-08-03 20:37:50.348702+00:00,2,8,11,3,0,1,C001,yaozeliang
+5,Marie-Christine Helg,Your Titleo,adfadfas,2021-07-31 20:05:51.202141+00:00,2021-08-03 18:44:13.633804+00:00,0,8,8,2,0,2,C001,yaozeliang
+6,Jk.Rowling,Harry Potter Children's Collection,adfaadfs,2021-08-02 17:50:43.193274+00:00,2021-08-07 17:28:02.218713+00:00,2,8,5,2,0,3,C071,yaozeliang
+7,Test Book,Test Title,adsfadsfasdfasadsfadsfasdf,2021-08-02 18:09:29.120527+00:00,2021-08-03 18:55:54.814203+00:00,0,100,2,3,0,3,B028,yaozeliang
+8,A.D. Martel,Amazing Test Book,Here's the amazing book,2021-08-03 18:54:38.342004+00:00,2021-08-05 13:19:40.879504+00:00,4,94,9,2,0,1,C076,yaozeliang
+9,Best Author,Best Book,this is the description,2021-08-03 20:17:09.402964+00:00,2021-08-07 19:16:50.157458+00:00,6,94,7,3,0,1,C012,yaozeliang
+10,Jk.Rowling,Harry Potter and magic stone,adffaaaaaaaaaa,2021-08-07 17:29:19.723300+00:00,2021-08-07 17:29:54.586299+00:00,1,7,5,3,0,2,C004,yaozeliang

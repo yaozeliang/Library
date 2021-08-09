@@ -1,0 +1,6 @@
+id,name,city,contact,created_at,updated_by,updated_at
+1,Pub1,Paris,people@outlook.com,2021-07-31 18:21:19.128665+00:00,yaozeliang,2021-07-31 18:21:19.129664+00:00
+2,Pub2,Beijing,FakePub2@outlook.com,2021-07-31 18:21:27.033171+00:00,yaozeliang,2021-07-31 18:21:27.034167+00:00
+3,Pub3,Rome,FakePub3@outlook.com,2021-07-31 18:21:36.376148+00:00,yaozeliang,2021-07-31 18:21:36.376148+00:00
+4,Pub4,Tokyo,FakePub4@163.com,2021-07-31 18:21:53.540765+00:00,yaozeliang,2021-08-01 15:14:28.407599+00:00
+5,Fake Pub 5,London,FakePub5@outlook.com,2021-08-05 10:03:22.230909+00:00,yaozeliang,2021-08-05 10:03:22.234877+00:00

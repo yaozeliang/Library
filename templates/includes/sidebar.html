@@ -21,6 +21,18 @@
                         <a href="/" class="nav-link "><span class="pcoded-micon"><i class="feather icon-home"></i></span><span class="pcoded-mtext">Dashboard</span></a>
                     </li>
 
+                    
+                    <!-- Borrow List -->
+                    <li class="nav-item pcoded-menu-caption">
+                        <label>Borrow records</label>
+                    </li>
+                    <li class="nav-item {% if request.resolver_match.url_name == 'record_list' %} active {% endif %}">
+                        <a href="{% url 'record_list' %}" class="nav-link "><span class="pcoded-micon"><i class="feather icon-file-text"></i></span><span class="pcoded-mtext">All Records</span></a>
+                    </li>
+
+                    <li   class="nav-item {% if request.resolver_match.url_name == 'record_create' %} active {% endif %}">
+                    <a href="{% url 'record_create' %}" class="nav-link "><span class="pcoded-micon"><i class="feather icon-file-text"></i></span><span class="pcoded-mtext">Add Record</span></a>
+                </li>
 
                     <!-- Manage Books -->
 
@@ -66,7 +78,6 @@
 
 
                     <!-- Membership  -->
-
                     <li class="nav-item pcoded-hasmenu {% if request.resolver_match.url_name == 'member_list' or request.resolver_match.url_name == 'member_create' or request.resolver_match.url_name == 'member_update' or request.resolver_match.url_name == 'member_delete' or request.resolver_match.url_name == 'member_detail' %} active pcoded-trigger {% endif %}">
                         <a href="javascript:" class="nav-link "><span class="pcoded-micon"><i class="feather icon-box"></i></span><span class="pcoded-mtext">Membership</span></a>
                         <ul class="pcoded-submenu">
@@ -99,17 +110,10 @@
                         <a href="{% url 'user_activity_list' %}" class="nav-link "><span class="pcoded-micon"><i class="feather icon-file-text"></i></span><span class="pcoded-mtext">Logs</a>
                     </li>
 
-                    <!-- Borrow List -->
-                    <li class="nav-item pcoded-menu-caption">
-                        <label>Borrow records</label>
-                    </li>
-                    <li class="nav-item {% if request.resolver_match.url_name == 'record_list' %} active {% endif %}">
-                        <a href="{% url 'record_list' %}" class="nav-link "><span class="pcoded-micon"><i class="feather icon-file-text"></i></span><span class="pcoded-mtext">All Records</span></a>
+                    <li  class="nav-item {% if request.resolver_match.url_name == 'data_center' %} active {% endif %}">
+                        <a href="{% url 'data_center' %}" class="nav-link "><span class="pcoded-micon"><i class="feather icon-file-text"></i></span><span class="pcoded-mtext">Data Center</a>
                     </li>
 
-                    <li   class="nav-item {% if request.resolver_match.url_name == 'record_create' %} active {% endif %}">
-                    <a href="{% url 'record_create' %}" class="nav-link "><span class="pcoded-micon"><i class="feather icon-file-text"></i></span><span class="pcoded-mtext">Add Record</span></a>
-                </li>
 
                     <!-- Form Table -->
                     <li class="nav-item pcoded-menu-caption">

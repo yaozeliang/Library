@@ -40,10 +40,10 @@ BORROW_RECORD_STATUS=(
     (1,'Closed')
 )
 
-RETURN_STATUS=(
-    (True,'On Time'),
-    (False,'Delayed')
-)
+# RETURN_STATUS=(
+#     (True,'On Time'),
+#     (False,'Delayed')
+# )
 
 class Category(models.Model):
     
@@ -195,7 +195,7 @@ class BorrowRecord(models.Model):
     periode = models.PositiveIntegerField(default=0)
 
     status = models.IntegerField(choices=BORROW_RECORD_STATUS,default=0)
-    return_on_time = models.BooleanField(choices=RETURN_STATUS,default=True)
+    # return_on_time = models.BooleanField(choices=RETURN_STATUS,default=True)
     delay_days = models.IntegerField(default=0)
 
     created_at= models.DateTimeField(default=timezone.now)
@@ -203,11 +203,18 @@ class BorrowRecord(models.Model):
     updated_by = models.CharField(max_length=20,default="")
     updated_at = models.DateTimeField(auto_now=True)
 
+    @property
+    def return_status(self):
+        if self.end_day.replace(tzinfo=None) > datetime.now()-timedelta(hours=24):
+            return 'On time'
+        else:
+            return 'Delayed'
+
     def get_absolute_url(self): 
         return reverse('record_list')
 
     def __str__(self):
-        return self.borrower+"->"+self.book_name
+        return self.borrower+"->"+self.book
     
     def save(self, *args, **kwargs):
         # profile = super(Profile, self).save(*args, **kwargs)
