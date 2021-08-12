@@ -41,7 +41,7 @@
                                 <div class="card-block">
                                     <div class="row d-flex align-items-center">
                                         <div class="col-auto">
-                                            <i class="fas fa-user-friends f-40 "></i>
+                                            <i class="fas fa-user-friends f-40 " style="color:coral"></i>
                                         </div>
                                         <div class="col">
                                             <h3 class="f-w-300">{{data_count.member}}</h3>
@@ -91,67 +91,34 @@
                         <div class="col-xl-8 col-md-6">
                             <div class="card Recent-Users">
                                 <div class="card-header">
-                                    <h5>Recent Users</h5>
+                                    <h5>Recent Closed Records</h5>
                                 </div>
                                 <div class="card-block px-0 py-3">
                                     <div class="table-responsive">
-                                        <table class="table table-hover">
+                                        <table class="table table-hover ">
+                                            <thead class="">
+                                                <tr>
+                                                    <th>Member</th>
+                                                    <th>Book</th>
+                                                    <th>Start date / End date </th>
+                                                    <th>Closed at</th>
+                                                    <!-- <th>On Time ?</th> -->
+                                                </tr>
+                                            </thead>
                                             <tbody>
+                                                {% for r in new_closed_records %}
                                                 <tr class="unread">
-                                                    <td><img class="rounded-circle" style="width:40px;" src="/static/assets/images/user/avatar-1.jpg" alt="activity-user"></td>
-                                                    <td>
-                                                        <h6 class="mb-1">Isabella Christensen</h6>
-                                                        <p class="m-0">Lorem Ipsum is simply…</p>
-                                                    </td>
-                                                    <td>
-                                                        <h6 class="text-muted"><i class="fas fa-circle text-c-green f-10 m-r-15"></i>11 MAY 12:56</h6>
-                                                    </td>
-                                                    <td><a href="#!" class="label theme-bg2 text-white f-12">Reject</a><a href="#!" class="label theme-bg text-white f-12">Approve</a></td>
+                                                 <td>
+                                                        <p class="mb-1"><a href="{% url 'record_detail' r.pk %}">{{ r.borrower}}</a></p>
+                                                        <p class="m-0"><i class="fas fa-credit-card" style="color: Tomato;"></i>&nbsp;{{r.borrower_card}}&nbsp;&nbsp;<i class="fas fa-mobile" style="color: cornflowerblue;"></i>&nbsp;{{r.borrower_phone_number}}</p>
+                                                 </td>
+                                                    <td>{{r.book |truncatewords:2}}</td>
+                                                    <td>{{r.start_day|date:"Y/m/d" }} - {{r.end_day|date:"Y/m/d" }} </td>
+                                                    <td>{{r.closed_at | timesince}}</td>
+                                                    <!-- <td>{{r.return_status}}</td> -->
                                                 </tr>
-                                                <tr class="unread">
-                                                    <td><img class="rounded-circle" style="width:40px;" src="/static/assets/images/user/avatar-2.jpg" alt="activity-user"></td>
-                                                    <td>
-                                                        <h6 class="mb-1">Mathilde Andersen</h6>
-                                                        <p class="m-0">Lorem Ipsum is simply text of…</p>
-                                                    </td>
-                                                    <td>
-                                                        <h6 class="text-muted"><i class="fas fa-circle text-c-red f-10 m-r-15"></i>11 MAY 10:35</h6>
-                                                    </td>
-                                                    <td><a href="#!" class="label theme-bg2 text-white f-12">Reject</a><a href="#!" class="label theme-bg text-white f-12">Approve</a></td>
-                                                </tr>
-                                                <tr class="unread">
-                                                    <td><img class="rounded-circle" style="width:40px;" src="/static/assets/images/user/avatar-3.jpg" alt="activity-user"></td>
-                                                    <td>
-                                                        <h6 class="mb-1">Karla Sorensen</h6>
-                                                        <p class="m-0">Lorem Ipsum is simply…</p>
-                                                    </td>
-                                                    <td>
-                                                        <h6 class="text-muted"><i class="fas fa-circle text-c-green f-10 m-r-15"></i>9 MAY 17:38</h6>
-                                                    </td>
-                                                    <td><a href="#!" class="label theme-bg2 text-white f-12">Reject</a><a href="#!" class="label theme-bg text-white f-12">Approve</a></td>
-                                                </tr>
-                                                <tr class="unread">
-                                                    <td><img class="rounded-circle" style="width:40px;" src="/static/assets/images/user/avatar-1.jpg" alt="activity-user"></td>
-                                                    <td>
-                                                        <h6 class="mb-1">Ida Jorgensen</h6>
-                                                        <p class="m-0">Lorem Ipsum is simply text of…</p>
-                                                    </td>
-                                                    <td>
-                                                        <h6 class="text-muted f-w-300"><i class="fas fa-circle text-c-red f-10 m-r-15"></i>19 MAY 12:56</h6>
-                                                    </td>
-                                                    <td><a href="#!" class="label theme-bg2 text-white f-12">Reject</a><a href="#!" class="label theme-bg text-white f-12">Approve</a></td>
-                                                </tr>
-                                                <tr class="unread">
-                                                    <td><img class="rounded-circle" style="width:40px;" src="/static/assets/images/user/avatar-2.jpg" alt="activity-user"></td>
-                                                    <td>
-                                                        <h6 class="mb-1">Albert Andersen</h6>
-                                                        <p class="m-0">Lorem Ipsum is simply dummy…</p>
-                                                    </td>
-                                                    <td>
-                                                        <h6 class="text-muted"><i class="fas fa-circle text-c-green f-10 m-r-15"></i>21 July 12:56</h6>
-                                                    </td>
-                                                    <td><a href="#!" class="label theme-bg2 text-white f-12">Reject</a><a href="#!" class="label theme-bg text-white f-12">Approve</a></td>
-                                                </tr>
+                                                {% endfor %}
+                                            
                                             </tbody>
                                         </table>
                                     </div>
@@ -181,7 +148,7 @@
                                 <div class="card-block border-bottom">
                                     <div class="row d-flex align-items-center">
                                         <div class="col-auto">
-                                            <i class="fas fa-user f-30 "></i>
+                                            <i class="fas fa-user f-30 " style="color:coral"></i>
                                         </div>
                                         <div class="col">
                                             <h3 class="mt-2 f-w-300">{{new_members_thisweek}} <sub class="text-muted f-15 ">New Members</sub></h3>
@@ -257,7 +224,7 @@
                             <div class="card-block ">
                                 <ul class="nav nav-tabs" id="myTab" role="tablist">
                                     <li class="nav-item">
-                                        <a class="nav-link active show" id="home-tab" data-toggle="tab" href="#new_member" role="tab" aria-controls="home" aria-selected="false">New Member</a>
+                                        <a class="nav-link " id="home-tab" data-toggle="tab" href="#new_member" role="tab" aria-controls="home" aria-selected="false">New Member</a>
                                     </li>
                                     <li class="nav-item">
                                         <a class="nav-link " id="profile-tab" data-toggle="tab" href="#stock" role="tab" aria-controls="profile" aria-selected="false">Short inventory</a>
@@ -265,10 +232,13 @@
                                     <li class="nav-item">
                                         <a class="nav-link" id="contact-tab" data-toggle="tab" href="#logs" role="tab" aria-controls="contact" aria-selected="false">Recent Logs </a>
                                     </li>
+                                    <li class="nav-item">
+                                        <a class="nav-link active show" id="contact-tab" data-toggle="tab" href="#return" role="tab" aria-controls="return" aria-selected="false">Return books this week </a>
+                                    </li>
                                 </ul>
                                 <div class="tab-content" id="myTabContent">
                                     <!-- New members -->
-                                    <div class="tab-pane fade active show" id="new_member" role="tabpanel" aria-labelledby="home-tab">
+                                    <div class="tab-pane fade " id="new_member" role="tabpanel" aria-labelledby="home-tab">
                                         <table class="table table-hover">
                                             <thead>
                                                 <tr>
@@ -285,7 +255,7 @@
                                             <tbody>
                                                 {% for member in new_members %}
                                                 <tr>
-                                                    <td>{{member.name}}</td>
+                                                    <td><a href="{% url 'member_detail' member.pk %}">{{member.name}}</a></td>
                                                     {% if member.gender == 'm' %}
                                                     <td><i class="fas fa-mars "></i></td>
                                                     {% else %}
@@ -322,7 +292,7 @@
     
                                                 {% for book in short_inventory %}
                                                 <tr>
-                                                    <td>{{book.title}}</td>
+                                                    <td><a href="{% url 'book_detail' book.pk %}">{{book.title}}</a></td>
                                                     <td>{{book.author}}</td>
                                                     <td>{{book.quantity}}</td>     
                                                     <td>{{book.floor_number}}{{book.bookshelf_number}}</td>                       
@@ -370,6 +340,11 @@
                                                         {% ifequal log.operation_type "danger" %}
                                                             <td class="text-right"><i class="fas fa-circle text-c-red f-10"></i></td>
                                                         {% endifequal %}
+
+
+                                                        {% ifequal log.operation_type "info" %}
+                                                        <td class="text-right"><i class="fas fa-circle text-c-blue f-10"></i></td>
+                                                    {% endifequal %}
     
                                                     </tr>
     
@@ -379,6 +354,54 @@
                                             </tbody>
                                         </table>
                                     </div>
+
+                                                                       <!-- Retrun books this week -->
+                                                                       <div class="tab-pane fade active show" id="return" role="tabpanel" aria-labelledby="contact-tab">
+                                                                        <table class="table table-hover">
+                                                                            <thead>
+                                                                                <tr>
+                                                                                    <th>Borrower</th>
+                                                                                    <th>Card</th>
+                                                                                    <th>Phone</th>
+                                                                                    <th>Book </th>
+                                                                                    <th>Start date </th>
+                                                                                    <th>Return date</th>
+                                                                                    <th>Delayed </th>
+                                                                                    <th class="">#</th>
+                                                                                </tr>
+                                                                            </thead>
+                                                                            <tbody>
+                                                                                {% for r in books_return_thisweek %}
+                                                                                    <tr>   
+                                                                                        <td><a href="{% url 'record_detail' r.pk %}">{{ r.borrower}}</a></td>
+                                                                                        <td>{{r.borrower_card}}</td>
+                                                                                        <td>{{r.borrower_phone_number}} </td>
+                                                                                        <td>{{r.book |truncatewords:2}}</td>
+                                                                                        <td>{{r.start_day|date:"Y-m-d" }} </td>
+                                                                                        <td>{{r.end_day|date:"Y-m-d" }} </td>
+                                                                                        {% if r.return_status == "Delayed" %}
+                                                                                        <td class='table-danger'>{{r.return_status}} {{r.get_delay_number_days}} days</td>
+
+                                                                                        {% else %}
+                                                                                        <td class= 'table-success'>{{r.return_status}}</td>
+
+                                                                                        {% endif %}
+
+                                                                                        {% if r.status == 0 %}
+                                                                                        <td><a href="{% url 'record_detail' r.pk %}" class="badge badge-danger badge-bg"><i class="fa fa-times"></i>&nbsp;Close</a></td>
+                                                                                        {% else %}
+                                                                                        <td>Closed</td>
+
+                                                                                        {% endif %}
+                                                                                        
+                                                                                    </tr>
+                                    
+                                                                                {% endfor %}
+                                    
+                                       
+                                                                            </tbody>
+                                                                        </table>
+                                                                    </div>
                                 </div>
                             </div>
                         

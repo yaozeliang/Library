@@ -72,10 +72,8 @@
                                                 <th>Num</th>
                                                 <th>Borrow date</th>
                                                 <th>Return date</th>
-                                                <th>Duration</th>
                                                 <th>Status</th>
                                                 <th>Delayed </th>
-                                                <th>P </th>
                                                 <th>#</th>
                                             </tr>
                                         </thead>
@@ -90,17 +88,15 @@
                                                 <td>{{record.quantity}}</td>
                                                 <td>{{record.start_day|date:"Y-m-d"}}</td>
                                                 <td>{{record.end_day|date:"Y-m-d"}}</td>
-                                                <td>{{record.periode}}</td>
                                                 <td>{{record.get_status_display}}</td>
-                                                {% if record.delay_days == 0 %}
-                                                <td>No</td>
+                                                {% if record.return_status == "Delayed" %}
+                                                <td class='table-danger'>{{record.return_status}} {{record.get_delay_number_days}} days</td>
                                                 {% else %}
-                                                <td>{{record.delay_days}} days</td>
+                                                <td class='table-success'>{{record.return_status}}</td>
                                                 {% endif %}
-                                                <td>{{record.return_status}}</td>
-                                                <!-- <td> {{record.created_by}} </td> -->
-                                                
                                                 <td>
+                                                    <a href="{% url 'record_detail' record.pk %}" class="badge badge-warning badge-bg"><i class="feather icon-eye"></i>&nbsp;check</a>
+
                                                     <a href="{% url 'record_delete' record.pk %}" class="badge badge-danger"><i class="feather icon-trash-2"></i>&nbsp;Delete</a>
                                                 </td>
                                                     

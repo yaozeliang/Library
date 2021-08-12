@@ -1,0 +1,124 @@
+{% extends "layouts/base.html" %}
+{% load book_extras %}
+{% block title %} Management {% endblock %} 
+
+{% block stylesheets %}{% endblock stylesheets %}
+
+{% block content %}
+
+<div class="pcoded-content">
+    <div class="pcoded-inner-content">
+        <div class="page-header">
+            <div class="page-block">
+                <!-- Title -->
+                <div class="row align-items-center">
+                    <!-- <div class="col-md-12">
+                        <div class="page-header-title">
+                            <h5 class="m-b-10"><span><i class="fas fa-user "></i> {{record.borrower}} => "{{record.book}}"  </span></h5>
+
+                        </div>
+
+                    </div> -->
+                </div>
+            </div>
+
+        </div>
+
+        <br>
+        <!-- [ breadcrumb ] end -->
+        <div class="main-body">
+            <div class="page-wrapper">
+                <!-- [ Main Content ] start -->
+                <div class="row">
+                    <!-- [ basic-table ] start -->
+                    <div class="col-xl-12">
+                        <div class="card">
+                            <div class="card-header">
+                                <h5 class="m-b-10"><span><i class="fas fa-user "></i> {{record.borrower}} => "{{record.book}}"  </span></h5>
+                            </div>
+                            
+                            {% show_messages %}
+
+                            <div class="card-block ">
+                                <div class='row'>
+                                    <div class="col-12 d-flex justify-content-center text-center">
+                                        <table class="table table-sm  ">
+                                            <thead class="thead-dark">
+                                              <tr>
+                                                <th scope="col">Field</th>
+                                                <th scope="col">Value</th>
+                                  
+                                              </tr>
+                                            </thead>
+                                            <tbody>
+                                              
+                                                <tr>
+                                                    <td>Borrower Name</td>
+                                                    <td>{{record.borrower}}</td>                                                
+                                                </tr>
+                                                <tr>
+                                                    <td>Card Number</td>
+                                                    <td>{{record.borrower_card}}</td>                                                
+                                                </tr>
+                                                <tr>
+                                                    <td>Contact</td>
+                                                    <td>{{record.borrower_email}} / {{record.borrower_phone_number}}</td>                                                
+                                                </tr>
+                                                <tr>
+                                                    <td>Book Name</td>
+                                                    <td>{{record.book}}</td>                                                
+                                                </tr>
+                                                <tr>
+                                                    <td>Quantity</td>
+                                                    <td>{{record.quantity}}</td>                                                
+                                                </tr>
+                                     
+                                                <tr>
+                                                    <td>Duration </td>
+                                                    <td>From {{record.start_day| date:"Y-m-d"}} to {{record.end_day| date:"Y-m-d"}}, {{record.periode}} days </td>                                                
+                                                </tr>
+
+                                                
+                                                <tr>
+                                                    <td>Return On Time ? </td>
+                                                    {% if record.return_status == "On time "%}
+                                                    <td>{{record.return_status}}</td>
+                                                    {% else %}
+                                                    <td>{{record.return_status}}, delayed {{record.get_delay_number_days}} days </td>
+                                                    {% endif %}
+                                                </tr>
+
+                                                <tr>
+                                                    <td>Record Status </td>
+                                                    <td>{{record.get_status_display}}</td>                                                
+                                                </tr>
+
+                                                <tr>
+                                                    <td>Closed By</td>
+                                                    <td>{{record.closed_by}}</td>                                                
+                                                </tr>
+                                                
+                                      
+                                        
+                                            </tbody>
+                                          </table>                    
+                                    </div>
+                                </div>
+
+                                <a href="{% url 'record_list' %}" class='btn btn-primary'>Return list</a>
+                                <a href="{% url 'record_close' record.pk %}" class='btn btn-danger'>Close Record (Book returned)</a>
+                            </div>
+                        </div>
+                    </div>
+                    
+                </div>
+                <!-- [ Main Content ] end -->
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock content %}
+
+<!-- Specific Page JS goes HERE  -->
+{% block javascripts %}{% endblock javascripts %}

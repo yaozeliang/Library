@@ -37,10 +37,8 @@
       {%else%}
       <img src="{% static 'assets/images/user/avatar-2.jpg' %} "style="width:30px;height:30px;border-radius:50%;" alt="">
       {% endif %}
-      {% if user.user.is_authenticated%}
+  
       {{user.username}}
-
-      {%endif%}
       </h6>
       
       <div class="dropdown-menu" aria-labelledby="navbarDropdown">

@@ -27,7 +27,8 @@ FLOOR =(
 OPERATION_TYPE =(
     ("success", "Create"),
     ("warning","Update"),
-    ("danger","Delete")
+    ("danger","Delete"),
+    ("info",'Close')
 )
 
 GENDER=(
@@ -195,13 +196,12 @@ class BorrowRecord(models.Model):
     periode = models.PositiveIntegerField(default=0)
 
     status = models.IntegerField(choices=BORROW_RECORD_STATUS,default=0)
-    # return_on_time = models.BooleanField(choices=RETURN_STATUS,default=True)
     delay_days = models.IntegerField(default=0)
 
     created_at= models.DateTimeField(default=timezone.now)
     created_by = models.CharField(max_length=20,blank=True)
-    updated_by = models.CharField(max_length=20,default="")
-    updated_at = models.DateTimeField(auto_now=True)
+    closed_by = models.CharField(max_length=20,default="")
+    closed_at = models.DateTimeField(auto_now=True)
 
     @property
     def return_status(self):
@@ -209,6 +209,14 @@ class BorrowRecord(models.Model):
             return 'On time'
         else:
             return 'Delayed'
+
+    @property
+    def get_delay_number_days(self):
+        if self.return_status=='Delayed':
+            return (datetime.now()-self.end_day.replace(tzinfo=None)).days
+        else:
+            return 0
+
 
     def get_absolute_url(self): 
         return reverse('record_list')

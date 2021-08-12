@@ -16,6 +16,7 @@ from .models import Book,Category,Publisher,UserActivity,Profile,Member,BorrowRe
 from django.apps import apps
 from django.conf import settings
 from django.core.paginator import EmptyPage, PageNotAnInteger
+from django.core import serializers
 
 
 from django.contrib.auth.models import User
@@ -32,7 +33,7 @@ from .utils import get_n_days_ago,create_clean_dir,change_col_format
 from .custom_filter import get_item
 from datetime import date,timedelta,datetime
 
-
+from django.forms.models import model_to_dict
 from django.core.paginator import Paginator
 
 
@@ -42,7 +43,6 @@ PAGINATOR_NUMBER = 5
 
 
 allowed_models = ['Category','Publisher','Book','Member','UserActivity','BorrowRecord']
-# data = {  model.__name__:model.objects.all() for model in apps.get_models() if model.__name__ in allowed_models}
 
 
 
@@ -66,14 +66,15 @@ class HomeView(LoginRequiredMixin,TemplateView):
         user_avatar = { e.created_by:Profile.objects.get(user__username=e.created_by).profile_pic.url for e in user_activities}
 
         short_inventory =Book.objects.order_by('quantity')[:5]
-         
-        new_members = Member.objects.order_by('-created_at')[:5]
+        
         current_week = date.today().isocalendar()[1]
+        new_members = Member.objects.order_by('-created_at')[:5]
         new_members_thisweek = Member.objects.filter(created_at__week=current_week).count()
         lent_books_thisweek = BorrowRecord.objects.filter(created_at__week=current_week).count()
 
-        # print(new_members_thisweek)
-       
+        books_return_thisweek = BorrowRecord.objects.filter(end_day__week=current_week)
+        number_books_return_thisweek = books_return_thisweek.count()
+        new_closed_records = BorrowRecord.objects.filter(status=1).order_by('-closed_at')[:5]
 
         self.context['data_count']=data_count
         self.context['recent_user_activities']=user_activities
@@ -82,7 +83,9 @@ class HomeView(LoginRequiredMixin,TemplateView):
         self.context['new_members']=new_members
         self.context['new_members_thisweek']=new_members_thisweek
         self.context['lent_books_thisweek']=lent_books_thisweek
- 
+        self.context['books_return_thisweek']=books_return_thisweek
+        self.context['number_books_return_thisweek']=number_books_return_thisweek
+        self.context['new_closed_records']=new_closed_records
  
         return render(request, self.template_name, self.context)
 
@@ -620,7 +623,7 @@ class BorrowRecordCreateView(LoginRequiredMixin,CreateView):
                                     detail =f" '{borrower_name}' borrowed <<{book_name}>>")
         return redirect('record_list')
 
-
+@login_required(login_url='login')
 def auto_member(request):
     if request.is_ajax():
         query = request.GET.get("term", "")
@@ -632,7 +635,7 @@ def auto_member(request):
     mimetype = "application/json"
     return HttpResponse(data, mimetype)
 
-
+@login_required(login_url='login')
 def auto_book(request):
     if request.is_ajax():
         query = request.GET.get("term", "")
@@ -642,7 +645,21 @@ def auto_book(request):
     mimetype = "application/json"
     return HttpResponse(data, mimetype)
 
+class BorrowRecordDetailView(LoginRequiredMixin,DetailView):
+    model = BorrowRecord
+    context_object_name = 'record'
+    template_name = 'borrow_records/detail.html'
+    login_url = 'login'   
 
+    # def get_queryset(self):
+    #     return BorrowRecord.objects.filter(pk=self.kwargs['pk'])
+
+    # Not recommanded
+    def get_context_data(self, **kwargs):
+        context = super(BorrowRecordDetailView, self).get_context_data(**kwargs)
+        related_member = Member.objects.get(name=self.get_object().borrower)
+        context['related_member'] = related_member
+        return context
 
 class BorrowRecordListView(LoginRequiredMixin,ListView):
     model = BorrowRecord
@@ -651,7 +668,7 @@ class BorrowRecordListView(LoginRequiredMixin,ListView):
     context_object_name = 'records'
     count_total = 0
     search_value = ''
-    order_field="-created_at"
+    order_field="-closed_at"
 
     def get_queryset(self):
         search =self.request.GET.get("search")  
@@ -682,7 +699,6 @@ class BorrowRecordListView(LoginRequiredMixin,ListView):
         context['objects'] = self.get_queryset()
         return context
 
-
 class BorrowRecordDeleteView(LoginRequiredMixin,View):
     login_url = 'login'
 
@@ -698,34 +714,48 @@ class BorrowRecordDeleteView(LoginRequiredMixin,View):
                     detail =f"Delete {model_name} {delete_record.borrower}")
         return HttpResponseRedirect(reverse("record_list"))
 
+class BorrowRecordClose(LoginRequiredMixin,View):
+    def get(self, request, *args, **kwargs):
+        close_record = BorrowRecord.objects.get(pk=self.kwargs['pk'])
+        close_record.closed_by = self.request.user.username
+        close_record.status = 1
+        close_record.save()
+        model_name = close_record.__class__.__name__
+        UserActivity.objects.create(created_by=self.request.user.username,
+                    operation_type="info",
+                    target_model=model_name,
+                    detail =f"Close {model_name} '{close_record.borrower}'=>{close_record.book}")
+        return HttpResponseRedirect(reverse("record_list"))
+
 
 # Data center
 
 class DataCenterView(LoginRequiredMixin,TemplateView):
     template_name = 'book/download_data.html'
     login_url = 'login'
-    data = {m.objects.model._meta.db_table:
-            {"source":pd.DataFrame(list(m.objects.all().values())) ,
-             "path":f"{str(settings.BASE_DIR)}/datacenter/{m.__name__}_{TODAY}.csv",
-             "file_name":f"{m.__name__}_{TODAY}.csv"}
-              for m in apps.get_models() if m.__name__ in allowed_models}
-
-    print(data['book_category']['source'])
+    
     def get(self,request,*args, **kwargs):
-        count_total = {k: v['source'].shape[0] for k,v in self.data.items()}
+
+        data = {m.objects.model._meta.db_table:
+        {"source":pd.DataFrame(list(m.objects.all().values())) ,
+          "path":f"{str(settings.BASE_DIR)}/datacenter/{m.__name__}_{TODAY}.csv",
+           "file_name":f"{m.__name__}_{TODAY}.csv"} for m in apps.get_models() if m.__name__ in allowed_models}
+        
+        count_total = {k: v['source'].shape[0] for k,v in data.items()}
         return render(request,self.template_name,context={'model_list':count_total})
 
+@login_required(login_url='login')
 def download_data(request,model_name):
 
-    download =DataCenterView.data
+    download = {m.objects.model._meta.db_table:
+        {"source":pd.DataFrame(list(m.objects.all().values())) ,
+          "path":f"{str(settings.BASE_DIR)}/datacenter/{m.__name__}_{TODAY}.csv",
+           "file_name":f"{m.__name__}_{TODAY}.csv"} for m in apps.get_models() if m.__name__ in allowed_models}
 
     download[model_name]['source'].to_csv(download[model_name]['path'],index=False,encoding='utf-8')
     download_file=pd.read_csv(download[model_name]['path'],encoding='utf-8')
-    print(download_file)
     response = HttpResponse(download_file,content_type="text/csv")
     response = HttpResponse(open(download[model_name]['path'],'r',encoding='utf-8'),content_type="text/csv")
-    # response = HttpResponse(content_type="text/csv")
-    
     response['Content-Disposition'] = f"attachment;filename={download[model_name]['file_name']}"
     return response
 

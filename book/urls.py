@@ -9,7 +9,7 @@ from .views import MemberCreateView,MemberUpdateView,MemberDeleteView,MemberList
 from .views import ProfileDetailView,ProfileCreateView,ProfileUpdateView
 from django.conf import settings
 from django.conf.urls.static import static
-from .views import BorrowRecordListView,BorrowRecordCreateView,BorrowRecordDeleteView,auto_member,auto_book
+from .views import BorrowRecordListView,BorrowRecordCreateView,BorrowRecordDeleteView,BorrowRecordDetailView,auto_member,auto_book,BorrowRecordClose
 from .views import DataCenterView,download_data
 
 # BorrowRecordCreateView
@@ -59,7 +59,9 @@ urlpatterns = [
     path('record-create-autocomplete-member-name/',auto_member,name="auto_member_name"),
     path('record-create-autocomplete-book-name/',auto_book,name="auto_book_name"),
     path('record-list/',BorrowRecordListView.as_view(),name="record_list"),
+    path('record-detail/<int:pk>/',BorrowRecordDetailView.as_view(),name="record_detail"),
     path('record-delete/<int:pk>/',BorrowRecordDeleteView.as_view(),name="record_delete"),
+    path('record-close/<int:pk>/',BorrowRecordClose.as_view(),name="record_close"),
 
 
     # Data center
