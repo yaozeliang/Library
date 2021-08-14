@@ -41,8 +41,10 @@
                                         <a href="{% url 'record_list' %}?search={{search}}&orderby=id">Id</a>  | 
                                         <a href="{% url 'record_list' %}?search={{ search }}&orderby=borrower">Name</a> |  
                                         <a href="{% url 'record_list' %}?search={{ search }}&orderby=book">Book</a> | 
-                                        <a href="{% url 'record_list' %}?search={{ search }}&orderby=start_day">Start day</a> |
-                                        <a href="{% url 'record_list' %}?search={{ search }}&orderby=end_day">Start day</a> |
+                                        <a href="{% url 'record_list' %}?search={{ search }}&orderby=start_day">Start</a> |
+                                        <a href="{% url 'record_list' %}?search={{ search }}&orderby=end_day">End</a>|
+                                        <a href="{% url 'record_list' %}?search={{ search }}&orderby=closed_at">Closed date</a> |
+                                        
                                     </div>
    
                                     <div class="col-auto">
@@ -81,14 +83,14 @@
                                             
                                             {% for record in records %}
                                             <tr>
-                                                <td>{{record.borrower}}</a></td>  
-                                                <td>{{record.borrower_card}}</a></td>  
+                                                <td>{{record.borrower}}</td>  
+                                                <td>{{record.borrower_card}}</td>  
                                                 <td>{{record.borrower_phone_number}}</a></td>   
                                                 <td>{{record.book|truncatewords:2}}</td>
                                                 <td>{{record.quantity}}</td>
                                                 <td>{{record.start_day|date:"Y-m-d"}}</td>
                                                 <td>{{record.end_day|date:"Y-m-d"}}</td>
-                                                <td>{{record.get_status_display}}</td>
+                                                <td>{{record.get_open_or_close_display}}</td>
                                                 {% if record.return_status == "Delayed" %}
                                                 <td class='table-danger'>{{record.return_status}} {{record.get_delay_number_days}} days</td>
                                                 {% else %}

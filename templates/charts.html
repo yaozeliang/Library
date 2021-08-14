@@ -1,0 +1,258 @@
+{% extends "layouts/base.html" %}
+
+{% block title %} Charts Morris {% endblock %} 
+
+<!-- Specific CSS goes HERE -->
+{% block stylesheets %}
+
+    <link rel="stylesheet" href="/static/assets/plugins/chart-morris/css/morris.css">
+
+{% endblock stylesheets %}
+
+{% block content %}
+
+<div class="pcoded-content">
+    <div class="pcoded-inner-content">
+        <!-- [ breadcrumb ] start -->
+        <div class="page-header">
+            <div class="page-block">
+                <div class="row align-items-center">
+                    <!-- <div class="col-md-12">
+                        <div class="page-header-title">
+                            <h5 class="m-b-10">Morris Chart</h5>
+                        </div>
+
+                    </div> -->
+                </div>
+            </div>
+        </div>
+        <div class="main-body">
+            <div class="page-wrapper">
+                <!-- [ Main Content ] start -->
+                <div class="row">
+                    <!-- [ Morris Chart ] start -->
+                    <div class="col-xl-6">
+                        <div class="card">
+                            <div class="card-header">
+                                <h5>Books in stock</h5>
+                            </div>
+                            <div class="card-block" >
+                                <figure class="highcharts-figure">
+                                    <div id="book-count" style="height:400px"></div>
+                                </figure>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-xl-6">
+                        <div class="card">
+                            <div class="card-header">
+                                <h5>Most Popular books</h5>
+                            </div>
+                            <div class="card-block">
+                                <figure class="highcharts-figure">
+                                <div id="top-borrow" style="height:400px"></div>
+                            </figure>
+
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-xl-6">
+                        <div class="card">
+                            <div class="card-header">
+                                <h5>BorrowRecord Status</h5>
+                            </div>
+                            <div class="card-block">
+                                <figure class="highcharts-figure">
+                                <div id="record-status" style="height:400px"></div>
+                                </figure>
+
+                            </div>
+                        </div>
+                    </div>
+
+
+                    <div class="col-xl-6">
+                        <div class="card">
+                            <div class="card-header">
+                                <h5>New Members</h5>
+                            </div>
+                            <div class="card-block">
+                                <figure class="highcharts-figure">
+                                <div id="monthly-member" style="height:400px"></div>
+                                </figure>
+
+                            </div>
+                        </div>
+                    </div>
+      
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+{% endblock content %}
+
+<!-- Specific Page JS goes HERE  -->
+{% block javascripts %}
+<script type="text/javascript" src="https://code.highcharts.com/highcharts.js"> </script> 
+<script type="text/javascript" src="https://code.highcharts.com/modules/exporting.js"> </script> 
+<script type="text/javascript" src="https://code.highcharts.com/modules/export-data.js"></script> 
+<script type="text/javascript" src="https://code.highcharts.com/modules/accessibility.js"></script> 
+<script type="text/javascript" src="https://code.highcharts.com/modules/cylinder.js"></script>
+<script type="text/javascript" src="https://code.highcharts.com/highcharts-3d.js"></script>
+<script type="text/javascript">
+  var chart_top_stock_book = new Highcharts.Chart({
+    chart: {
+      renderTo: 'book-count',
+      type: 'column',
+      options3d: {
+        enabled: true,
+        alpha: 5,
+        beta: 15,
+        depth: 50,
+      }
+    },
+    title: {
+          text: 'Top 5 in Stock'
+      },
+      xAxis: {
+          categories: {{top_5_book_titles|safe}}
+      },
+      yAxis: {title: {text: 'Stock'}},
+      series: [{
+          type: 'column',
+          name: 'Quantity',
+          data: {{top_5_book__quantities}},
+      }]
+  });
+
+  new Highcharts.Chart({
+    chart: {
+      renderTo: 'top-borrow',
+      type: 'column',
+    },
+    title: {
+          text: 'Most borrowed books'
+      },
+      xAxis: {
+          categories: {{top_borrow_titles|safe}},
+   
+      },
+      yAxis: {title: {text: 'Counts'}},
+      series: [{
+          type: 'column',
+          name: 'Count',
+          data: {{top_borrow_times}},
+          color:"#47CC8A",
+      }]
+  });
+
+
+  new Highcharts.Chart({
+    chart: {
+        type: 'pie',
+        renderTo: 'record-status',
+    },
+
+    tooltip: {
+        pointFormat: '{series.name}: <b>{point.percentage:.1f}%</b>'
+    },
+
+    title: {
+          text: 'Open / Closed '
+      },
+   accessibility: {
+        point: {
+            valueSuffix: '%'
+        }
+    },
+    plotOptions: {
+        pie: {
+            allowPointSelect: true,
+            cursor: 'pointer',
+            dataLabels: {
+                enabled: true,
+                format: '<b>{point.name}</b>: {point.y:.0f}'  }    
+        }
+    },
+    series: [{
+        name: 'Record',
+        colorByPoint: true,
+        data: [{
+            name: 'Open',
+            y: {{r_open |safe}},
+            color:"#F28B5B",
+        }, 
+            
+            { name: 'Closed',
+              y: {{r_close |safe}},
+              color:"#A169E7",
+            }
+        ]
+    }]
+});
+
+
+new Highcharts.chart('monthly-member', {
+
+title: {
+    text: 'New joined member / month'
+},
+
+subtitle: {
+    text: 'Count total by month'
+},
+
+yAxis: {
+    title: {
+        text: 'Total count'
+    }
+},
+
+xAxis: {
+    categories: {{months_member|safe}}
+},
+
+legend: {
+    layout: 'vertical',
+    align: 'right',
+    verticalAlign: 'middle'
+},
+
+plotOptions: {
+    series: {
+        label: {
+            connectorAllowed: false
+        },
+    }
+},
+
+series: [{
+    name: 'Member',
+    data: {{count_monthly_member|safe}}
+}],
+
+responsive: {
+    rules: [{
+        condition: {
+            maxWidth: 500
+        },
+        chartOptions: {
+            legend: {
+                layout: 'horizontal',
+                align: 'center',
+                verticalAlign: 'bottom'
+            }
+        }
+    }]
+}
+
+});
+
+</script>
+
+{% endblock javascripts %}

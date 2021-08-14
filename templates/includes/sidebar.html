@@ -3,7 +3,7 @@
         <div class="navbar-wrapper">
             <div class="navbar-brand header-logo">
                 <a target="_blank" 
-                   href="https://appseed.us/admin-dashboards/django-dashboard-dattaable" class="b-brand">
+                   href="" class="b-brand">
                     <div class="b-bg">
                         <i class="feather icon-trending-up"></i>
                     </div>
@@ -16,11 +16,14 @@
                     <li class="nav-item pcoded-menu-caption">
                         <label>Menu</label>
                     </li>
-                    <li data-username="dashboard Default Ecommerce CRM Analytics Crypto Project" 
+                    <li 
                         class="nav-item {% if 'index' in segment %} active {% endif %}">
                         <a href="/" class="nav-link "><span class="pcoded-micon"><i class="feather icon-home"></i></span><span class="pcoded-mtext">Dashboard</span></a>
                     </li>
-
+                    <li 
+                        class="nav-item {% if request.resolver_match.url_name == 'chart' %} active {% endif %}">
+                        <a href="{% url 'chart' %}" class="nav-link "><span class="pcoded-micon"><i class="feather icon-home"></i></span><span class="pcoded-mtext">Charts</span></a>
+                    </li>
                     
                     <!-- Borrow List -->
                     <li class="nav-item pcoded-menu-caption">
@@ -31,7 +34,7 @@
                     </li>
 
                     <li   class="nav-item {% if request.resolver_match.url_name == 'record_create' %} active {% endif %}">
-                    <a href="{% url 'record_create' %}" class="nav-link "><span class="pcoded-micon"><i class="feather icon-file-text"></i></span><span class="pcoded-mtext">Add Record</span></a>
+                    <a href="{% url 'record_create' %}" class="nav-link "><span class="pcoded-micon"><i class="feather icon-file-text"></i></span><span class="pcoded-mtext">Lend Book</span></a>
                 </li>
 
                     <!-- Manage Books -->
@@ -42,13 +45,6 @@
                     <li class="nav-item pcoded-hasmenu {% if request.resolver_match.url_name == 'book_list' or request.resolver_match.url_name == 'book_create' or request.resolver_match.url_name == 'book_update' or request.resolver_match.url_name == 'book_delete' or request.resolver_match.url_name == 'book_detail' %} active pcoded-trigger {% endif %}">
                         <a href="javascript:" class="nav-link "><span class="pcoded-micon"><i class="feather icon-box"></i></span><span class="pcoded-mtext">Books</span></a>
                         <ul class="pcoded-submenu">
-                            <li class=""><a href="/ui-button.html" class="">Button</a></li>
-                            <li class=""><a href="/ui-badges.html" class="">Badges</a></li>
-                            <li class=""><a href="/ui-breadcrumb-pagination.html" class="">Breadcrumb & paggination</a></li>
-                            <li class=""><a href="/ui-collapse.html" class="">Collapse</a></li>
-                            <li class=""><a href="/ui-tabs.html" class="">Tabs & pills</a></li>
-                            <li class=""><a href="/ui-typography.html" class="">Typography</a></li>
-                            <li class=""><a href="/ui-icons.html" class="">Feather<span class="pcoded-badge label label-danger">NEW</span></a></li>
                             <li class=""><a href="{% url 'book_list' %}" class="">All books</a></li>
                             <li class=""><a href="{% url 'book_create' %}" class="">Add book</a></li>
                         </ul>

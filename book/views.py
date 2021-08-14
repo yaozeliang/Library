@@ -2,6 +2,8 @@ import os
 import pandas as pd
 import json
 
+from django.db.models.functions import ExtractMonth,ExtractWeek,TruncMonth,TruncWeek
+
 from django.shortcuts import render,get_object_or_404,redirect
 from django.urls import  reverse_lazy,reverse
 from django.contrib.auth import get_user_model
@@ -18,7 +20,7 @@ from django.conf import settings
 from django.core.paginator import EmptyPage, PageNotAnInteger
 from django.core import serializers
 
-
+from django.db.models import Sum, Count
 from django.contrib.auth.models import User
 from django.contrib.auth.decorators import login_required
 from django.core.exceptions import PermissionDenied 
@@ -74,7 +76,7 @@ class HomeView(LoginRequiredMixin,TemplateView):
 
         books_return_thisweek = BorrowRecord.objects.filter(end_day__week=current_week)
         number_books_return_thisweek = books_return_thisweek.count()
-        new_closed_records = BorrowRecord.objects.filter(status=1).order_by('-closed_at')[:5]
+        new_closed_records = BorrowRecord.objects.filter(open_or_close=1).order_by('-closed_at')[:5]
 
         self.context['data_count']=data_count
         self.context['recent_user_activities']=user_activities
@@ -89,6 +91,66 @@ class HomeView(LoginRequiredMixin,TemplateView):
  
         return render(request, self.template_name, self.context)
 
+@login_required(login_url='login')
+def global_serach(request):
+    search_value = request.POST.get('global_search')
+    if search_value =='':
+        return HttpResponseRedirect("/")
+
+    r_category = Category.objects.filter(Q(name__icontains=search_value))
+    r_publisher = Publisher.objects.filter(Q(name__icontains=search_value)|Q(contact__icontains=search_value))
+    r_book = Book.objects.filter(Q(author__icontains=search_value)|Q(title__icontains=search_value))
+    r_member = Member.objects.filter(Q(name__icontains=search_value)|Q(card_number__icontains=search_value)|Q(phone_number__icontains=search_value))
+    r_borrow = BorrowRecord.objects.filter(Q(borrower__icontains=search_value)|Q(borrower_card__icontains=search_value)|Q(book__icontains=search_value))
+
+   
+    context={
+        'categories':r_category,
+        'publishers':r_publisher,
+        'books':r_book,
+        'members':r_member,
+        'records':r_borrow,
+    }
+
+    return render(request, 'book/global_search.html',context=context)
+
+
+# Chart
+class ChartView(LoginRequiredMixin,TemplateView):
+    template_name = "charts.html"
+    login_url = 'login'
+    context={}
+
+    def get(self,request, *args, **kwargs):
+
+        top_5_book= Book.objects.order_by('-quantity')[:5].values_list('title','quantity')
+        top_5_book_titles = [b[0] for b in top_5_book ]
+        top_5_book__quantities = [b[1] for b in top_5_book ]
+        # print(top_5_book_titles,top_5_book__quantities)
+
+        top_borrow = Book.objects.order_by('-total_borrow_times')[:5].values_list('title','total_borrow_times')
+        top_borrow_titles = [b[0] for b in top_borrow ]
+        top_borrow_times = [b[1] for b in top_borrow ]
+
+        r_open = BorrowRecord.objects.filter(open_or_close=0).count()
+        r_close = BorrowRecord.objects.filter(open_or_close=1).count()
+        
+        m = Member.objects.annotate(month=TruncMonth('created_at')).values('month').annotate(c=Count('id'))
+        months_member = [e['month'].strftime("%m/%Y") for e  in m]
+        count_monthly_member= [e['c'] for e in m] 
+
+       
+        self.context['top_5_book_titles']=top_5_book_titles
+        self.context['top_5_book__quantities']=top_5_book__quantities
+        self.context['top_borrow_titles']=top_borrow_titles
+        self.context['top_borrow_times']=top_borrow_times
+        self.context['r_open']=r_open
+        self.context['r_close']=r_close
+        self.context['months_member']=months_member
+        self.context['count_monthly_member']=count_monthly_member
+       
+
+        return render(request, self.template_name, self.context)
 
 # Book
 
@@ -542,10 +604,13 @@ class MemberDetailView(LoginRequiredMixin,DetailView):
     template_name = 'book/member_detail.html'
     login_url = 'login'
 
-    # def get_context_data(self, **kwargs):
-    #     context = super().get_context_data(**kwargs)
-    #     context["card_number"] = str(self.get_object().card_id)[:8]
-    #     return context
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        current_member_name = self.get_object().name
+        related_records = BorrowRecord.objects.filter(borrower=current_member_name)
+        context['related_records'] = related_records
+        context["card_number"] = str(self.get_object().card_id)[:8]
+        return context
 
 
 # Profile View
@@ -594,12 +659,11 @@ class BorrowRecordCreateView(LoginRequiredMixin,CreateView):
 
     def form_valid(self, form):
         selected_member= get_object_or_404(Member,name = form.cleaned_data['borrower'] )
-
         form.instance.borrower_card = selected_member.card_number
         form.instance.borrower_email = selected_member.email
         form.instance.borrower_phone_number = selected_member.phone_number
         form.instance.created_by = self.request.user.username
-        # form.save()
+        form.save()
         return super(BorrowRecordCreateView,self).form_valid(form)
 
  
@@ -718,7 +782,7 @@ class BorrowRecordClose(LoginRequiredMixin,View):
     def get(self, request, *args, **kwargs):
         close_record = BorrowRecord.objects.get(pk=self.kwargs['pk'])
         close_record.closed_by = self.request.user.username
-        close_record.status = 1
+        close_record.open_or_close = 1
         close_record.save()
         model_name = close_record.__class__.__name__
         UserActivity.objects.create(created_by=self.request.user.username,

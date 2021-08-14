@@ -3,12 +3,15 @@
 {% load book_extras %}
 <nav class="navbar navbar-light  justify-content-between">
   <div class="col-6">
-    <form class="form-inline">
+    <form  method="post"  action="{% url 'global_search'  %}" class="form-inline" >
+      {% csrf_token %}
       <input
         class="form-control mr-sm-2"
         type="search"
         placeholder="Search"
         aria-label="Search"
+        id="global_search"
+        name='global_search'
       />
       <button class="btn btn-info my-2 my-sm-0" type="submit">Search</button>
     </form>

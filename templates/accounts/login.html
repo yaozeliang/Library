@@ -20,11 +20,15 @@
                     <h3 class="mb-4">Login</h3>
 
                     <span class="mb-0 text-muted">
+
+                        
                         {% if msg %}
-                            {{ msg | safe }}
+                        {{ msg | safe }}
                         {% else %}
-                            Add your credentials
+                            Enter Username and Password
                         {% endif %} 
+                   
+
                     </span>
 
                     <br />
@@ -55,7 +59,7 @@
                     <p class="mb-0 text-muted">Don’t have an account? <a href="{% url 'register' %}" >Sign UP</a></p>
                     <br />
                     <p class="mb-2 text-muted">
-                        &copy; <a target="_blank" href="https://bit.ly/37fF9RT">Zeliang</a> 
+                        &copy; <a target="_blank" href="">Zeliang</a> 
                         - <a target="_blank" href="">2021</a>.
                     </p>
                 </div>

@@ -41,11 +41,6 @@ BORROW_RECORD_STATUS=(
     (1,'Closed')
 )
 
-# RETURN_STATUS=(
-#     (True,'On Time'),
-#     (False,'Delayed')
-# )
-
 class Category(models.Model):
     
     name = models.CharField(max_length=50, blank=True)
@@ -181,21 +176,18 @@ class Profile(models.Model):
 
 class BorrowRecord(models.Model):
 
-
     borrower = models.CharField(blank=False,max_length=20)
     borrower_card = models.CharField(max_length=8,blank=True)
     borrower_email = models.EmailField(max_length=50,blank=True)
     borrower_phone_number  = models.CharField(max_length=30,blank=True)
-    
     book = models.CharField(blank=False,max_length=20)
-
     quantity = models.PositiveIntegerField(default=1)
 
     start_day = models.DateTimeField(default=timezone.now)
     end_day = models.DateTimeField(default=timezone.now()+timedelta(days=7))
     periode = models.PositiveIntegerField(default=0)
 
-    status = models.IntegerField(choices=BORROW_RECORD_STATUS,default=0)
+    open_or_close = models.IntegerField(choices=BORROW_RECORD_STATUS,default=0)
     delay_days = models.IntegerField(default=0)
 
     created_at= models.DateTimeField(default=timezone.now)
@@ -226,7 +218,7 @@ class BorrowRecord(models.Model):
     
     def save(self, *args, **kwargs):
         # profile = super(Profile, self).save(*args, **kwargs)
-        self.periode =(self.end_day - self.start_day).days
+        self.periode =(self.end_day - self.start_day).days+1
         return super(BorrowRecord, self).save(*args, **kwargs)
 
 

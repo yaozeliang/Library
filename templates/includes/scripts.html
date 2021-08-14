@@ -1,7 +1,13 @@
 
     <!-- Required Js -->
+    {% load static %}
 
-    <script src="/static/assets/js/vendor-all.min.js"></script>
-    <script src="/static/assets/plugins/bootstrap/js/bootstrap.min.js"></script>
-    <script src="/static/assets/js/pcoded.min.js"></script>
+    <script src="{% static 'assets/js/vendor-all.min.js' %}"></script>
+    <script src="{% static 'assets/js/pcoded.min.js' %}"></script>
+    <script src="{% static 'assets/plugins/bootstrap/js/bootstrap.min.js' %}"></script>
+    <script src="{% static 'assets/plugins/bootstrap/js/popover.js' %}"></script>
 
+
+    <!-- <script src="https://code.jquery.com/jquery-1.12.4.js"></script>
+    <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-datetimepicker/2.5.20/jquery.datetimepicker.full.min.js" integrity="sha256-FEqEelWI3WouFOo2VWP/uJfs1y8KJ++FLh2Lbqc8SJk=" crossorigin="anonymous"></script>  -->

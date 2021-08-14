@@ -1,0 +1,252 @@
+{% extends "layouts/base.html" %}
+{% load book_extras %}
+{% block title %} Management {% endblock %}
+
+{% block stylesheets %}{% endblock stylesheets %}
+
+{% block content %}
+
+<div class="pcoded-content">
+    <div class="pcoded-inner-content">
+        <div class="page-header">
+            <div class="page-block">
+                <!-- Title -->
+                <div class="row align-items-center">
+                    <div class="col-md-12">
+                        <div class="page-header-title">
+                            <h5 class="m-b-10">Search Result</h5>
+
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+        <br>
+        <div class="main-body">
+            <div class="page-wrapper">
+                <div class="row">
+                    {% if categories %}
+                    <div class="col-xl-6">
+                        <div class="card">
+                            <div class="card-header">
+                                <h5>Category</h5>
+                            </div>
+
+                            <div class="card-block ">
+                                <div class="table-responsive table-hover">
+                                    <table class="table">
+                                        <thead>
+                                            <tr>
+                                                <th>id</th>
+                                                <th>Name</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            {% for category in categories %}
+                                            <tr>
+                                                <th scope="row">{{category.id}}</th>
+                                                <td>{{category.name}}</td>
+                                            </tr>
+                                            {% endfor %}
+
+                                        </tbody>
+                                    </table>
+                                </div>
+
+                            </div>
+                        </div>
+
+                    </div>
+                    {% endif %}
+
+                    {% if publishers %}
+                    <div class="col-xl-6">
+                        <div class="card">
+                            <div class="card-header">
+                                <h5>Publisher</h5>
+                            </div>
+
+                            <div class="card-block ">
+                                <div class="table-responsive table-hover">
+                                    <table class="table">
+                                        <thead>
+                                            <tr>
+                                                <th>Name</th>
+                                                <th>City</th>
+                                                <th>Contact</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            {% for publisher in publishers %}
+                                            <tr>
+                                                <td>{{publisher.name}}</td>
+                                                <td>{{publisher.city}}</td>
+                                                <td>{{publisher.contact}}</td>
+                                            </tr>
+                                            {% endfor %}
+
+                                        </tbody>
+                                    </table>
+                                </div>
+
+                            </div>
+                        </div>
+
+                    </div>
+                    {% endif %}
+
+                    {% if books %}
+                    <div class="col-xl-12">
+                        <div class="card">
+                            <div class="card-header">
+                                <h5>Book</h5>
+                            </div>
+
+                            <div class="card-block ">
+                                <div class="table-responsive table-hover">
+                                    <table class="table">
+                                        <thead>
+                                            <tr>
+                                                <th>Title</th>
+                                                <th>Author</th>
+                                                <th>Category</th>
+                                                <th>Status</th>
+                                                <th>Quantity</th>
+                                                <th>Location</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            {% for book in books %}
+                                            <tr>
+                                                <td><a href="{% url 'book_detail' book.id%}" class="badge badge-secondary">{{book.title}}</a></td>
+                                                <td>{{book.author}}</td>
+                                                <td>{{book.category}}</td>
+                                                <td>{{book.get_status_display}}</td>
+                                                <td>{{book.quantity}}</td>
+                                                <td>{{book.floor_number}}{{book.bookshelf_number}}</td>
+                                            </tr>
+                                            {% endfor %}
+
+                                        </tbody>
+                                    </table>
+                                </div>
+
+                            </div>
+                        </div>
+
+                    </div>
+                    {% endif %}
+
+                    {% if members %}
+                    <div class="col-xl-12">
+                        <div class="card">
+                            <div class="card-header">
+                                <h5>Member</h5>
+                            </div>
+
+                            <div class="card-block ">
+                                <div class="table-responsive table-hover">
+                                    <table class="table">
+                                        <thead>
+                                            <tr>
+                                                <th>Name</th>
+                                                <th>Sex</th>
+                                                <th>Phone</th>
+                                                <th>Card</th>
+                                                <th>City</th>
+                                                <th>Email</th>
+                                                <th>Created At</th>
+                                                <th>Expired At</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            {% for member in members %}
+                                            <tr>
+                                                <td><a href="{% url 'member_detail' member.pk %}" class='badge badge-secondary '><i class="feather icon-user"></i>&nbsp;{{member.name}}</a></td>                                                                
+                                                <td>{{member.gender|upper}}</td>
+                                                <td>{{member.phone_number}}</td>
+                                                <td>{{member.card_number}}</td>
+                                                <td>{{member.city}}</td>
+                                                <td>{{member.email}}</td>
+                                                <td>{{ member.created_at|date:"Y-m-d" }} by {{member.created_by}} </td>
+                                                <td>{{ member.expired_at|date:"Y-m-d" }} </td>
+                                            </tr>
+                                            {% endfor %}
+
+                                        </tbody>
+                                    </table>
+                                </div>
+
+                            </div>
+                        </div>
+
+                    </div>
+                    {% endif %}
+
+                    {% if records %}
+                    <div class="col-xl-12">
+                        <div class="card">
+                            <div class="card-header">
+                                <h5>Borrow Records</h5>
+                            </div>
+
+                            <div class="card-block ">
+                                <div class="table-responsive table-hover">
+                                    <table class="table">
+                                        <thead>
+                                            <tr>
+                                                <th>Name</th>
+                                                <th>Card</th>
+                                                <th>Phone</th>
+                                                <th>Book</th>
+                                                <th>Num</th>
+                                                <th>Borrow date</th>
+                                                <th>Return date</th>
+                                                <th>Status</th>
+                                                <th>Delayed </th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            {% for record in records %}
+                                            <tr>
+                                                <td><a href="{% url 'record_detail' record.pk %}" class="badge badge-secondary">{{record.borrower}}</a> </td>  
+                                                <td>{{record.borrower_card}}</td>  
+                                                <td>{{record.borrower_phone_number}}</td>   
+                                                <td>{{record.book|truncatewords:2}}</td>
+                                                <td>{{record.quantity}}</td>
+                                                <td>{{record.start_day|date:"Y-m-d"}}</td>
+                                                <td>{{record.end_day|date:"Y-m-d"}}</td>
+                                                <td>{{record.get_open_or_close_display}}</td>
+                                                {% if record.return_status == "Delayed" %}
+                                                <td class='table-danger'>{{record.return_status}} {{record.get_delay_number_days}} days</td>
+                                                {% else %}
+                                                <td class='table-success'>{{record.return_status}}</td>
+                                                {% endif %}
+                                            </tr>
+                                            {% endfor %}
+
+                                        </tbody>
+                                    </table>
+                                </div>
+
+                            </div>
+                        </div>
+
+                    </div>
+                    {% endif %}
+
+
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock content %}
+
+<!-- Specific Page JS goes HERE  -->
+{% block javascripts %}{% endblock javascripts %}

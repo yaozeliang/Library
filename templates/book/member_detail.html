@@ -44,6 +44,8 @@
                                                 <!-- <li><a class="nav-link text-left" id="contact-tab" data-toggle="pill" href="#contact" role="tab" aria-controls="contact" aria-selected="false">Contact</a></li> -->
                                                 <li><a class="nav-link text-left" id="card-tab" data-toggle="pill" href="#card" role="tab" aria-controls="card" aria-selected="false">Card</a></li>
                                                 <li><a class="nav-link text-left" id="audit-trail-tab" data-toggle="pill" href="#audit-trail" role="tab" aria-controls="audit-trail" aria-selected="false">Audit Trail</a></li>
+                                                <li><a class="nav-link text-left" id="audit-trail-tab" data-toggle="pill" href="#borrow-record" role="tab" aria-controls="borrow-record" aria-selected="false">Borrow History</a></li>
+
                                             </ul>
                                         </div>
                                         <div class="col-md-9 col-sm-12">
@@ -79,7 +81,42 @@
                                                     <br>
                                                     <p>Updated at : {{member.updated_at | date:"Y-m-d H:i"}}</p>
                                                     <p>Updated by : {{member.updated_by}} </p>
+                                                </div>
 
+                                                <div class="tab-pane fade" id="borrow-record" role="tabpanel" aria-labelledby="audit-trail-tab">
+                                                    {% if related_records %}
+                                                    <table class="table table-sm">
+                                                       <thead>
+                                                         <tr>
+                                                           <th scope="col">Borrower</th>
+                                                           <th scope="col">Card</th>
+                                                           <th scope="col">Book Name</th>
+                                                           <th scope="col">Start - End</th>
+                                                           <th scope="col">Status</th>
+                                                           <th scope="col">Return at</th>
+                                                           <th scope="col">#</th>
+                                                         </tr>
+                                                       </thead>
+                                                       <tbody>
+                                                        
+                                                        {% for record in related_records %}
+                                                         <tr>
+                                                           <td>{{record.borrower}} </td>
+                                                           <td>{{record.borrower_card}}</td>
+                                                           <td>{{record.book}}</td>
+                                                           <td>{{record.start_day | date:"Y/m/d"}} - {{record.end_day | date:"Y/m/d"}}</td>
+                                                           <td>{{record.get_open_or_close_display}}</td>
+                                                           <td>{{record.closed_at | date:"Y/m/d"}}</td>
+                                                           <td>{{record.return_status}}</td>
+                                                         </tr>
+                                      
+                                                       {% endfor %}
+                                                       {% else %}
+                                                       <h4 class="text-center">No Records</h4>
+                                                       {% endif  %}
+                                                       </tbody>
+                                                     </table>
+                                             
                                                 </div>
                                             </div>
                                         </div>

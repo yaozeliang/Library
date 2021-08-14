@@ -90,12 +90,17 @@
 
                                                 <tr>
                                                     <td>Record Status </td>
-                                                    <td>{{record.get_status_display}}</td>                                                
+                                                    <td>{{record.get_open_or_close_display}}</td>                                                
                                                 </tr>
 
                                                 <tr>
                                                     <td>Closed By</td>
                                                     <td>{{record.closed_by}}</td>                                                
+                                                </tr>
+
+                                                <tr>
+                                                    <td>Closed at</td>
+                                                    <td>{{record.closed_at| date:"Y-m-d H:i"}}</td>                                                
                                                 </tr>
                                                 
                                       
@@ -106,7 +111,10 @@
                                 </div>
 
                                 <a href="{% url 'record_list' %}" class='btn btn-primary'>Return list</a>
+
+                                {% if record.get_open_or_close_display == "Open"  %}
                                 <a href="{% url 'record_close' record.pk %}" class='btn btn-danger'>Close Record (Book returned)</a>
+                                {% endif %}
                             </div>
                         </div>
                     </div>

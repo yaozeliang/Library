@@ -9,15 +9,12 @@
 
     <div class="pcoded-content">
         <div class="pcoded-inner-content">
-            <!-- [ breadcrumb ] start -->
 
-            <!-- [ breadcrumb ] end -->
             <div class="main-body">
                 <br>                
                 <div class="page-wrapper">
-
                     <div class="row">
-                        <!--  Count Data  -->
+                        <!--  Count Books  -->
                         <div class='col-md-3'>
                             <div class="card">
                                 <div class="card-block">
@@ -35,7 +32,7 @@
                             </div>
 
                         </div>
-
+                        <!-- Count Members -->
                         <div class='col-md-3'>
                             <div class="card">
                                 <div class="card-block">
@@ -51,7 +48,7 @@
                                 </div>
                             </div>
                         </div>
-
+                        <!-- Count Categories -->
                         <div class='col-md-3'>
                         <div class="card">
                             <div class="card-block">
@@ -67,7 +64,7 @@
                             </div>
                         </div>
                         </div>
-
+                        <!-- Count Publishers -->
                         <div class='col-md-3'>                    
                             <div class="card">
                                 <div class="card-block">
@@ -84,11 +81,8 @@
                             </div>
                         </div>
 
-
-
-
-
                         <div class="col-xl-8 col-md-6">
+                            <!-- Recent Closed Records -->
                             <div class="card Recent-Users">
                                 <div class="card-header">
                                     <h5>Recent Closed Records</h5>
@@ -125,11 +119,10 @@
                                 </div>
                             </div>
                         </div>
-                        <!--[ Recent Users ] end-->
 
-                        <!-- [ statistics year chart ] start -->
                         <div class="col-xl-4 col-md-6">
                             <div class="card card-event">
+                                <!-- Coming Event -->
                                 <div class="card-block">
                                     <div class="row align-items-center justify-content-center">
                                         <div class="col">
@@ -144,6 +137,7 @@
                                     <i class="fab fa-angellist text-c-purple f-50"></i>
                                 </div>
                             </div>
+                            <!-- New members registed this week -->
                             <div class="card">
                                 <div class="card-block border-bottom">
                                     <div class="row d-flex align-items-center">
@@ -156,6 +150,7 @@
                                         </div>
                                     </div>
                                 </div>
+                                <!-- Books lent this week -->
                                 <div class="card-block">
                                     <div class="row d-flex align-items-center">
                                         <div class="col-auto">
@@ -169,11 +164,7 @@
                                 </div>
                             </div>
                         </div>
-                        <!-- [ statistics year chart ] end -->
-          
-  
-                        <!--[social-media section] end-->
-                        <!-- [ rating list ] starts-->
+ 
                         <!-- <div class="col-xl-4 col-md-6">
                             <div class="card user-list">
                                 <div class="card-header">
@@ -215,7 +206,6 @@
                                 </div>
                             </div>
                         </div> -->
-                        <!-- [ rating list ] end-->
                         <div class="col-xl-12 col-md-12 m-b-30">
                         <div class="card">
                             <div class="card-header">
@@ -248,7 +238,6 @@
                                                     <th>Card N </th>
                                                     <th>Joined at</th>
                                                     <th>Created by</th>
-                                                    
                                                     <th class="text-right"></th>
                                                 </tr>
                                             </thead>
@@ -355,62 +344,57 @@
                                         </table>
                                     </div>
 
-                                                                       <!-- Retrun books this week -->
-                                                                       <div class="tab-pane fade active show" id="return" role="tabpanel" aria-labelledby="contact-tab">
-                                                                        <table class="table table-hover">
-                                                                            <thead>
-                                                                                <tr>
-                                                                                    <th>Borrower</th>
-                                                                                    <th>Card</th>
-                                                                                    <th>Phone</th>
-                                                                                    <th>Book </th>
-                                                                                    <th>Start date </th>
-                                                                                    <th>Return date</th>
-                                                                                    <th>Delayed </th>
-                                                                                    <th class="">#</th>
-                                                                                </tr>
-                                                                            </thead>
-                                                                            <tbody>
-                                                                                {% for r in books_return_thisweek %}
-                                                                                    <tr>   
-                                                                                        <td><a href="{% url 'record_detail' r.pk %}">{{ r.borrower}}</a></td>
-                                                                                        <td>{{r.borrower_card}}</td>
-                                                                                        <td>{{r.borrower_phone_number}} </td>
-                                                                                        <td>{{r.book |truncatewords:2}}</td>
-                                                                                        <td>{{r.start_day|date:"Y-m-d" }} </td>
-                                                                                        <td>{{r.end_day|date:"Y-m-d" }} </td>
-                                                                                        {% if r.return_status == "Delayed" %}
-                                                                                        <td class='table-danger'>{{r.return_status}} {{r.get_delay_number_days}} days</td>
+                                    <!-- Retrun books this week -->
+                                    <div class="tab-pane fade active show" id="return" role="tabpanel" aria-labelledby="contact-tab">
+                                    <table class="table table-hover">
+                                        <thead>
+                                            <tr>
+                                                <th>Borrower</th>
+                                                <th>Card</th>
+                                                <th>Phone</th>
+                                                <th>Book </th>
+                                                <th>Start date </th>
+                                                <th>Return date</th>
+                                                <th>Delayed </th>
+                                                <th class="">#</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            {% for r in books_return_thisweek %}
+                                                <tr>   
+                                                    <td><a href="{% url 'record_detail' r.pk %}">{{ r.borrower}}</a></td>
+                                                    <td>{{r.borrower_card}}</td>
+                                                    <td>{{r.borrower_phone_number}} </td>
+                                                    <td>{{r.book |truncatewords:2}}</td>
+                                                    <td>{{r.start_day|date:"Y-m-d" }} </td>
+                                                    <td>{{r.end_day|date:"Y-m-d" }} </td>
+                                                    {% if r.return_status == "Delayed" %}
+                                                    <td class='table-danger'>{{r.return_status}} {{r.get_delay_number_days}} days</td>
 
-                                                                                        {% else %}
-                                                                                        <td class= 'table-success'>{{r.return_status}}</td>
+                                                    {% else %}
+                                                    <td class= 'table-success'>{{r.return_status}}</td>
 
-                                                                                        {% endif %}
+                                                    {% endif %}
 
-                                                                                        {% if r.status == 0 %}
-                                                                                        <td><a href="{% url 'record_detail' r.pk %}" class="badge badge-danger badge-bg"><i class="fa fa-times"></i>&nbsp;Close</a></td>
-                                                                                        {% else %}
-                                                                                        <td>Closed</td>
+                                                    {% if r.open_or_close == 0 %}
+                                                    <td><a href="{% url 'record_detail' r.pk %}" class="badge badge-danger badge-bg"><i class="fa fa-times"></i>&nbsp;Close</a></td>
+                                                    {% else %}
+                                                    <td>Closed</td>
 
-                                                                                        {% endif %}
-                                                                                        
-                                                                                    </tr>
-                                    
-                                                                                {% endfor %}
-                                    
-                                       
-                                                                            </tbody>
-                                                                        </table>
-                                                                    </div>
+                                                    {% endif %}
+                                                    
+                                                </tr>
+
+                                            {% endfor %}
+
+    
+                                        </tbody>
+                                    </table>
+                                    </div>
                                 </div>
                             </div>
-                        
-
-
                         </div>
                         </div>
-
- 
                 </div>
             </div>
         </div>
@@ -418,5 +402,4 @@
 
 {% endblock content %}
 
-<!-- Specific Page JS goes HERE  -->
 {% block javascripts %}{% endblock javascripts %}

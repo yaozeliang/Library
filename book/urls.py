@@ -11,9 +11,7 @@ from django.conf import settings
 from django.conf.urls.static import static
 from .views import BorrowRecordListView,BorrowRecordCreateView,BorrowRecordDeleteView,BorrowRecordDetailView,auto_member,auto_book,BorrowRecordClose
 from .views import DataCenterView,download_data
-
-# BorrowRecordCreateView
-
+from .views import ChartView,global_serach
 
 urlpatterns = [
 
@@ -63,10 +61,15 @@ urlpatterns = [
     path('record-delete/<int:pk>/',BorrowRecordDeleteView.as_view(),name="record_delete"),
     path('record-close/<int:pk>/',BorrowRecordClose.as_view(),name="record_close"),
 
-
     # Data center
     path('data-center/',DataCenterView.as_view(),name="data_center"),
     path('data-download/<str:model_name>/',download_data,name="data_download"),
+
+    # Chart
+    path('charts/',ChartView.as_view(),name="chart"),
+
+    # Global Search
+    path('global-search/',global_serach,name="global_search"),
 
 ]
 
