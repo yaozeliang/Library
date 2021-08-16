@@ -44,7 +44,7 @@ BORROW_RECORD_STATUS=(
 class Category(models.Model):
     
     name = models.CharField(max_length=50, blank=True)
-    created = models.DateTimeField(default=timezone.now)
+    created_at = models.DateTimeField(default=timezone.now)
 
     def __str__(self):
         return self.name
@@ -71,7 +71,7 @@ class Book(models.Model):
     author = models.CharField("Author",max_length=20)
     title = models.CharField('Title',max_length=100)
     description = models.TextField()
-    created = models.DateTimeField('Created Time',default=timezone.now)
+    created_at = models.DateTimeField('Created Time',default=timezone.now)
     updated_at = models.DateTimeField(auto_now=True)
     total_borrow_times = models.PositiveIntegerField(default=0)
     quantity = models.PositiveIntegerField(default=10)
@@ -189,6 +189,7 @@ class BorrowRecord(models.Model):
 
     open_or_close = models.IntegerField(choices=BORROW_RECORD_STATUS,default=0)
     delay_days = models.IntegerField(default=0)
+    final_status = models.CharField(max_length=10,default="Unknown")
 
     created_at= models.DateTimeField(default=timezone.now)
     created_by = models.CharField(max_length=20,blank=True)
@@ -197,14 +198,19 @@ class BorrowRecord(models.Model):
 
     @property
     def return_status(self):
-        if self.end_day.replace(tzinfo=None) > datetime.now()-timedelta(hours=24):
+        if self.final_status!="Unknown":
+            return self.final_status
+        elif self.end_day.replace(tzinfo=None) > datetime.now()-timedelta(hours=24):
             return 'On time'
         else:
             return 'Delayed'
 
     @property
     def get_delay_number_days(self):
-        if self.return_status=='Delayed':
+        
+        if self.delay_days!=0:
+            return self.delay_days
+        elif self.return_status=='Delayed':
             return (datetime.now()-self.end_day.replace(tzinfo=None)).days
         else:
             return 0

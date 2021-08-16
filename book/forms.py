@@ -2,7 +2,6 @@ from django import forms
 from .models import Book,Publisher,Member,Profile,BorrowRecord
 from django.contrib.admin.widgets import AutocompleteSelect
 from django.contrib import admin
-from dal import autocomplete
 from django.urls import reverse
 
 

@@ -81,7 +81,7 @@
                                                 
                                                 <tr>
                                                     <td>Return On Time ? </td>
-                                                    {% if record.return_status == "On time "%}
+                                                    {% if record.return_status == "On time"%}
                                                     <td>{{record.return_status}}</td>
                                                     {% else %}
                                                     <td>{{record.return_status}}, delayed {{record.get_delay_number_days}} days </td>

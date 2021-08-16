@@ -91,6 +91,7 @@ class HomeView(LoginRequiredMixin,TemplateView):
  
         return render(request, self.template_name, self.context)
 
+# Global Serch
 @login_required(login_url='login')
 def global_serach(request):
     search_value = request.POST.get('global_search')
@@ -267,7 +268,7 @@ class CategoryListView(LoginRequiredMixin,ListView):
     template_name = 'book/category_list.html'
     count_total = 0
     search_value = ''
-    order_field="-created"
+    order_field="-created_at"
 
 
     def get_queryset(self):
@@ -782,13 +783,17 @@ class BorrowRecordClose(LoginRequiredMixin,View):
     def get(self, request, *args, **kwargs):
         close_record = BorrowRecord.objects.get(pk=self.kwargs['pk'])
         close_record.closed_by = self.request.user.username
+        close_record.final_status = close_record.return_status
+        close_record.delay_days = close_record.get_delay_number_days
         close_record.open_or_close = 1
+        
+  
         close_record.save()
         model_name = close_record.__class__.__name__
-        UserActivity.objects.create(created_by=self.request.user.username,
-                    operation_type="info",
-                    target_model=model_name,
-                    detail =f"Close {model_name} '{close_record.borrower}'=>{close_record.book}")
+        # UserActivity.objects.create(created_by=self.request.user.username,
+        #             operation_type="info",
+        #             target_model=model_name,
+        #             detail =f"Close {model_name} '{close_record.borrower}'=>{close_record.book}")
         return HttpResponseRedirect(reverse("record_list"))
 
 

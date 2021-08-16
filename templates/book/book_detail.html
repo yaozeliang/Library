@@ -66,7 +66,7 @@
                                         <p>Publisher: {{book.publisher}} </p>
                                     </div>
                                     <div class='col-6'>
-                                        <p>Created at: {{book.created|date:"Y/m/d H:i"}} </p>
+                                        <p>Created at: {{book.created_at|date:"Y/m/d H:i"}} </p>
                                         <p>Last updated by: <span class="badge badge-secondary">{{book.updated_by}}</span> at {{book.updated_at|date:"Y/m/d H:i"}} </p>
                                         <p>Borrowed times: {{book.total_borrow_times}} </p>
 
@@ -116,7 +116,11 @@
                                     <td>{{record.start_day | date:"Y/m/d"}} - {{record.end_day | date:"Y/m/d"}}</td>
                                     <td>{{record.get_open_or_close_display}}</td>
                                     <td>{{record.closed_at | date:"Y/m/d"}}</td>
-                                    <td>{{record.return_status}}</td>
+                                    {% if record.final_status == "Delayed" %}
+                                        <td>{{record.final_status}}, {{record.delay_days}} days</td>
+                                    {% else %}
+                                        <td>{{record.final_status}}</td>
+                                    {% endif %}
                                   </tr>
                
                                 {% endfor %}

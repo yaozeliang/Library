@@ -46,7 +46,7 @@
                                         <b>Sort By : - </b>
                                         <a href="{% url 'category_list' %}?search={{search}}&orderby=id">Id</a>  | 
                                         <a href="{% url 'category_list' %}?search={{ search }}&orderby=name">Name</a> |  
-                                        <a href="{% url 'category_list' %}?search={{ search }}&orderby=created">Created</a> 
+                                        <a href="{% url 'category_list' %}?search={{ search }}&orderby=created_at">Created</a> 
                                     </div>
                                      <!-- Search box -->
                                     <div class="col-6">
@@ -82,7 +82,7 @@
                                             <tr>
                                                 <th scope="row">{{cat.id}}</th>
                                                 <td>{{cat.name}}</td>
-                                                <td>{{ cat.created|date:"Y-m-d H:i" }}  </td>
+                                                <td>{{ cat.created_at|date:"Y-m-d H:i" }}  </td>
                                                 <td><a href="{% url 'category_delete' cat.pk %}" class="badge badge-danger"><i class="feather icon-trash-2"></i>&nbsp;Delete</a></td>
 
                                             </tr>
