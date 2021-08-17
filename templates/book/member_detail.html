@@ -100,15 +100,19 @@
                                                        <tbody>
                                                         
                                                         {% for record in related_records %}
-                                                         <tr>
-                                                           <td>{{record.borrower}} </td>
-                                                           <td>{{record.borrower_card}}</td>
-                                                           <td>{{record.book}}</td>
-                                                           <td>{{record.start_day | date:"Y/m/d"}} - {{record.end_day | date:"Y/m/d"}}</td>
-                                                           <td>{{record.get_open_or_close_display}}</td>
-                                                           <td>{{record.closed_at | date:"Y/m/d"}}</td>
-                                                           <td>{{record.return_status}}</td>
-                                                         </tr>
+                                                        <tr>
+                                                            <td>{{record.borrower}} </td>
+                                                            <td>{{record.borrower_card}}</td>
+                                                            <td>{{record.book}}</td>
+                                                            <td>{{record.start_day | date:"Y/m/d"}} - {{record.end_day | date:"Y/m/d"}}</td>
+                                                            <td>{{record.get_open_or_close_display}}</td>
+                                                            <td>{{record.closed_at | date:"Y/m/d"}}</td>
+                                                            {% if record.final_status == "Delayed" %}
+                                                                <td>{{record.final_status}}, {{record.delay_days}} days</td>
+                                                            {% else %}
+                                                                <td>{{record.final_status}}</td>
+                                                            {% endif %}
+                                                          </tr>
                                       
                                                        {% endfor %}
                                                        {% else %}

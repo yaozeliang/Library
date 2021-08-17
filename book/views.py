@@ -118,7 +118,7 @@ def global_serach(request):
 
 # Chart
 class ChartView(LoginRequiredMixin,TemplateView):
-    template_name = "charts.html"
+    template_name = "book/charts.html"
     login_url = 'login'
     context={}
 
@@ -781,19 +781,19 @@ class BorrowRecordDeleteView(LoginRequiredMixin,View):
 
 class BorrowRecordClose(LoginRequiredMixin,View):
     def get(self, request, *args, **kwargs):
+
         close_record = BorrowRecord.objects.get(pk=self.kwargs['pk'])
         close_record.closed_by = self.request.user.username
         close_record.final_status = close_record.return_status
         close_record.delay_days = close_record.get_delay_number_days
         close_record.open_or_close = 1
-        
-  
         close_record.save()
+
         model_name = close_record.__class__.__name__
-        # UserActivity.objects.create(created_by=self.request.user.username,
-        #             operation_type="info",
-        #             target_model=model_name,
-        #             detail =f"Close {model_name} '{close_record.borrower}'=>{close_record.book}")
+        UserActivity.objects.create(created_by=self.request.user.username,
+                    operation_type="info",
+                    target_model=model_name,
+                    detail =f"Close {model_name} '{close_record.borrower}'=>{close_record.book}")
         return HttpResponseRedirect(reverse("record_list"))
 
 

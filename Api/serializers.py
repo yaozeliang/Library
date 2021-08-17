@@ -47,3 +47,21 @@ class BookSerializer(serializers.ModelSerializer):
         representation['updated_at'] = instance.updated_at.strftime("%Y/%m/%d")
 
         return representation
+
+
+# Publisher Serializer
+class PublisherSerializer(serializers.ModelSerializer):
+    class Meta:
+        model=Publisher
+        fields = ('id',
+                  'name',
+                  'city',
+                  'contact',
+                  )
+
+    def to_representation(self, instance):
+        representation = super(PublisherSerializer, self).to_representation(instance)
+        representation['created_at'] = instance.created_at.strftime("%Y/%m/%d")
+        representation['updated_at'] = instance.updated_at.strftime("%Y/%m/%d")
+
+        return representation

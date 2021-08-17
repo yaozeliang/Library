@@ -18,6 +18,12 @@ urlpatterns = [
     path('book-update/<int:pk>/', views.BookUpdate, name="api_book_update"),
     path('book-delete/<int:pk>/', views.BookDelete, name="api_book_delete"),
 
+    # Publisher API    
+    path('publisher-list/', views.PublisherList, name="api_publisher_list"),
+    path('publisher-create/', views.PublisherCreate, name="api_publisher_create"),
+    path('publisher-update/<int:pk>/', views.PublisherUpdate, name="api_publisher_update"),
+    path('publisher-delete/<int:pk>/', views.PublisherDelete, name="api_publisher_delete"),
+
     path('', views.apiOverview, name="api-overview"),
     path('api-auth/', include('rest_framework.urls', namespace='rest_framework'))
 ]

@@ -1,3 +1,4 @@
+from book.views import PublisherUpdateView
 from django.shortcuts import render
 
 # Create your views here.
@@ -10,7 +11,7 @@ from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework import permissions
-from .serializers import CategorySerializer,BookSerializer
+from .serializers import CategorySerializer,BookSerializer,PublisherSerializer
 from book.models import Member,Category,Publisher,Book
 
 
@@ -78,14 +79,12 @@ def CategoryDelete(request, pk):
 
 
 # Book Api View
-
 @api_view(['GET'])
 @permission_classes((permissions.IsAuthenticated,))
 def BookList(request):
 	books = Book.objects.all().order_by('-updated_by')
 	serializer = BookSerializer(books, many=True)
 	return Response(serializer.data)
-
 
 @api_view(['POST'])
 @permission_classes((permissions.IsAuthenticated,))
@@ -94,7 +93,6 @@ def BookCreate(request):
 	if serializer.is_valid():
 		serializer.save()
 	return Response(serializer.data)
-
 
 @api_view(['GET'])
 @permission_classes((permissions.IsAuthenticated,))
@@ -113,16 +111,12 @@ def BookUpdate(request, pk):
 	return Response(serializer.data)
 
 
-
 @api_view(['DELETE'])
 @permission_classes((permissions.IsAuthenticated,))
 def BookDelete(request, pk):
 	book = Book.objects.get(id=pk)
 	book.delete()
 	return Response(f'{book.title} succsesfully delete!')
-
-
-
 
 
 
@@ -147,4 +141,37 @@ class GroupViewSet(viewsets.ModelViewSet):
 
 
 
+# Publisher Api View
+@api_view(['GET'])
+@permission_classes((permissions.IsAuthenticated,))
+def PublisherList(request):
+	pubs = Publisher.objects.all().order_by('-created_at')
+	serializer = PublisherSerializer(pubs, many=True)
+	return Response(serializer.data)
 
+
+@api_view(['POST'])
+@permission_classes((permissions.IsAuthenticated,))
+def PublisherCreate(request):
+	serializer = PublisherSerializer(data=request.data)
+	if serializer.is_valid():
+		serializer.save()
+	return Response(serializer.data)
+
+
+@api_view(['POST'])
+@permission_classes((permissions.IsAuthenticated,))
+def PublisherUpdate(request, pk):
+	pub = Publisher.objects.get(id=pk)
+	serializer = PublisherSerializer(instance=pub, data=request.data)
+	if serializer.is_valid():
+		serializer.save()
+	return Response(serializer.data)
+
+
+@api_view(['DELETE'])
+@permission_classes((permissions.IsAuthenticated,))
+def PublisherDelete(request, pk):
+	pub = Publisher.objects.get(id=pk)
+	pub.delete()
+	return Response(f'{pub.name} succsesfully delete!')
