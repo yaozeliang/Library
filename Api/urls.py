@@ -1,10 +1,16 @@
 from django.urls import include, path
 from rest_framework import routers
 from Api import views
+from rest_framework.urlpatterns import format_suffix_patterns
 
 
 
 urlpatterns = [
+
+    #Home
+    path('', views.apiOverview, name="api-overview"),
+    path('api-auth/', include('rest_framework.urls', namespace='rest_framework')),
+
     # Category API    
     path('category-list/', views.CategoryList, name="api_category_list"),
     path('category-create/', views.CategoryCreate, name="api_category_create"),
@@ -24,6 +30,10 @@ urlpatterns = [
     path('publisher-update/<int:pk>/', views.PublisherUpdate, name="api_publisher_update"),
     path('publisher-delete/<int:pk>/', views.PublisherDelete, name="api_publisher_delete"),
 
-    path('', views.apiOverview, name="api-overview"),
-    path('api-auth/', include('rest_framework.urls', namespace='rest_framework'))
+    # Member API
+    path('members/', views.MemberList.as_view()),
+    path('members/<int:pk>', views.MemberDetail.as_view()),
 ]
+
+
+urlpatterns = format_suffix_patterns(urlpatterns)

@@ -51,6 +51,7 @@ class BookSerializer(serializers.ModelSerializer):
 
 # Publisher Serializer
 class PublisherSerializer(serializers.ModelSerializer):
+
     class Meta:
         model=Publisher
         fields = ('id',
@@ -61,6 +62,27 @@ class PublisherSerializer(serializers.ModelSerializer):
 
     def to_representation(self, instance):
         representation = super(PublisherSerializer, self).to_representation(instance)
+        representation['created_at'] = instance.created_at.strftime("%Y/%m/%d")
+        representation['updated_at'] = instance.updated_at.strftime("%Y/%m/%d")
+
+        return representation
+
+
+
+# Membership Serializer
+class MemberSerializer(serializers.ModelSerializer):
+    class Meta:
+        model=Member
+        fields = ("id",
+                  'name',
+                  'gender',
+                  'age',
+                  'email',
+                  'city', 
+                  'phone_number',)
+
+    def to_representation(self, instance):
+        representation = super(MemberSerializer, self).to_representation(instance)
         representation['created_at'] = instance.created_at.strftime("%Y/%m/%d")
         representation['updated_at'] = instance.updated_at.strftime("%Y/%m/%d")
 
