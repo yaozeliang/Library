@@ -1,4 +1,4 @@
-
+{% load book_extras %}
     <nav class="pcoded-navbar">
         <div class="navbar-wrapper">
             <div class="navbar-brand header-logo">
@@ -102,17 +102,34 @@
 
                     {% endif %}
 
+
+                    {% if request.user|has_group:"logs" %}
                     <li  class="nav-item {% if request.resolver_match.url_name == 'user_activity_list' %} active {% endif %} {% if request.resolver_match.url_name == 'user_activity_delete' %} active {% endif %}">
                         <a href="{% url 'user_activity_list' %}" class="nav-link "><span class="pcoded-micon"><i class="feather icon-file-text"></i></span><span class="pcoded-mtext">Logs</a>
                     </li>
+                    {% endif %}
 
+                    {% if request.user|has_group:"download_data" %}
                     <li  class="nav-item {% if request.resolver_match.url_name == 'data_center' %} active {% endif %}">
                         <a href="{% url 'data_center' %}" class="nav-link "><span class="pcoded-micon"><i class="feather icon-file-text"></i></span><span class="pcoded-mtext">Data Center</a>
                     </li>
+                    {% endif %}
 
+                    
+                    {% if request.user|has_group:"api" %}
+                    <li  class="nav-item {% if request.resolver_match.url_name == 'api-overview' %} active {% endif %}">
+                        <a href="{% url 'api-overview' %}" class="nav-link "><span class="pcoded-micon"><i class="feather icon-file-text"></i></span><span class="pcoded-mtext">API</a>
+                    </li>
+                    {% endif %}
+
+                    {% if request.user.is_superuser %}
+                    <li  class="nav-item {% if request.resolver_match.url_name == 'employees_list' %} active {% endif %}">
+                        <a href="{% url 'employees_list' %}" class="nav-link "><span class="pcoded-micon"><i class="feather icon-file-text"></i></span><span class="pcoded-mtext">Employees</a>
+                    </li>
+                    {% endif %}
 
                     <!-- Form Table -->
-                    <li class="nav-item pcoded-menu-caption">
+                    <!-- <li class="nav-item pcoded-menu-caption">
                         <label>Forms & table</label>
                     </li>
                     <li data-username="form elements advance componant validation masking wizard picker select" 
@@ -122,40 +139,8 @@
                     <li data-username="Table bootstrap datatable footable" 
                         class="nav-item {% if 'ui-tables' in segment %} active {% endif %}">
                         <a href="/ui-tables.html" class="nav-link "><span class="pcoded-micon"><i class="feather icon-server"></i></span><span class="pcoded-mtext">Table</span></a>
-                    </li>
+                    </li> -->
 
-
-                    <!-- Chart Maps -->
-                    <li class="nav-item pcoded-menu-caption">
-                        <label>Chart & Maps</label>
-                    </li>
-                    <li data-username="Charts Morris" 
-                        class="nav-item {% if 'charts-morris' in segment %} active {% endif %}">
-                        <a href="/charts-morris.html" class="nav-link "><span class="pcoded-micon"><i class="feather icon-pie-chart"></i></span><span class="pcoded-mtext">Chart</span></a></li>
-                    <li data-username="Maps Google" 
-                         class="nav-item {% if 'maps-google' in segment %} active {% endif %}">
-                        <a href="/maps-google.html" class="nav-link "><span class="pcoded-micon"><i class="feather icon-map"></i></span><span class="pcoded-mtext">Maps</span></a></li>
-                    <li class="nav-item pcoded-menu-caption">
-                        <label>Pages</label>
-                    </li>
-                    <li data-username="Authentication Sign up Sign in reset password Change password Personal information profile settings map form subscribe" class="nav-item pcoded-hasmenu">
-                        <a href="javascript:" class="nav-link "><span class="pcoded-micon"><i class="feather icon-lock"></i></span><span class="pcoded-mtext">Authentication</span></a>
-                        <ul class="pcoded-submenu">
-                            <li class=""><a href="/auth-reset-pass.html" class="">Reset Pass</a></li>
-                            <li class=""><a href="/login.html" class="">Login (template)</a></li>
-                            <li class=""><a href="/register.html" class="">Register (template)</a></li>
-                        </ul>
-                    </li>
-                    <li data-username="Sample Page" 
-                        class="nav-item {% if 'page-blank' in segment %} active {% endif %}">
-                        <a href="/page-blank.html" class="nav-link"><span class="pcoded-micon"><i class="feather icon-sidebar"></i></span><span class="pcoded-mtext">Sample page</span></a></li>
-                    <li data-username="Sample Page" class="nav-item"><a href="/page-404.html" class="nav-link"><span class="pcoded-micon"><i class="feather icon-sidebar"></i></span><span class="pcoded-mtext">Error 404</span></a></li>
-
-                    <li data-username="Disabled Menu" class="nav-item">
-                        <a href="{% url 'logout' %}" class="nav-link">
-                            <span class="pcoded-micon"><i class="feather icon-power"></i></span><span class="pcoded-mtext">Logout</span>
-                        </a>
-                    </li>
                 </ul>
             </div>
         </div>

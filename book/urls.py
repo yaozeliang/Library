@@ -11,7 +11,7 @@ from django.conf import settings
 from django.conf.urls.static import static
 from .views import BorrowRecordListView,BorrowRecordCreateView,BorrowRecordDeleteView,BorrowRecordDetailView,auto_member,auto_book,BorrowRecordClose
 from .views import DataCenterView,download_data
-from .views import ChartView,global_serach
+from .views import ChartView,global_serach,EmployeeView,EmployeeDetailView,EmployeeUpdate
 
 urlpatterns = [
 
@@ -70,6 +70,11 @@ urlpatterns = [
 
     # Global Search
     path('global-search/',global_serach,name="global_search"),
+
+    # Employee
+    path('employees/',EmployeeView.as_view(),name="employees_list"),
+    path('employees-detail/<int:pk>',EmployeeDetailView.as_view(),name="employees_detail"),
+    path('employees-update/<int:pk>',EmployeeUpdate,name='employee_update')
 
 ]
 

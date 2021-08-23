@@ -3,7 +3,6 @@ import pandas as pd
 import json
 
 from django.db.models.functions import ExtractMonth,ExtractWeek,TruncMonth,TruncWeek
-
 from django.shortcuts import render,get_object_or_404,redirect
 from django.urls import  reverse_lazy,reverse
 from django.contrib.auth import get_user_model
@@ -19,11 +18,12 @@ from django.apps import apps
 from django.conf import settings
 from django.core.paginator import EmptyPage, PageNotAnInteger
 from django.core import serializers
-
+from django.core.exceptions import PermissionDenied
 from django.db.models import Sum, Count
-from django.contrib.auth.models import User
-from django.contrib.auth.decorators import login_required
-from django.core.exceptions import PermissionDenied 
+from django.contrib.auth.models import User,Group
+from django.contrib.auth.decorators import login_required,user_passes_test,permission_required
+from django.utils.decorators import method_decorator
+
 from django.contrib.auth.mixins import LoginRequiredMixin 
 from django.contrib.messages.views import SuccessMessageMixin
 from django.core.files.storage import FileSystemStorage
@@ -32,18 +32,18 @@ from django.views.decorators.csrf import csrf_exempt
 from .forms import BookCreateEditForm,PubCreateEditForm,MemberCreateEditForm,ProfileForm,BorrowRecordCreateForm
 
 from .utils import get_n_days_ago,create_clean_dir,change_col_format
+from .groups_permissions import check_user_group,user_groups,check_superuser,SuperUserRequiredMixin
 from .custom_filter import get_item
 from datetime import date,timedelta,datetime
 
 from django.forms.models import model_to_dict
 from django.core.paginator import Paginator
+from django.contrib.contenttypes.models import ContentType
 
 
 
 TODAY=get_n_days_ago(0,"%Y%m%d")
 PAGINATOR_NUMBER = 5
-
-
 allowed_models = ['Category','Publisher','Book','Member','UserActivity','BorrowRecord']
 
 
@@ -54,6 +54,11 @@ class HomeView(LoginRequiredMixin,TemplateView):
     login_url = 'login'
     template_name = "index.html"
     context={}
+
+  
+    # users = User.objects.all()
+    # for user in users:
+    #     print(user.get_username(),user.is_superuser)
 
     def get(self,request, *args, **kwargs):
 
@@ -424,8 +429,9 @@ class PublisherDeleteView(LoginRequiredMixin,View):
 
 
 # User Logs
-
+@method_decorator(user_passes_test(lambda u: check_user_group(u,"logs")), name='get')
 class ActivityListView(LoginRequiredMixin,ListView):
+
     login_url = 'login'
     model= UserActivity
     context_object_name = 'activities'
@@ -437,15 +443,13 @@ class ActivityListView(LoginRequiredMixin,ListView):
     all_users = User.objects.values()
     user_list = [x['username'] for x in all_users] 
 
-
     def get_queryset(self):
+        # check_user_group(self.request.user,'logs')
         data = self.request.GET.copy()
-   
         search =self.request.GET.get("search")
         filter_user=self.request.GET.get("created_by") 
 
         all_activities = UserActivity.objects.all()
-  
 
         if filter_user:
             self.created_by = filter_user
@@ -454,19 +458,11 @@ class ActivityListView(LoginRequiredMixin,ListView):
         if search:
             self.search_value = search
             all_activities = all_activities.filter(Q(target_model__icontains=search))
-                
 
-        # if filter_user and search:
-
-        # all_activities = all_activities.filter(created_by=self.created_by).filter(Q(target_model__icontains=search))
-
-   
         self.search_value=search
         self.count_total = all_activities.count()
         paginator = Paginator(all_activities,PAGINATOR_NUMBER)
         page = self.request.GET.get('page')
-        # activities = paginator.get_page(page)
-
         try:
             response = paginator.get_page(page)
         except PageNotAnInteger:
@@ -484,6 +480,8 @@ class ActivityListView(LoginRequiredMixin,ListView):
         context['created_by'] = self.created_by
         return context
 
+
+@method_decorator(user_passes_test(lambda u: check_user_group(u,"logs")), name='get')
 class ActivityDeleteView(LoginRequiredMixin,View):
 
     login_url = 'login'
@@ -789,6 +787,14 @@ class BorrowRecordClose(LoginRequiredMixin,View):
         close_record.open_or_close = 1
         close_record.save()
 
+        borrowed_book = Book.objects.get(title=close_record.book)
+        borrowed_book.quantity+=1
+        count_record_same_book = BorrowRecord.objects.filter(book=close_record.book).count()
+        if count_record_same_book==1:
+            borrowed_book.status = 1
+
+        borrowed_book.save()
+
         model_name = close_record.__class__.__name__
         UserActivity.objects.create(created_by=self.request.user.username,
                     operation_type="info",
@@ -803,8 +809,9 @@ class DataCenterView(LoginRequiredMixin,TemplateView):
     template_name = 'book/download_data.html'
     login_url = 'login'
     
-    def get(self,request,*args, **kwargs):
 
+    def get(self,request,*args, **kwargs):
+        check_user_group(request.user,"download_data")
         data = {m.objects.model._meta.db_table:
         {"source":pd.DataFrame(list(m.objects.all().values())) ,
           "path":f"{str(settings.BASE_DIR)}/datacenter/{m.__name__}_{TODAY}.csv",
@@ -815,7 +822,8 @@ class DataCenterView(LoginRequiredMixin,TemplateView):
 
 @login_required(login_url='login')
 def download_data(request,model_name):
-
+    check_user_group(request.user,"download_data")
+            
     download = {m.objects.model._meta.db_table:
         {"source":pd.DataFrame(list(m.objects.all().values())) ,
           "path":f"{str(settings.BASE_DIR)}/datacenter/{m.__name__}_{TODAY}.csv",
@@ -856,3 +864,43 @@ def bad_request(request, exception=None):
     response.status_code = 400
     return response
 
+# Employees
+# @method_decorator(user_passes_test(lambda u: check_superuser(u)), name='dispatch')
+class EmployeeView(SuperUserRequiredMixin,ListView):
+    login_url = 'login'
+    model=User
+    context_object_name = 'employees'
+    template_name = 'book/employees.html'
+
+    # def get(self, request):
+    #     # check_superuser(request.user)
+    #     return super(EmployeeView, self).get(self,request)
+
+# @method_decorator(user_passes_test(lambda u: check_superuser(u)), name='dispatch')
+class EmployeeDetailView(SuperUserRequiredMixin,DetailView):
+    model = User
+    context_object_name = 'employee'
+    template_name = 'book/employee_detail.html'
+    login_url = 'login'
+
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['groups'] = user_groups
+        return context
+
+
+@user_passes_test(lambda u: u.is_superuser)
+@login_required(login_url='login')
+def EmployeeUpdate(request,pk):
+    # check_superuser(request.user)
+    current_user = User.objects.get(pk=pk)
+    if request.method == 'POST':
+        chosen_groups = [ g for g in user_groups if "on" in request.POST.getlist(g)]
+        current_user.groups.clear()
+        for each in chosen_groups:
+            group = Group.objects.get(name=each)
+            current_user.groups.add(group)
+        messages.success(request, f"Group for  << {current_user.username} >> has been updated")
+        return redirect('employees_detail', pk=pk)
+        

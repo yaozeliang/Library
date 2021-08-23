@@ -18,11 +18,13 @@ from book.models import Member, Category, Publisher, Book
 from rest_framework.views import APIView, status
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated, AllowAny, IsAdminUser
-
+from django.core.exceptions import PermissionDenied
+from book.groups_permissions import check_user_group
 
 @api_view(['GET'])
-@permission_classes((permissions.AllowAny,))
+@permission_classes((permissions.IsAuthenticated,))
 def apiOverview(request):
+	check_user_group(request.user,'api')
 	api_urls = {
 		'Category List': '/category-list/',
 		'Category Create': '/category-create/',

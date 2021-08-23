@@ -64,12 +64,13 @@
                                         <p>Author: {{book.author}} </p>
                                         <p>Category: {{book.category}} </p>
                                         <p>Publisher: {{book.publisher}} </p>
+                                   
                                     </div>
                                     <div class='col-6'>
                                         <p>Created at: {{book.created_at|date:"Y/m/d H:i"}} </p>
                                         <p>Last updated by: <span class="badge badge-secondary">{{book.updated_by}}</span> at {{book.updated_at|date:"Y/m/d H:i"}} </p>
                                         <p>Borrowed times: {{book.total_borrow_times}} </p>
-
+                                        <p>Status Now : {{book.get_status_display}} </p>
                                     </div>
                                 </div>
                             </div>

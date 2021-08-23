@@ -1,0 +1,106 @@
+{% extends "layouts/base.html" %}
+{% block title %} Management {% endblock %} 
+
+{% block stylesheets %}{% endblock stylesheets %}
+
+{% block content %}
+
+<div class="pcoded-content">
+    <div class="pcoded-inner-content">
+        <div class="page-header">
+            <div class="page-block">
+                <!-- Title -->
+                <div class="row align-items-center">
+                    <div class="col-md-12">
+                        <div class="page-header-title">
+                            <h5 class="m-b-10">Employee Status</h5>
+
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+        <br>
+        <!-- [ breadcrumb ] end -->
+        <div class="main-body">
+            <div class="page-wrapper">
+                <!-- [ Main Content ] start -->
+                <div class="row">
+                    <!-- [ basic-table ] start -->
+                    <div class="col-xl-12">
+                        <div class="card">
+                            <div class="card-header">
+                                <h5>All Employees registered</h5>
+                            </div>
+                            
+
+                            <div class="card-block ">
+
+                                
+                                <div class="table-responsive table-hover">
+                                    <!-- Table -->
+                                    <table class="table">
+                                        <thead>
+                                            <tr>
+                                                <th>User Name</th>
+                                                <th>Email</th>
+                                                <th>Group</th>
+                                                <th>SuperUser?</th>
+                                                <th>Active ?</th>
+                                                <th>Last login</th>
+                                                <th>#</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            
+                                            {% for e in employees %}
+                                            <tr>
+                                                <th scope="row">{{e.username}}</th>
+                                                <td>{{e.email}}</td>
+                                                <td>{{e.groups.all |join:", "}}</td>
+                                                <td>
+                                                    {% if e.is_superuser %}
+                                                    <i class="fas fa-check-circle" style="color:#267013"></i>
+                                                    {% else %}
+                                                    <i class="fas fa-times-circle" style="color:#f01616"></i>
+                                                    {% endif %}
+                                                </td>
+
+                                                <td>
+                                                    {% if e.is_active %}
+                                                    <i class="fas fa-check-circle" style="color:#267013"></i>
+                                                    {% else %}
+                                                    <i class="fas fa-times-circle" style="color:#f01616"></i>
+                                                    {% endif %}
+
+                                                </td>
+                                                
+                                                
+                                                <td>{{ e.last_login|date:"Y/m/d H:i" }}  </td>
+                                                <td><a href="{% url 'employees_detail' e.pk %}">Update</a></td>
+                                            </tr>
+                                            {% endfor %}
+
+
+                                        </tbody>
+                                    </table>
+                                </div>
+ 
+                            </div>
+                        </div>
+                    </div>
+                    
+                </div>
+                <!-- [ Main Content ] end -->
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock content %}
+
+<!-- Specific Page JS goes HERE  -->
+{% block javascripts %}{% endblock javascripts %}

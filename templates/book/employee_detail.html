@@ -1,0 +1,97 @@
+{% extends "layouts/base.html" %}
+{% load crispy_forms_tags %}
+{% load book_extras %}
+
+{% block title %} Management{% endblock %} 
+
+{% block stylesheets %}
+<!-- <link rel="stylesheet" href="/static/assets/css/card.css"> -->
+
+{% endblock stylesheets %}
+
+{% block content %}
+
+<div class="pcoded-content">
+    <div class="pcoded-inner-content">
+        <div class="page-header">
+            <div class="page-block">
+                <div class="row align-items-center">
+                    <div class="col-md-12">
+                        <div class="page-header-title">
+                            <h5 class="m-b-10">Employee Management</h5>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <br>
+        <!-- [ breadcrumb ] end -->
+        <div class="main-body">
+            <div class="page-wrapper">
+                <div class="row">
+                    <div class="col-xl-12">
+                        <div class="card">
+                            <div class="card-header">
+                                <h5><i class="fas fa-user-tie"></i> {{employee.username}}  </h5>
+                            </div>
+                            {% show_messages %}
+
+                            <div class="card-block">
+                                <div class='row'>                                
+                                    
+                                    <div class="col-md-6">
+                                        <p>User Name: {{employee.username}}</p>
+                                        <p>is_superuser: {{employee.is_superuser}}</p>
+                                        <p>Date joined : {{employee.date_joined}}</p>
+                                        <p>Last login : {{employee.last_login|date:"Y/m/d H:i"}}</p>
+                                    </div>
+
+                                    <div class="col-md-6">
+                                        <p>is_staff: {{employee.is_staff}}</p>
+                                        <p>is_active: {{employee.is_active}}</p>
+ 
+                                        
+                                        <form action="{% url 'employee_update' employee.pk %}" method="POST" class='form-inline'>
+                                            {% csrf_token %}
+                                        <div class="form-check form-check-inline">Change Group :</div>
+                                        {% for g in groups %}
+                                        {% if employee|has_group:g %}
+                                        <div class="form-check form-check-inline">
+                                            <input class="form-check-input" type="checkbox" id={{g}} name={{g}}  checked>
+                                            <label class="form-check-label" for={{g}}>{{g}}</label>
+                                        </div>
+                                        {% else %}
+                                        <div class="form-check form-check-inline">
+                                            <input class="form-check-input" type="checkbox" id={{g}} name={{g}}  >
+                                            <label class="form-check-label" for={{g}}>{{g}}</label>
+                                        </div>
+                                        {% endif %}
+
+                                        {% endfor %}
+
+                                        <button class="badge badge-sm" type="submit">Update</badge>
+
+                                        </form>
+
+                                    </div>
+                                </div>
+
+
+                                <a href="{% url 'employees_list' %}" class='btn btn-primary'>Back</a>
+
+                            </div>
+                            
+
+                        </div>
+                    </div>
+                    
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock content %}
+
+<!-- Specific Page JS goes HERE  -->
+{% block javascripts %}{% endblock javascripts %}
