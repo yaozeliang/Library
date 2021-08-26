@@ -1,7 +1,3 @@
-# -*- encoding: utf-8 -*-
-"""
-Copyright (c) 2019 - present AppSeed.us
-"""
 from django.conf import settings
 from django.conf.urls.static import static
 from django.contrib import admin
@@ -12,15 +8,18 @@ urlpatterns = [
     path('admin/', admin.site.urls),          
     path("auth/", include("authentication.urls")), # Auth routes - login / register
     path("", include("book.urls")),
-    path('api/', include('Api.urls'))    
+    path('api/', include('Api.urls')),
+    path('comment/', include('comment.urls', namespace='comment')),
+
 ]
 
 
-urlpatterns+= static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
+
 
 if settings.DEBUG:
     urlpatterns += static(settings.MEDIA_URL,
                           document_root=settings.MEDIA_ROOT)
+    urlpatterns+= static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
 
 handler400 = 'book.views.bad_request'
 handler403 = 'book.views.permission_denied'

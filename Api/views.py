@@ -17,9 +17,10 @@ from .serializers import CategorySerializer, BookSerializer, PublisherSerializer
 from book.models import Member, Category, Publisher, Book
 from rest_framework.views import APIView, status
 from rest_framework.response import Response
-from rest_framework.permissions import IsAuthenticated, AllowAny, IsAdminUser
+from rest_framework.permissions import IsAuthenticated, AllowAny, IsAdminUser,IsAuthenticatedOrReadOnly
 from django.core.exceptions import PermissionDenied
 from book.groups_permissions import check_user_group
+from .permissions import IsOwnerOrReadOnly
 
 @api_view(['GET'])
 @permission_classes((permissions.IsAuthenticated,))
@@ -168,7 +169,7 @@ def PublisherDelete(request, pk):
 # Member API
 
 class MemberList(APIView):
-	permission_classes = [IsAuthenticated]
+	permission_classes = [IsAuthenticatedOrReadOnly]
 
 	def get(self,request,format=None):
 		members = Member.objects.all()
@@ -184,7 +185,7 @@ class MemberList(APIView):
 
 class MemberDetail(APIView):
 
-	permission_classes = [IsAuthenticated]
+	permission_classes = [IsAuthenticatedOrReadOnly,IsOwnerOrReadOnly]
 
 	def get_object(self,pk):
 		try:
@@ -210,3 +211,6 @@ class MemberDetail(APIView):
 		member.delete()
 		return Response(status=status.HTTP_204_NO_CONTENT)
 
+
+
+# User Api

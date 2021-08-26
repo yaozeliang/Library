@@ -1,9 +1,12 @@
 {% extends "layouts/base.html" %}
 {% load crispy_forms_tags %}
+{% load tailwind_filters %}
 {% block title %} Management {% endblock %} 
 
 <!-- Specific CSS goes HERE -->
-{% block stylesheets %}{% endblock stylesheets %}
+{% block stylesheets %}
+<link href="https://unpkg.com/tailwindcss@^2/dist/tailwind.min.css" rel="stylesheet">
+{% endblock stylesheets %}
 
 {% block content %}
 

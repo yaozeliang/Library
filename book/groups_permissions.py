@@ -26,6 +26,19 @@ class SuperUserRequiredMixin(LoginRequiredMixin, UserPassesTestMixin):
     def test_func(self):
         return self.request.user.is_superuser
 
+
+
+
+
+
+
+
+
+
+
+
+
+
 # content_type = ContentType.objects.get_for_model(Book)
 # content_type = ContentType.objects.get_for_model(BlogPost)
 # permission = Permission.objects.create(

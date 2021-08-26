@@ -39,6 +39,8 @@ from datetime import date,timedelta,datetime
 from django.forms.models import model_to_dict
 from django.core.paginator import Paginator
 from django.contrib.contenttypes.models import ContentType
+from comment.models import Comment
+from comment.forms import CommentForm
 
 
 
@@ -202,6 +204,7 @@ class BookDetailView(LoginRequiredMixin,DetailView):
     context_object_name = 'book'
     template_name = 'book/book_detail.html'
     login_url = 'login'
+    comment_form = CommentForm()
 
     # def get_object(self, queryset=None):
     #     obj = super(BookDetailView, self).get_object(queryset=queryset)
@@ -210,8 +213,11 @@ class BookDetailView(LoginRequiredMixin,DetailView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         current_book_name = self.get_object().title
+        comments = Comment.objects.filter(book=self.get_object().id)
         related_records = BorrowRecord.objects.filter(book=current_book_name)
         context['related_records'] = related_records
+        context['comments'] = comments
+        context['comment_form'] = self.comment_form
         return context
 
 class BookCreateView(LoginRequiredMixin,CreateView):
@@ -428,8 +434,8 @@ class PublisherDeleteView(LoginRequiredMixin,View):
         return HttpResponseRedirect(reverse("publisher_list"))
 
 
-# User Logs
-@method_decorator(user_passes_test(lambda u: check_user_group(u,"logs")), name='get')
+# User Logs  
+@method_decorator(user_passes_test(lambda u: u.has_perm("book.view_useractivity")), name='dispatch')
 class ActivityListView(LoginRequiredMixin,ListView):
 
     login_url = 'login'
@@ -443,8 +449,10 @@ class ActivityListView(LoginRequiredMixin,ListView):
     all_users = User.objects.values()
     user_list = [x['username'] for x in all_users] 
 
+    # def dispatch(self, *args, **kwargs):
+    #     return super(ActivityListView, self).dispatch(*args, **kwargs)
+
     def get_queryset(self):
-        # check_user_group(self.request.user,'logs')
         data = self.request.GET.copy()
         search =self.request.GET.get("search")
         filter_user=self.request.GET.get("created_by") 
@@ -481,12 +489,13 @@ class ActivityListView(LoginRequiredMixin,ListView):
         return context
 
 
-@method_decorator(user_passes_test(lambda u: check_user_group(u,"logs")), name='get')
+@method_decorator(user_passes_test(lambda u: u.has_perm("book.delete_useractivity")), name='dispatch')
 class ActivityDeleteView(LoginRequiredMixin,View):
 
     login_url = 'login'
 
     def get(self,request,*args,**kwargs):
+        
         log_pk=kwargs["pk"]
         delete_log=UserActivity.objects.get(pk=log_pk)
         messages.error(request, f"Activity Removed")
@@ -804,14 +813,13 @@ class BorrowRecordClose(LoginRequiredMixin,View):
 
 
 # Data center
-
+@method_decorator(user_passes_test(lambda u: check_user_group(u,"download_data")), name='dispatch')
 class DataCenterView(LoginRequiredMixin,TemplateView):
     template_name = 'book/download_data.html'
     login_url = 'login'
     
 
     def get(self,request,*args, **kwargs):
-        check_user_group(request.user,"download_data")
         data = {m.objects.model._meta.db_table:
         {"source":pd.DataFrame(list(m.objects.all().values())) ,
           "path":f"{str(settings.BASE_DIR)}/datacenter/{m.__name__}_{TODAY}.csv",

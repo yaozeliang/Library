@@ -52,7 +52,10 @@
                                 <a class="nav-link" id="pills-contact-tab" data-toggle="pill" href="#pills-contact" role="tab" aria-controls="pills-contact" aria-selected="false">Location</a>
                             </li>
                             <li class="nav-item">
-                                <a class="nav-link" id="pills-contact-tab" data-toggle="pill" href="#pills-record" role="tab" aria-controls="pills-record" aria-selected="false">Borrow History</a>
+                                <a class="nav-link" id="pills-record-tab" data-toggle="pill" href="#pills-record" role="tab" aria-controls="pills-record" aria-selected="false">Borrow History</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" id="pills-comment-tab" data-toggle="pill" href="#pills-comment" role="tab" aria-controls="pills-comments" aria-selected="false">Comments</a>
                             </li>
                         </ul>
                         <div class="tab-content" id="pills-tabContent">
@@ -80,6 +83,7 @@
                                     {{book.description}}
                                 </p>
                             </div>
+                            <!-- Location detail -->
                             <div class="tab-pane fade" id="pills-contact" role="tabpanel" aria-labelledby="pills-contact-tab">
                                 <div class='row'>
                                     <div class='col-6'>
@@ -91,7 +95,7 @@
 
                                 </div>
                             </div>
-
+                            <!-- Borrow record -->
                             <div class="tab-pane fade" id="pills-record" role="tabpanel" aria-labelledby="pills-record-tab">
                              <h5 class='mb-3'>Borrow History</h5>
                              {% if related_records %}
@@ -136,6 +140,61 @@
                               </table>
 
                             </div>
+
+                            <!-- Comments -->
+                            <div class="tab-pane fade" id="pills-comment" role="tabpanel" aria-labelledby="pills-comment-tab">
+                                {% if user.is_authenticated %}
+                                <div>
+                                    <form 
+                                        action="{% url 'comment:post_comment' book.id %}" 
+                                        method="POST"
+                                    >
+                                    {% csrf_token %}
+                                        <div class="form-group">
+                                            <label for="body">
+                                                <strong>
+                                                    Add a comment:
+                                                </strong>
+                                            </label>
+
+                                                <div>
+                                                    {{ comment_form.media }}
+                                                    {{ comment_form.body }}
+                                                </div>
+                                        </div>
+
+                                        <!-- 提交按钮 -->
+                                        <button type="submit" class="btn btn-success ">Send</button>                    
+                                    </form>
+                                </div>
+                                <br>
+                            {% else %}
+                                <br>
+                                <h5 class="row justify-content-center">
+                                    Please<a href="{% url 'login' %}">login</a>to reply
+                                </h5>
+                                <br>
+                            {% endif %}
+
+
+                            <h4>Total {{ comments.count }} comments</h4>
+                            <div>
+                                {% for comment in comments %}
+                                    <hr>
+                                    <p>
+                                        <strong style="color: rgb(175, 31, 55)">
+                                            {{ comment.user }} 
+                                        </strong>  
+                                        published at 
+                                        <span style="color: green">
+                                             {{ comment.created_at|date:"Y/m/d H:i" }}
+                                        </span> :
+                                    </p>
+                                    <p>{{ comment.body|safe }}</p>
+
+                                {% endfor %}
+                            </div>
+                            </div>
                             </div>
                         </div>
                     </div>
@@ -158,4 +217,9 @@
 {% endblock content %}
 
 <!-- Specific Page JS goes HERE  -->
-{% block javascripts %}{% endblock javascripts %}
+{% block javascripts %}
+<script>
+    $(".django-ckeditor-widget").removeAttr('style');
+</script>
+
+{% endblock javascripts %}
