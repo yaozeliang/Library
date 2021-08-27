@@ -31,7 +31,8 @@ from django.contrib.messages.views import messages
 from django.views.decorators.csrf import csrf_exempt
 from .forms import BookCreateEditForm,PubCreateEditForm,MemberCreateEditForm,ProfileForm,BorrowRecordCreateForm
 
-from .utils import get_n_days_ago,create_clean_dir,change_col_format
+# from .utils import get_n_days_ago,create_clean_dir,change_col_format
+from util.useful import get_n_days_ago,create_clean_dir,change_col_format
 from .groups_permissions import check_user_group,user_groups,check_superuser,SuperUserRequiredMixin
 from .custom_filter import get_item
 from datetime import date,timedelta,datetime
@@ -813,13 +814,12 @@ class BorrowRecordClose(LoginRequiredMixin,View):
 
 
 # Data center
-@method_decorator(user_passes_test(lambda u: check_user_group(u,"download_data")), name='dispatch')
 class DataCenterView(LoginRequiredMixin,TemplateView):
     template_name = 'book/download_data.html'
     login_url = 'login'
-    
 
     def get(self,request,*args, **kwargs):
+        check_user_group(request.user,"download_data")
         data = {m.objects.model._meta.db_table:
         {"source":pd.DataFrame(list(m.objects.all().values())) ,
           "path":f"{str(settings.BASE_DIR)}/datacenter/{m.__name__}_{TODAY}.csv",

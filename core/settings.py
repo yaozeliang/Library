@@ -42,6 +42,7 @@ INSTALLED_APPS = [
     'rest_framework',
     'ckeditor',
     'comment',
+    'mptt',
 ]
 
 CRISPY_ALLOWED_TEMPLATE_PACKS = "tailwind"
