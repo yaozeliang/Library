@@ -1,0 +1,76 @@
+{% extends "layouts/base.html" %}
+{% load static %}
+
+{% block title %} Notifications {% endblock %} 
+
+{% block stylesheets %}
+<style>
+    #notice_link a:link {
+        color: black;
+    }
+
+    #notice_link a:visited {
+        color: lightgrey;
+    }
+</style>
+{% endblock stylesheets %}
+{% block content %}
+
+<div class="pcoded-content">
+    <div class="pcoded-inner-content">
+        <div class="page-header">
+            <div class="page-block">
+                <!-- Title -->
+                <div class="row align-items-center">
+                    <div class="col-md-12">
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+        <br>
+        <!-- [ breadcrumb ] end -->
+        <div class="main-body">
+            <div class="page-wrapper">
+                <!-- [ Main Content ] start -->
+                <div class="row">
+                    <!-- [ basic-table ] start -->
+                    <div class="col-xl-12">
+                        <div class="card">
+                            <div class="card-header">
+                                <h5>All Notifications</h5>
+                            </div>
+                            
+
+                            <div class="card-block ">
+                                <div class="row mt-4 ml-4">
+                                    <a href="{% url 'notice_update' %}" class="btn btn-warning" role="button">Clear All</a>
+                                </div>
+                                <div class="row mt-2 ml-4">
+                                    <ul class="list-group">
+                                        {% for notice in notices %}
+                                            <li class="list-group-item" id="notice_link">
+                                                <p><span style="color: #5897fb;">
+                                                    {{ notice.actor }} 
+                                                </span>
+                                                {{ notice.verb }} 
+                                                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{{ notice.timestamp|date:"Y/m/d H:i" }}</p>
+                                            </li>
+                                        {% endfor %}
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                </div>
+         </div>
+        </div>
+    </div>
+</div>
+
+{% endblock content %}
+
+<!-- Specific Page JS goes HERE  -->
+{% block javascripts %}{% endblock javascripts %}

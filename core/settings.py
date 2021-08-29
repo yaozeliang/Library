@@ -32,7 +32,6 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    # 'app',
     'book',
     'crispy_forms',
     'crispy_tailwind',
@@ -42,8 +41,8 @@ INSTALLED_APPS = [
     'rest_framework',
     'ckeditor',
     'comment',
-    'mptt',
-]
+    'notifications',
+    ]
 
 CRISPY_ALLOWED_TEMPLATE_PACKS = "tailwind"
 CRISPY_TEMPLATE_PACK = "tailwind"

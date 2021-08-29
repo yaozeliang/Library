@@ -42,7 +42,8 @@ from django.core.paginator import Paginator
 from django.contrib.contenttypes.models import ContentType
 from comment.models import Comment
 from comment.forms import CommentForm
-
+from notifications.signals import notify
+from .notification import send_notification
 
 
 TODAY=get_n_days_ago(0,"%Y%m%d")
@@ -317,6 +318,12 @@ class CategoryCreateView(LoginRequiredMixin,CreateView):
     fields=['name']
     template_name='book/category_create.html'
 
+    def form_valid(self, form):
+        new_cat = form.save(commit=False)
+        new_cat.save()
+        send_notification(self.request.user,new_cat,verb=f'Add New Category << {new_cat.name} >>')
+        return super(CategoryCreateView, self).form_valid(form)
+
 
     def post(self,request, *args, **kwargs):
         super(CategoryCreateView,self).post(request)
@@ -325,6 +332,7 @@ class CategoryCreateView(LoginRequiredMixin,CreateView):
         UserActivity.objects.create(created_by=self.request.user.username,
                                     target_model=self.model.__name__,
                                     detail =f"Create {self.model.__name__} << {new_cat_name} >>")
+
         return redirect('category_list')
 
 class CategoryDeleteView(LoginRequiredMixin,View):
@@ -336,6 +344,7 @@ class CategoryDeleteView(LoginRequiredMixin,View):
         model_name = delete_cat.__class__.__name__
         messages.error(request, f"Category << {delete_cat.name} >> Removed")
         delete_cat.delete()
+        send_notification(self.request.user,delete_cat,verb=f'Delete Category << {delete_cat.name} >>')
         UserActivity.objects.create(created_by=self.request.user.username,
                             operation_type="danger",
                             target_model=model_name,
@@ -563,6 +572,8 @@ class MemberCreateView(LoginRequiredMixin,CreateView):
         self.object = form.save()
         self.object.created_by = self.request.user.username
         self.object.save(update_fields=['created_by'])
+        send_notification(self.request.user,self.object,f'Add new memeber {self.object.name}')
+    
         return HttpResponseRedirect(self.get_success_url())
 
 
@@ -601,6 +612,9 @@ class MemberDeleteView(LoginRequiredMixin,View):
         model_name = delete_member.__class__.__name__
         messages.error(request, f"Member << {delete_member.name} >> Removed")
         delete_member.delete()
+        send_notification(self.request.user,delete_member,f'Delete member {delete_member.name} ')
+
+
         UserActivity.objects.create(created_by=self.request.user.username,
                     operation_type="danger",
                     target_model=model_name,
@@ -911,4 +925,32 @@ def EmployeeUpdate(request,pk):
             current_user.groups.add(group)
         messages.success(request, f"Group for  << {current_user.username} >> has been updated")
         return redirect('employees_detail', pk=pk)
-        
+
+
+
+# Notice
+
+class CatNoticeListView(SuperUserRequiredMixin, ListView):
+    context_object_name = 'notices'
+    template_name = 'notice_list.html'
+    login_url = 'login'
+
+    # 未读通知的查询集
+    def get_queryset(self):
+        return self.request.user.notifications.unread()
+
+
+class CatNoticeUpdateView(SuperUserRequiredMixin,View):
+    """Update Status of Notification"""
+    # 处理 get 请求
+    def get(self, request):
+        # 获取未读消息
+        notice_id = request.GET.get('notice_id')
+        # 更新单条通知
+        if notice_id:
+            request.user.notifications.get(id=notice_id).mark_as_read()
+            return redirect('category_list')
+        # 更新全部通知
+        else:
+            request.user.notifications.mark_all_as_read()
+            return redirect('notice_list')

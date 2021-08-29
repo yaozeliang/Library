@@ -11,7 +11,7 @@ from django.conf import settings
 from django.conf.urls.static import static
 from .views import BorrowRecordListView,BorrowRecordCreateView,BorrowRecordDeleteView,BorrowRecordDetailView,auto_member,auto_book,BorrowRecordClose
 from .views import DataCenterView,download_data
-from .views import ChartView,global_serach,EmployeeView,EmployeeDetailView,EmployeeUpdate
+from .views import ChartView,global_serach,EmployeeView,EmployeeDetailView,EmployeeUpdate,CatNoticeListView,CatNoticeUpdateView
 
 urlpatterns = [
 
@@ -74,8 +74,11 @@ urlpatterns = [
     # Employee
     path('employees/',EmployeeView.as_view(),name="employees_list"),
     path('employees-detail/<int:pk>',EmployeeDetailView.as_view(),name="employees_detail"),
-    path('employees-update/<int:pk>',EmployeeUpdate,name='employee_update')
+    path('employees-update/<int:pk>',EmployeeUpdate,name='employee_update'),
 
+    # Notice
+    path('notice-list/', CatNoticeListView.as_view(), name='notice_list'),
+    path('notice-update/', CatNoticeUpdateView.as_view(), name='notice_update'),
 ]
 
 

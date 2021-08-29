@@ -1,6 +1,8 @@
 <!-- NOT IMPLEMENTED -->
 <!-- {% load static %} -->
 {% load book_extras %}
+{% load notifications_tags %}
+{% notifications_unread as unread_count %}
 <nav class="navbar navbar-light  justify-content-between">
   <div class="col-6">
     <form  method="post"  action="{% url 'global_search'  %}" class="form-inline" >
@@ -17,12 +19,12 @@
     </form>
   </div>
 
-  <div class="col-4">
+  <div class="col-3">
       {% show_weather %}
   </div>
 
 
-  <div class="col-2 ">
+  <div class="col-3 ">
 
     <div class="nav-item dropdown float-right">
         
@@ -35,12 +37,23 @@
         aria-haspopup="true"
         aria-expanded="false"
       >
+
+      {% if unread_count %}
+            <svg viewBox="0 0 8 8"
+                 width="8px"
+                 height="8px">
+                <circle cx="4"
+                        cy="4"
+                        r="4"
+                        fill="#ff6b6b"
+                        ></circle>
+            </svg>
+        {% endif %}
       {% if user.profile.profile_pic %}
       <img src="{{user.profile.profile_pic.url}}" style="width:30px;height:30px;border-radius:50%;"> 
       {%else%}
       <img src="{% static 'assets/images/user/avatar-2.jpg' %} "style="width:30px;height:30px;border-radius:50%;" alt="">
       {% endif %}
-  
       {{user.username}}
       </h6>
       
@@ -57,6 +70,14 @@
         >
         {% endif %}
         <div class="dropdown-divider"></div>
+
+        {% if request.user.is_superuser %}
+        <a class="dropdown-item" href="{% url 'notice_list' %}">Notification
+          {% if unread_count %}
+          <span class="badge badge-danger">{{ unread_count }}</span>
+        {% endif %}
+       </a>
+       {% endif %}
         <a class="dropdown-item" href="{% url 'logout' %}">Logout</a>
       </div>
 
