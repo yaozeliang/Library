@@ -51,6 +51,9 @@ class Category(models.Model):
     def get_absolute_url(self): 
         return reverse('category_list')
 
+    # class Meta:
+    #     db_table='category'
+
 class Publisher(models.Model):
     
     name = models.CharField(max_length=50, blank=True)

@@ -42,6 +42,9 @@ INSTALLED_APPS = [
     'ckeditor',
     'comment',
     'notifications',
+    # 'elasticsearch-dsl',
+    # 'django_elasticsearch_dsl',
+    # 'django-elasticsearch-dsl-drf',
     ]
 
 CRISPY_ALLOWED_TEMPLATE_PACKS = "tailwind"
@@ -51,7 +54,9 @@ MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'whitenoise.middleware.WhiteNoiseMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
+    'django.middleware.cache.UpdateCacheMiddleware', # Redis
     'django.middleware.common.CommonMiddleware',
+    'django.middleware.cache.FetchFromCacheMiddleware',     # Redis
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
@@ -99,8 +104,8 @@ REST_FRAMEWORK = {
 }
 
 ROOT_URLCONF = 'core.urls'
-LOGIN_REDIRECT_URL = "home"   # Route defined in app/urls.py
-LOGOUT_REDIRECT_URL = "home"  # Route defined in app/urls.py
+LOGIN_REDIRECT_URL = "home"   
+LOGOUT_REDIRECT_URL = "home"  
 TEMPLATE_DIR = os.path.join(BASE_DIR, "templates")  # ROOT dir for templates
 
 TEMPLATES = [
@@ -124,8 +129,6 @@ CRISPY_TEMPLATE_PACK = 'bootstrap4'
 
 WSGI_APPLICATION = 'core.wsgi.application'
 
-# Database
-# https://docs.djangoproject.com/en/3.0/ref/settings/#databases
 
 DATABASES = {
     'default': {
@@ -152,9 +155,12 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
+ELASTICSEARCH_DSL={
+    'default': {
+        'hosts': 'localhost:9200'
+    },
+}
 
-# Internationalization
-# https://docs.djangoproject.com/en/3.0/topics/i18n/
 
 LANGUAGE_CODE = 'en-us'
 
@@ -167,11 +173,52 @@ USE_L10N = True
 
 USE_TZ = True
 
-#############################################################
-# SRC: https://devcenter.heroku.com/articles/django-assets
 
-# Static files (CSS, JavaScript, Images)
-# https://docs.djangoproject.com/en/1.9/howto/static-files/
+LOGGING_DIR = os.path.join(BASE_DIR, 'logging')
+
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'formatters': {
+        'simple': {
+            'format': '%(asctime)s %(name)-12s %(lineno)d %(levelname)-8s %(message)s',
+        },
+    },
+    'handlers': {
+        "console": {
+            'class': "logging.StreamHandler",
+            'formatter': 'simple',
+        },
+        'mail_admins': {
+            'level': "ERROR",
+            'class': 'django.utils.log.AdminEmailHandler',
+        },
+        'file': {
+            'level': 'INFO',
+            'class': "logging.FileHandler",
+            'formatter': 'simple',
+            'filename': os.path.join(LOGGING_DIR, 'book.admin.log'),
+        },
+        'performance': {
+            'level': 'INFO',
+            'class': 'logging.FileHandler',
+            'formatter': 'simple',
+            'filename': os.path.join(LOGGING_DIR, 'book.performance.log'),
+        },
+    },
+
+    'root': {
+        'handlers': ['console', 'file'],
+        'level': 'INFO',
+    },
+    'loggers': {
+        "interview.performance": {
+            "handlers": ["console", "performance"],
+            "level": "INFO",
+            "propagate": False,
+        },
+    },
+}
 
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 STATIC_URL = '/static/'
@@ -185,3 +232,17 @@ MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
 DATA_URL = '/data/'
 DATA_ROOT = os.path.join(BASE_DIR, 'data')
+
+
+CACHES = {
+    "default": {
+        "BACKEND": "django_redis.cache.RedisCache",
+        "LOCATION": "redis://127.0.0.1:6379/1",
+        "OPTIONS": {
+            "CLIENT_CLASS": "django_redis.client.DefaultClient",
+            # "PASSWORD": "mysecret"
+            "SOCKET_CONNECT_TIMEOUT": 5,  
+            "SOCKET_TIMEOUT": 5,  
+        }
+    }
+}

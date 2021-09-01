@@ -112,7 +112,8 @@
 
                                 <a href="{% url 'record_list' %}" class='btn btn-primary'>Return list</a>
 
-                                {% if record.get_open_or_close_display == "Open"  %}
+                                {% if record.open_or_close == 0 %}
+
                                 <a href="{% url 'record_close' record.pk %}" class='btn btn-danger'>Close Record (Book returned)</a>
                                 {% endif %}
                             </div>

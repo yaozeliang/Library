@@ -44,6 +44,10 @@ from comment.models import Comment
 from comment.forms import CommentForm
 from notifications.signals import notify
 from .notification import send_notification
+import logging
+
+logger = logging.getLogger(__name__)
+
 
 
 TODAY=get_n_days_ago(0,"%Y%m%d")
@@ -207,7 +211,7 @@ class BookDetailView(LoginRequiredMixin,DetailView):
     template_name = 'book/book_detail.html'
     login_url = 'login'
     comment_form = CommentForm()
-
+    
     # def get_object(self, queryset=None):
     #     obj = super(BookDetailView, self).get_object(queryset=queryset)
     #     return obj
@@ -215,6 +219,7 @@ class BookDetailView(LoginRequiredMixin,DetailView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         current_book_name = self.get_object().title
+        logger.info(f'Book  <<{current_book_name}>> retrieved from db')
         comments = Comment.objects.filter(book=self.get_object().id)
         related_records = BorrowRecord.objects.filter(book=current_book_name)
         context['related_records'] = related_records
@@ -317,23 +322,19 @@ class CategoryCreateView(LoginRequiredMixin,CreateView):
     model=Category
     fields=['name']
     template_name='book/category_create.html'
+    success_url = reverse_lazy('category_list')
 
     def form_valid(self, form):
         new_cat = form.save(commit=False)
         new_cat.save()
         send_notification(self.request.user,new_cat,verb=f'Add New Category << {new_cat.name} >>')
+        logger.info(f'{self.request.user} created Category {new_cat.name}')
+        UserActivity.objects.create(created_by=self.request.user.username,
+                                    target_model=self.model.__name__,
+                                    detail =f"Create {self.model.__name__} << {new_cat.name} >>")
         return super(CategoryCreateView, self).form_valid(form)
 
 
-    def post(self,request, *args, **kwargs):
-        super(CategoryCreateView,self).post(request)
-        new_cat_name = request.POST['name']
-        messages.success(request, f"Category << {new_cat_name} >> Added")
-        UserActivity.objects.create(created_by=self.request.user.username,
-                                    target_model=self.model.__name__,
-                                    detail =f"Create {self.model.__name__} << {new_cat_name} >>")
-
-        return redirect('category_list')
 
 class CategoryDeleteView(LoginRequiredMixin,View):
     login_url = 'login'
@@ -349,6 +350,9 @@ class CategoryDeleteView(LoginRequiredMixin,View):
                             operation_type="danger",
                             target_model=model_name,
                             detail =f"Delete {model_name} << {delete_cat.name} >>")
+
+        logger.info(f'{self.request.user} delete Category {delete_cat.name}')
+
         return HttpResponseRedirect(reverse("category_list"))
 
 
@@ -397,15 +401,29 @@ class PublisherCreateView(LoginRequiredMixin,CreateView):
     login_url = 'login'
     form_class=PubCreateEditForm
     template_name='book/publisher_create.html'
+    success_url = reverse_lazy('publisher_list')
 
-    def post(self,request, *args, **kwargs):
-        super(PublisherCreateView,self).post(request)
-        new_publisher_name = request.POST['name']
-        messages.success(request, f"New Publisher << {new_publisher_name} >> Added")
+
+    def form_valid(self,form):
+        new_pub = form.save(commit=False)
+        new_pub.save()
+        messages.success(self.request, f"New Publisher << {new_pub.name} >> Added")
+        send_notification(self.request.user,new_pub,verb=f'Add New Publisher << {new_pub.name} >>')
+        logger.info(f'{self.request.user} created Publisher {new_pub.name}')
+
         UserActivity.objects.create(created_by=self.request.user.username,
                                     target_model=self.model.__name__,
-                                    detail =f"Create {self.model.__name__} << {new_publisher_name} >>")
-        return redirect('publisher_list')
+                                    detail =f"Create {self.model.__name__} << {new_pub.name} >>")
+        return super(PublisherCreateView, self).form_valid(form)
+
+    # def post(self,request, *args, **kwargs):
+    #     super(PublisherCreateView,self).post(request)
+    #     new_publisher_name = request.POST['name']
+    #     messages.success(request, f"New Publisher << {new_publisher_name} >> Added")
+    #     UserActivity.objects.create(created_by=self.request.user.username,
+    #                                 target_model=self.model.__name__,
+    #                                 detail =f"Create {self.model.__name__} << {new_publisher_name} >>")
+    #     return redirect('publisher_list')
 
 class PublisherUpdateView(LoginRequiredMixin,UpdateView):
     model=Publisher
@@ -437,6 +455,8 @@ class PublisherDeleteView(LoginRequiredMixin,View):
         model_name = delete_pub.__class__.__name__
         messages.error(request, f"Publisher << {delete_pub.name} >> Removed")
         delete_pub.delete()
+        send_notification(self.request.user,delete_pub,verb=f'Delete Publisher << {delete_pub.name} >>')
+        logger.info(f'{self.request.user} delete Publisher {delete_pub.name}')
         UserActivity.objects.create(created_by=self.request.user.username,
                     operation_type="danger",
                     target_model=model_name,
@@ -810,6 +830,8 @@ class BorrowRecordClose(LoginRequiredMixin,View):
         close_record.delay_days = close_record.get_delay_number_days
         close_record.open_or_close = 1
         close_record.save()
+        print(close_record.open_or_close,close_record.final_status,close_record.pk)
+        
 
         borrowed_book = Book.objects.get(title=close_record.book)
         borrowed_book.quantity+=1
@@ -930,7 +952,7 @@ def EmployeeUpdate(request,pk):
 
 # Notice
 
-class CatNoticeListView(SuperUserRequiredMixin, ListView):
+class NoticeListView(SuperUserRequiredMixin, ListView):
     context_object_name = 'notices'
     template_name = 'notice_list.html'
     login_url = 'login'
@@ -940,7 +962,7 @@ class CatNoticeListView(SuperUserRequiredMixin, ListView):
         return self.request.user.notifications.unread()
 
 
-class CatNoticeUpdateView(SuperUserRequiredMixin,View):
+class NoticeUpdateView(SuperUserRequiredMixin,View):
     """Update Status of Notification"""
     # 处理 get 请求
     def get(self, request):
