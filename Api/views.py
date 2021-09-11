@@ -59,6 +59,11 @@ def CategoryList(request):
 	serializer = CategorySerializer(cats, many=True)
 	return Response(serializer.data)
 
+# One function with CRUD , including type "PUT","GET","POST","DELETE"
+# class CategoryList(viewsets.ModelViewSet):
+#     serializer_class = CategorySerializer
+#     queryset = Category.objects.all().order_by('-created_at')
+
 
 @api_view(['POST'])
 @permission_classes((permissions.IsAuthenticated,))

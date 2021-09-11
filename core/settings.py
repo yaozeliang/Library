@@ -42,9 +42,7 @@ INSTALLED_APPS = [
     'ckeditor',
     'comment',
     'notifications',
-    # 'elasticsearch-dsl',
-    # 'django_elasticsearch_dsl',
-    # 'django-elasticsearch-dsl-drf',
+    'flatpickr',
     ]
 
 CRISPY_ALLOWED_TEMPLATE_PACKS = "tailwind"
@@ -54,9 +52,9 @@ MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'whitenoise.middleware.WhiteNoiseMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
-    'django.middleware.cache.UpdateCacheMiddleware', # Redis
+    # 'django.middleware.cache.UpdateCacheMiddleware', # Redis
     'django.middleware.common.CommonMiddleware',
-    'django.middleware.cache.FetchFromCacheMiddleware',     # Redis
+    # 'django.middleware.cache.FetchFromCacheMiddleware',     # Redis
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
@@ -128,7 +126,6 @@ TEMPLATES = [
 CRISPY_TEMPLATE_PACK = 'bootstrap4'
 
 WSGI_APPLICATION = 'core.wsgi.application'
-
 
 DATABASES = {
     'default': {
@@ -234,15 +231,15 @@ DATA_URL = '/data/'
 DATA_ROOT = os.path.join(BASE_DIR, 'data')
 
 
-CACHES = {
-    "default": {
-        "BACKEND": "django_redis.cache.RedisCache",
-        "LOCATION": "redis://127.0.0.1:6379/1",
-        "OPTIONS": {
-            "CLIENT_CLASS": "django_redis.client.DefaultClient",
-            # "PASSWORD": "mysecret"
-            "SOCKET_CONNECT_TIMEOUT": 5,  
-            "SOCKET_TIMEOUT": 5,  
-        }
-    }
-}
+# CACHES = {
+#     "default": {
+#         "BACKEND": "django_redis.cache.RedisCache",
+#         "LOCATION": "redis://127.0.0.1:6379/1",
+#         "OPTIONS": {
+#             "CLIENT_CLASS": "django_redis.client.DefaultClient",
+#             # "PASSWORD": "mysecret"
+#             "SOCKET_CONNECT_TIMEOUT": 5,  
+#             "SOCKET_TIMEOUT": 5,  
+#         }
+#     }
+# }

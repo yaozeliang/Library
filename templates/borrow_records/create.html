@@ -69,13 +69,22 @@ $( "#id_book" ).autocomplete({
   source: "{% url 'auto_book_name' %}",
 });
 
-$("#id_start_day").datetimepicker( {
-       format:'Y-m-d',
-  });
+// $("#id_start_day").datetimepicker( {
+//     //    format:'Y-m-d H:i',
+//     // dateFormat: "yy-mm-dd H:i:ss"
+    
+//   });
 
- $("#id_end_day").datetimepicker( {
-       format:'Y-m-d',
-  });
+//  $("#id_end_day").datetimepicker();
+
+//  $(".datepicker").datepicker(
+//     {
+//         dateFormat: "yy-mm-dd",
+//         changeYear:true,
+//         changeMonth:true,
+//   }
+//  )
+
 } );
 </script>
 

@@ -54,6 +54,8 @@ urlpatterns = [
 
     # BorrowRecords
     path('record-create/',BorrowRecordCreateView.as_view(),name="record_create"),
+    # path('record-create/',record_create,name="record_create"),
+
     path('record-create-autocomplete-member-name/',auto_member,name="auto_member_name"),
     path('record-create-autocomplete-book-name/',auto_book,name="auto_book_name"),
     path('record-list/',BorrowRecordListView.as_view(),name="record_list"),
