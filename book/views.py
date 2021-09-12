@@ -33,7 +33,7 @@ from .forms import BookCreateEditForm,PubCreateEditForm,MemberCreateEditForm,Pro
 
 # from .utils import get_n_days_ago,create_clean_dir,change_col_format
 from util.useful import get_n_days_ago,create_clean_dir,change_col_format
-from .groups_permissions import check_user_group,user_groups,check_superuser,SuperUserRequiredMixin
+from .groups_permissions import check_user_group,user_groups,check_superuser,SuperUserRequiredMixin,allowed_groups
 from .custom_filter import get_item
 from datetime import date,timedelta,datetime
 
@@ -463,7 +463,8 @@ class PublisherDeleteView(LoginRequiredMixin,View):
 
 
 # User Logs  
-@method_decorator(user_passes_test(lambda u: u.has_perm("book.view_useractivity")), name='dispatch')
+# @method_decorator(user_passes_test(lambda u: u.has_perm("book.view_useractivity")), name='dispatch')
+@method_decorator(allowed_groups(group_name=['logs']), name='dispatch')
 class ActivityListView(LoginRequiredMixin,ListView):
 
     login_url = 'login'
@@ -517,7 +518,8 @@ class ActivityListView(LoginRequiredMixin,ListView):
         return context
 
 
-@method_decorator(user_passes_test(lambda u: u.has_perm("book.delete_useractivity")), name='dispatch')
+# @method_decorator(user_passes_test(lambda u: u.has_perm("book.delete_useractivity")), name='dispatch')
+@method_decorator(allowed_groups(group_name=['logs']), name='dispatch')
 class ActivityDeleteView(LoginRequiredMixin,View):
 
     login_url = 'login'
@@ -740,74 +742,8 @@ class BorrowRecordCreateView(LoginRequiredMixin,CreateView):
 
  
     # def post(self,request, *args, **kwargs):
-    #     super(BorrowRecordCreateView,self).post(request)
 
-    #     start_day = request.POST['start_day']
-
-    #     selected_member= Member.objects.get(name=request.POST['borrower'])
-    #     selected_book = Book.objects.get(title=request.POST['book'])
-  
-    #     # Change field on Model Book
-    #     selected_book.status=0
-    #     selected_book.total_borrow_times+=1
-    #     selected_book.quantity-=int(request.POST['quantity'])
-    #     selected_book.save()
-
-    #     # Create Log 
-    #     borrower_name = selected_member.name
-    #     book_name = selected_book.title
-    #     messages.success(request, f" '{borrower_name}' borrowed <<{book_name}>>")
-    #     UserActivity.objects.create(created_by=self.request.user.username,
-    #                                 target_model=self.model.__name__,
-    #                                 detail =f" '{borrower_name}' borrowed <<{book_name}>>")
     #     return redirect('record_list')
-
-# @login_required(login_url='login')
-# def record_create(request):
-#     # 判断用户是否提交数据
-#     if request.method == "POST":
-#         record_post_form = BorrowRecordCreateForm(request.POST)
-#         # 判断提交的数据是否满足模型的要求
-#         if record_post_form.is_valid():
-#             new_record = record_post_form.save(commit=False)
-
-
-#             selected_member= get_object_or_404(Member,name = record_post_form.cleaned_data['borrower'] )
-#             selected_book = Book.objects.get(title=record_post_form.cleaned_data['book'])
-#             new_record.borrower_card = selected_member.card_number
-#             new_record.borrower_email = selected_member.email
-#             new_record.borrower_phone_number = selected_member.phone_number
-#             new_record.created_by = request.user.username
-#             # print(datetime.strptime(record_post_form.cleaned_data['start_day'], "%Y/%m/%d %H:%M:%S"))
-#             # print(datetime.strptime(record_post_form.cleaned_data['end_day'], "%Y/%m/%d %H:%M:%S"))
-
-#             new_record.start_day = datetime.strptime(record_post_form.cleaned_data['start_day'],"%Y-%m-%d %H:%M:%S")
-#             new_record.end_day = datetime.strptime(record_post_form.cleaned_data['end_day'],"%Y-%m-%d %H:%M:%S")
-#             new_record.save()
-
-#                     # Change field on Model Book
-#             selected_book.status=0
-#             selected_book.total_borrow_times+=1
-#             selected_book.quantity-=int(request.POST['quantity'])
-#             selected_book.save()
-
-#             # Create Log 
-#             borrower_name = selected_member.name
-#             book_name = selected_book.title
-#             messages.success(request, f" '{borrower_name}' borrowed <<{book_name}>>")
-#             UserActivity.objects.create(created_by=request.user.username,
-#                                         target_model='BorrowRecord',
-#                                         detail =f" '{borrower_name}' borrowed <<{book_name}>>")
-#             return redirect("record_list")
-#         else:
-#             print(record_post_form.errors)
-#             return HttpResponse("Error with form")
-#     # 如果用户请求获取数据
-#     else:
-#         record_post_form = BorrowRecordCreateForm()
-#         context = { 'form': record_post_form, }
-
-#         return render(request, 'borrow_records/create.html', context)
 
 
 
@@ -931,12 +867,13 @@ class BorrowRecordClose(LoginRequiredMixin,View):
 
 
 # Data center
+@method_decorator(allowed_groups(group_name=['download_data']), name='dispatch')
 class DataCenterView(LoginRequiredMixin,TemplateView):
     template_name = 'book/download_data.html'
     login_url = 'login'
 
     def get(self,request,*args, **kwargs):
-        check_user_group(request.user,"download_data")
+        # check_user_group(request.user,"download_data")
         data = {m.objects.model._meta.db_table:
         {"source":pd.DataFrame(list(m.objects.all().values())) ,
           "path":f"{str(settings.BASE_DIR)}/datacenter/{m.__name__}_{TODAY}.csv",
@@ -946,6 +883,7 @@ class DataCenterView(LoginRequiredMixin,TemplateView):
         return render(request,self.template_name,context={'model_list':count_total})
 
 @login_required(login_url='login')
+@allowed_groups(group_name=['download_data'])
 def download_data(request,model_name):
     check_user_group(request.user,"download_data")
             
