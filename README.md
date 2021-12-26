@@ -1,5 +1,6 @@
-# Dependency issue fixed （2021/12/26）
-repair dependencies issue
+## Dependency issue fixed （2021/12/26）
+ - fix dependencies issue
+ - python version used in project: 3.10
 
 ## Run project (2021/10)
 
