@@ -12,10 +12,9 @@ __pycache__/
 # venv
 # env
 # venv
-
+*.log
 # other
 .DS_Store
-
 # javascript
 package-lock.json
 
