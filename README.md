@@ -3,7 +3,7 @@
  - python version used in project: 3.10
  - if problem appears when trying to install requeirements.txt, try to manually install with command `pip install <package name>`
 
-## Run project (2021/10)
+## Run project (2022/01/16)
 
 ```bash
 $ # Download
