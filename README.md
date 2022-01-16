@@ -6,9 +6,16 @@
 ## Run project (2021/10)
 
 ```bash
+$ # Download
+$ git clone https://github.com/yaozeliang/Library.git
+$ cd Library
+
+$ # Install vierual environment
+$ pip install virtualenv
+$ virtualenv envname
+
 $ # Activae virtual env
-$ cd env\Scripts
-$ activate
+$ envname\scripts\activate
 
 $cd ../..
 $ pip3 install -r requirements.txt
