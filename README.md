@@ -28,5 +28,10 @@ $ # Start the application
 $ python manage.py runserver 
 
 ```
+## Other issues
+ - No type convention or comments
+ - No unit/function test implemented
+ - No performance improvements yet
+
 ## Another way to download project
 https://katfile.com/users/alphaglobalus/114645/Django%E5%9B%BE%E4%B9%A6%E9%A6%86%E9%A1%B9%E7%9B%AE%E5%93%94%E5%93%A9%E5%93%94%E5%93%A9
