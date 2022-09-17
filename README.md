@@ -1,3 +1,7 @@
+## Note （2021/12/26）
+ - No typing or test function in app
+ 
+
 ## Dependency issue fixed （2021/12/26）
  - fix dependencies issue
  - python version used in project: 3.10
