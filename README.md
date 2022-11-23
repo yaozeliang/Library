@@ -1,5 +1,6 @@
-## Note （2021/12/26）
- - No typing or test function in app
+## Note （2022/10/26）
+ - No typing annotation or tests functions in app  (please add your own testcase with module pytest or unitest)
+ - One bug found: Failed to access userprofile page if the user doesn't have the portrait, it will work if you upload the portrait 
  
 
 ## Dependency issue fixed （2021/12/26）
