@@ -1,4 +1,6 @@
-## Note （2022/10/26）
+## Note （2023/05/03）
+ - There's no dockerfile in this exercice project, better to build one
+ - Consider to replace sqlite with PostgresSQL and build a docker-compose file
  - No typing annotation or tests functions in app  (please add your own testcase and type annotation...)
  - One bug found: Failed to access userprofile page if the user doesn't have the portrait, it will work if you upload the portrait 
  
