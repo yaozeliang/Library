@@ -1,4 +1,6 @@
-# -*- encoding: utf-8 -*-
+"""Core Django application configuration.
+
+This module contains the core Django application settings and configuration.
 """
-Copyright (c) 2019 - present AppSeed.us
-"""
+
+default_app_config = "core.apps.CoreConfig"

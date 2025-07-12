@@ -1,5 +1,4 @@
-<!-- NOT IMPLEMENTED -->
-<!-- {% load static %} -->
+{% load static %}
 {% load book_extras %}
 {% load notifications_tags %}
 {% notifications_unread as unread_count %}
@@ -52,7 +51,7 @@
       {% if user.profile.profile_pic %}
       <img src="{{user.profile.profile_pic.url}}" style="width:30px;height:30px;border-radius:50%;"> 
       {%else%}
-      <img src="{% static 'assets/images/user/avatar-2.jpg' %} "style="width:30px;height:30px;border-radius:50%;" alt="">
+      <img src="{% static 'assets/images/user/avatar-2.jpg' %}" style="width:30px;height:30px;border-radius:50%;" alt="">
       {% endif %}
       {{user.username}}
       </h6>

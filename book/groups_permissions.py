@@ -23,20 +23,17 @@ def check_user_group(user,group_name):
 
 
 def allowed_groups(group_name=[]):
-	def decorator(view_func):
-		def wrapper_func(request, *args, **kwargs):
-            
-
-			group = None
-			if request.user.groups.exists():
-				group = request.user.groups.all()[0].name
-
-			if group in group_name:
-				return view_func(request, *args, **kwargs)
-			else:
-				raise PermissionDenied("You do not have permission to access this Page")
-		return wrapper_func
-	return decorator
+    def decorator(view_func):
+        def wrapper_func(request, *args, **kwargs):
+            if request.user.is_superuser:
+                return view_func(request, *args, **kwargs)
+            user_groups = request.user.groups.values_list('name', flat=True)
+            if any(g in group_name for g in user_groups):
+                return view_func(request, *args, **kwargs)
+            else:
+                raise PermissionDenied("You do not have permission to access this Page")
+        return wrapper_func
+    return decorator
 
 
 

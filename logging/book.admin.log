@@ -3,3 +3,387 @@
 2021-12-26 13:50:24,114 django.utils.autoreload 597 INFO     Watching for file changes with StatReloader
 2021-12-26 15:30:13,716 django.utils.autoreload 597 INFO     Watching for file changes with StatReloader
 2021-12-27 13:28:28,699 django.utils.autoreload 597 INFO     Watching for file changes with StatReloader
+2022-01-23 21:50:31,933 django.utils.autoreload 637 INFO     Watching for file changes with StatReloader
+2025-07-12 23:33:33,049 django.utils.autoreload 597 INFO     Watching for file changes with StatReloader
+2025-07-12 23:42:13,628 django.request 222 WARNING  Forbidden (Permission denied): /user-activity-list
+Traceback (most recent call last):
+  File "D:\DjangoProject\Library\.venv\lib\site-packages\django\core\handlers\exception.py", line 34, in inner
+    response = get_response(request)
+  File "D:\DjangoProject\Library\.venv\lib\site-packages\django\core\handlers\base.py", line 115, in _get_response
+    response = self.process_exception_by_middleware(e, request)
+  File "D:\DjangoProject\Library\.venv\lib\site-packages\django\core\handlers\base.py", line 113, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+  File "D:\DjangoProject\Library\.venv\lib\site-packages\django\views\generic\base.py", line 71, in view
+    return self.dispatch(request, *args, **kwargs)
+  File "D:\DjangoProject\Library\.venv\lib\site-packages\django\utils\decorators.py", line 45, in _wrapper
+    return bound_method(*args, **kwargs)
+  File "D:\DjangoProject\Library\book\groups_permissions.py", line 37, in wrapper_func
+    raise PermissionDenied("You do not have permission to access this Page")
+django.core.exceptions.PermissionDenied: You do not have permission to access this Page
+2025-07-12 23:43:56,839 django.request 222 WARNING  Forbidden (Permission denied): /user-activity-list
+Traceback (most recent call last):
+  File "D:\DjangoProject\Library\.venv\lib\site-packages\django\core\handlers\exception.py", line 34, in inner
+    response = get_response(request)
+  File "D:\DjangoProject\Library\.venv\lib\site-packages\django\core\handlers\base.py", line 115, in _get_response
+    response = self.process_exception_by_middleware(e, request)
+  File "D:\DjangoProject\Library\.venv\lib\site-packages\django\core\handlers\base.py", line 113, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+  File "D:\DjangoProject\Library\.venv\lib\site-packages\django\views\generic\base.py", line 71, in view
+    return self.dispatch(request, *args, **kwargs)
+  File "D:\DjangoProject\Library\.venv\lib\site-packages\django\utils\decorators.py", line 45, in _wrapper
+    return bound_method(*args, **kwargs)
+  File "D:\DjangoProject\Library\book\groups_permissions.py", line 37, in wrapper_func
+    raise PermissionDenied("You do not have permission to access this Page")
+django.core.exceptions.PermissionDenied: You do not have permission to access this Page
+2025-07-12 23:44:02,823 django.request 222 WARNING  Forbidden (Permission denied): /user-activity-list
+Traceback (most recent call last):
+  File "D:\DjangoProject\Library\.venv\lib\site-packages\django\core\handlers\exception.py", line 34, in inner
+    response = get_response(request)
+  File "D:\DjangoProject\Library\.venv\lib\site-packages\django\core\handlers\base.py", line 115, in _get_response
+    response = self.process_exception_by_middleware(e, request)
+  File "D:\DjangoProject\Library\.venv\lib\site-packages\django\core\handlers\base.py", line 113, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+  File "D:\DjangoProject\Library\.venv\lib\site-packages\django\views\generic\base.py", line 71, in view
+    return self.dispatch(request, *args, **kwargs)
+  File "D:\DjangoProject\Library\.venv\lib\site-packages\django\utils\decorators.py", line 45, in _wrapper
+    return bound_method(*args, **kwargs)
+  File "D:\DjangoProject\Library\book\groups_permissions.py", line 37, in wrapper_func
+    raise PermissionDenied("You do not have permission to access this Page")
+django.core.exceptions.PermissionDenied: You do not have permission to access this Page
+2025-07-12 23:44:04,407 django.request 222 WARNING  Forbidden (Permission denied): /user-activity-list
+Traceback (most recent call last):
+  File "D:\DjangoProject\Library\.venv\lib\site-packages\django\core\handlers\exception.py", line 34, in inner
+    response = get_response(request)
+  File "D:\DjangoProject\Library\.venv\lib\site-packages\django\core\handlers\base.py", line 115, in _get_response
+    response = self.process_exception_by_middleware(e, request)
+  File "D:\DjangoProject\Library\.venv\lib\site-packages\django\core\handlers\base.py", line 113, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+  File "D:\DjangoProject\Library\.venv\lib\site-packages\django\views\generic\base.py", line 71, in view
+    return self.dispatch(request, *args, **kwargs)
+  File "D:\DjangoProject\Library\.venv\lib\site-packages\django\utils\decorators.py", line 45, in _wrapper
+    return bound_method(*args, **kwargs)
+  File "D:\DjangoProject\Library\book\groups_permissions.py", line 37, in wrapper_func
+    raise PermissionDenied("You do not have permission to access this Page")
+django.core.exceptions.PermissionDenied: You do not have permission to access this Page
+2025-07-12 23:44:06,139 django.request 222 WARNING  Forbidden (Permission denied): /user-activity-list
+Traceback (most recent call last):
+  File "D:\DjangoProject\Library\.venv\lib\site-packages\django\core\handlers\exception.py", line 34, in inner
+    response = get_response(request)
+  File "D:\DjangoProject\Library\.venv\lib\site-packages\django\core\handlers\base.py", line 115, in _get_response
+    response = self.process_exception_by_middleware(e, request)
+  File "D:\DjangoProject\Library\.venv\lib\site-packages\django\core\handlers\base.py", line 113, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+  File "D:\DjangoProject\Library\.venv\lib\site-packages\django\views\generic\base.py", line 71, in view
+    return self.dispatch(request, *args, **kwargs)
+  File "D:\DjangoProject\Library\.venv\lib\site-packages\django\utils\decorators.py", line 45, in _wrapper
+    return bound_method(*args, **kwargs)
+  File "D:\DjangoProject\Library\book\groups_permissions.py", line 37, in wrapper_func
+    raise PermissionDenied("You do not have permission to access this Page")
+django.core.exceptions.PermissionDenied: You do not have permission to access this Page
+2025-07-12 23:44:17,182 django.utils.autoreload 597 INFO     Watching for file changes with StatReloader
+2025-07-12 23:44:20,539 django.request 222 WARNING  Forbidden (Permission denied): /user-activity-list
+Traceback (most recent call last):
+  File "D:\DjangoProject\Library\.venv\lib\site-packages\django\core\handlers\exception.py", line 34, in inner
+    response = get_response(request)
+  File "D:\DjangoProject\Library\.venv\lib\site-packages\django\core\handlers\base.py", line 115, in _get_response
+    response = self.process_exception_by_middleware(e, request)
+  File "D:\DjangoProject\Library\.venv\lib\site-packages\django\core\handlers\base.py", line 113, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+  File "D:\DjangoProject\Library\.venv\lib\site-packages\django\views\generic\base.py", line 71, in view
+    return self.dispatch(request, *args, **kwargs)
+  File "D:\DjangoProject\Library\.venv\lib\site-packages\django\utils\decorators.py", line 45, in _wrapper
+    return bound_method(*args, **kwargs)
+  File "D:\DjangoProject\Library\book\groups_permissions.py", line 37, in wrapper_func
+    raise PermissionDenied("You do not have permission to access this Page")
+django.core.exceptions.PermissionDenied: You do not have permission to access this Page
+2025-07-12 23:44:22,506 django.request 222 WARNING  Forbidden (Permission denied): /user-activity-list
+Traceback (most recent call last):
+  File "D:\DjangoProject\Library\.venv\lib\site-packages\django\core\handlers\exception.py", line 34, in inner
+    response = get_response(request)
+  File "D:\DjangoProject\Library\.venv\lib\site-packages\django\core\handlers\base.py", line 115, in _get_response
+    response = self.process_exception_by_middleware(e, request)
+  File "D:\DjangoProject\Library\.venv\lib\site-packages\django\core\handlers\base.py", line 113, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+  File "D:\DjangoProject\Library\.venv\lib\site-packages\django\views\generic\base.py", line 71, in view
+    return self.dispatch(request, *args, **kwargs)
+  File "D:\DjangoProject\Library\.venv\lib\site-packages\django\utils\decorators.py", line 45, in _wrapper
+    return bound_method(*args, **kwargs)
+  File "D:\DjangoProject\Library\book\groups_permissions.py", line 37, in wrapper_func
+    raise PermissionDenied("You do not have permission to access this Page")
+django.core.exceptions.PermissionDenied: You do not have permission to access this Page
+2025-07-12 23:44:23,290 django.request 222 WARNING  Forbidden (Permission denied): /user-activity-list
+Traceback (most recent call last):
+  File "D:\DjangoProject\Library\.venv\lib\site-packages\django\core\handlers\exception.py", line 34, in inner
+    response = get_response(request)
+  File "D:\DjangoProject\Library\.venv\lib\site-packages\django\core\handlers\base.py", line 115, in _get_response
+    response = self.process_exception_by_middleware(e, request)
+  File "D:\DjangoProject\Library\.venv\lib\site-packages\django\core\handlers\base.py", line 113, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+  File "D:\DjangoProject\Library\.venv\lib\site-packages\django\views\generic\base.py", line 71, in view
+    return self.dispatch(request, *args, **kwargs)
+  File "D:\DjangoProject\Library\.venv\lib\site-packages\django\utils\decorators.py", line 45, in _wrapper
+    return bound_method(*args, **kwargs)
+  File "D:\DjangoProject\Library\book\groups_permissions.py", line 37, in wrapper_func
+    raise PermissionDenied("You do not have permission to access this Page")
+django.core.exceptions.PermissionDenied: You do not have permission to access this Page
+2025-07-12 23:44:23,810 django.request 222 WARNING  Forbidden (Permission denied): /user-activity-list
+Traceback (most recent call last):
+  File "D:\DjangoProject\Library\.venv\lib\site-packages\django\core\handlers\exception.py", line 34, in inner
+    response = get_response(request)
+  File "D:\DjangoProject\Library\.venv\lib\site-packages\django\core\handlers\base.py", line 115, in _get_response
+    response = self.process_exception_by_middleware(e, request)
+  File "D:\DjangoProject\Library\.venv\lib\site-packages\django\core\handlers\base.py", line 113, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+  File "D:\DjangoProject\Library\.venv\lib\site-packages\django\views\generic\base.py", line 71, in view
+    return self.dispatch(request, *args, **kwargs)
+  File "D:\DjangoProject\Library\.venv\lib\site-packages\django\utils\decorators.py", line 45, in _wrapper
+    return bound_method(*args, **kwargs)
+  File "D:\DjangoProject\Library\book\groups_permissions.py", line 37, in wrapper_func
+    raise PermissionDenied("You do not have permission to access this Page")
+django.core.exceptions.PermissionDenied: You do not have permission to access this Page
+2025-07-12 23:44:48,946 django.request 222 WARNING  Forbidden (Permission denied): /user-activity-list
+Traceback (most recent call last):
+  File "D:\DjangoProject\Library\.venv\lib\site-packages\django\core\handlers\exception.py", line 34, in inner
+    response = get_response(request)
+  File "D:\DjangoProject\Library\.venv\lib\site-packages\django\core\handlers\base.py", line 115, in _get_response
+    response = self.process_exception_by_middleware(e, request)
+  File "D:\DjangoProject\Library\.venv\lib\site-packages\django\core\handlers\base.py", line 113, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+  File "D:\DjangoProject\Library\.venv\lib\site-packages\django\views\generic\base.py", line 71, in view
+    return self.dispatch(request, *args, **kwargs)
+  File "D:\DjangoProject\Library\.venv\lib\site-packages\django\utils\decorators.py", line 45, in _wrapper
+    return bound_method(*args, **kwargs)
+  File "D:\DjangoProject\Library\book\groups_permissions.py", line 37, in wrapper_func
+    raise PermissionDenied("You do not have permission to access this Page")
+django.core.exceptions.PermissionDenied: You do not have permission to access this Page
+2025-07-12 23:45:50,640 django.request 222 WARNING  Forbidden (Permission denied): /user-activity-list
+Traceback (most recent call last):
+  File "D:\DjangoProject\Library\.venv\lib\site-packages\django\core\handlers\exception.py", line 34, in inner
+    response = get_response(request)
+  File "D:\DjangoProject\Library\.venv\lib\site-packages\django\core\handlers\base.py", line 115, in _get_response
+    response = self.process_exception_by_middleware(e, request)
+  File "D:\DjangoProject\Library\.venv\lib\site-packages\django\core\handlers\base.py", line 113, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+  File "D:\DjangoProject\Library\.venv\lib\site-packages\django\views\generic\base.py", line 71, in view
+    return self.dispatch(request, *args, **kwargs)
+  File "D:\DjangoProject\Library\.venv\lib\site-packages\django\utils\decorators.py", line 45, in _wrapper
+    return bound_method(*args, **kwargs)
+  File "D:\DjangoProject\Library\book\groups_permissions.py", line 37, in wrapper_func
+    raise PermissionDenied("You do not have permission to access this Page")
+django.core.exceptions.PermissionDenied: You do not have permission to access this Page
+2025-07-12 23:46:18,306 django.request 222 WARNING  Forbidden (Permission denied): /user-activity-list
+Traceback (most recent call last):
+  File "D:\DjangoProject\Library\.venv\lib\site-packages\django\core\handlers\exception.py", line 34, in inner
+    response = get_response(request)
+  File "D:\DjangoProject\Library\.venv\lib\site-packages\django\core\handlers\base.py", line 115, in _get_response
+    response = self.process_exception_by_middleware(e, request)
+  File "D:\DjangoProject\Library\.venv\lib\site-packages\django\core\handlers\base.py", line 113, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+  File "D:\DjangoProject\Library\.venv\lib\site-packages\django\views\generic\base.py", line 71, in view
+    return self.dispatch(request, *args, **kwargs)
+  File "D:\DjangoProject\Library\.venv\lib\site-packages\django\utils\decorators.py", line 45, in _wrapper
+    return bound_method(*args, **kwargs)
+  File "D:\DjangoProject\Library\book\groups_permissions.py", line 37, in wrapper_func
+    raise PermissionDenied("You do not have permission to access this Page")
+django.core.exceptions.PermissionDenied: You do not have permission to access this Page
+2025-07-12 23:47:17,774 django.utils.autoreload 597 INFO     Watching for file changes with StatReloader
+2025-07-12 23:48:29,841 django.request 222 WARNING  Not Found: /favicon.ico
+2025-07-12 23:49:27,302 django.utils.autoreload 597 INFO     Watching for file changes with StatReloader
+2025-07-12 23:49:32,932 django.request 222 WARNING  Forbidden (Permission denied): /user-activity-list
+Traceback (most recent call last):
+  File "D:\DjangoProject\Library\.venv\lib\site-packages\django\core\handlers\exception.py", line 34, in inner
+    response = get_response(request)
+  File "D:\DjangoProject\Library\.venv\lib\site-packages\django\core\handlers\base.py", line 115, in _get_response
+    response = self.process_exception_by_middleware(e, request)
+  File "D:\DjangoProject\Library\.venv\lib\site-packages\django\core\handlers\base.py", line 113, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+  File "D:\DjangoProject\Library\.venv\lib\site-packages\django\views\generic\base.py", line 71, in view
+    return self.dispatch(request, *args, **kwargs)
+  File "D:\DjangoProject\Library\.venv\lib\site-packages\django\utils\decorators.py", line 45, in _wrapper
+    return bound_method(*args, **kwargs)
+  File "D:\DjangoProject\Library\book\groups_permissions.py", line 37, in wrapper_func
+    raise PermissionDenied("You do not have permission to access this Page")
+django.core.exceptions.PermissionDenied: You do not have permission to access this Page
+2025-07-12 23:50:51,207 django.request 222 WARNING  Not Found: /favicon.ico
+2025-07-12 23:52:21,184 django.utils.autoreload 597 INFO     Watching for file changes with StatReloader
+2025-07-12 23:52:24,287 django.request 222 WARNING  Forbidden (Permission denied): /user-activity-list
+Traceback (most recent call last):
+  File "D:\DjangoProject\Library\.venv\lib\site-packages\django\core\handlers\exception.py", line 34, in inner
+    response = get_response(request)
+  File "D:\DjangoProject\Library\.venv\lib\site-packages\django\core\handlers\base.py", line 115, in _get_response
+    response = self.process_exception_by_middleware(e, request)
+  File "D:\DjangoProject\Library\.venv\lib\site-packages\django\core\handlers\base.py", line 113, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+  File "D:\DjangoProject\Library\.venv\lib\site-packages\django\views\generic\base.py", line 71, in view
+    return self.dispatch(request, *args, **kwargs)
+  File "D:\DjangoProject\Library\.venv\lib\site-packages\django\utils\decorators.py", line 45, in _wrapper
+    return bound_method(*args, **kwargs)
+  File "D:\DjangoProject\Library\book\groups_permissions.py", line 37, in wrapper_func
+    raise PermissionDenied("You do not have permission to access this Page")
+django.core.exceptions.PermissionDenied: You do not have permission to access this Page
+2025-07-12 23:52:26,386 django.request 222 WARNING  Forbidden (Permission denied): /user-activity-list
+Traceback (most recent call last):
+  File "D:\DjangoProject\Library\.venv\lib\site-packages\django\core\handlers\exception.py", line 34, in inner
+    response = get_response(request)
+  File "D:\DjangoProject\Library\.venv\lib\site-packages\django\core\handlers\base.py", line 115, in _get_response
+    response = self.process_exception_by_middleware(e, request)
+  File "D:\DjangoProject\Library\.venv\lib\site-packages\django\core\handlers\base.py", line 113, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+  File "D:\DjangoProject\Library\.venv\lib\site-packages\django\views\generic\base.py", line 71, in view
+    return self.dispatch(request, *args, **kwargs)
+  File "D:\DjangoProject\Library\.venv\lib\site-packages\django\utils\decorators.py", line 45, in _wrapper
+    return bound_method(*args, **kwargs)
+  File "D:\DjangoProject\Library\book\groups_permissions.py", line 37, in wrapper_func
+    raise PermissionDenied("You do not have permission to access this Page")
+django.core.exceptions.PermissionDenied: You do not have permission to access this Page
+2025-07-12 23:52:27,212 django.request 222 WARNING  Forbidden (Permission denied): /user-activity-list
+Traceback (most recent call last):
+  File "D:\DjangoProject\Library\.venv\lib\site-packages\django\core\handlers\exception.py", line 34, in inner
+    response = get_response(request)
+  File "D:\DjangoProject\Library\.venv\lib\site-packages\django\core\handlers\base.py", line 115, in _get_response
+    response = self.process_exception_by_middleware(e, request)
+  File "D:\DjangoProject\Library\.venv\lib\site-packages\django\core\handlers\base.py", line 113, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+  File "D:\DjangoProject\Library\.venv\lib\site-packages\django\views\generic\base.py", line 71, in view
+    return self.dispatch(request, *args, **kwargs)
+  File "D:\DjangoProject\Library\.venv\lib\site-packages\django\utils\decorators.py", line 45, in _wrapper
+    return bound_method(*args, **kwargs)
+  File "D:\DjangoProject\Library\book\groups_permissions.py", line 37, in wrapper_func
+    raise PermissionDenied("You do not have permission to access this Page")
+django.core.exceptions.PermissionDenied: You do not have permission to access this Page
+2025-07-12 23:52:28,184 django.request 222 WARNING  Forbidden (Permission denied): /user-activity-list
+Traceback (most recent call last):
+  File "D:\DjangoProject\Library\.venv\lib\site-packages\django\core\handlers\exception.py", line 34, in inner
+    response = get_response(request)
+  File "D:\DjangoProject\Library\.venv\lib\site-packages\django\core\handlers\base.py", line 115, in _get_response
+    response = self.process_exception_by_middleware(e, request)
+  File "D:\DjangoProject\Library\.venv\lib\site-packages\django\core\handlers\base.py", line 113, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+  File "D:\DjangoProject\Library\.venv\lib\site-packages\django\views\generic\base.py", line 71, in view
+    return self.dispatch(request, *args, **kwargs)
+  File "D:\DjangoProject\Library\.venv\lib\site-packages\django\utils\decorators.py", line 45, in _wrapper
+    return bound_method(*args, **kwargs)
+  File "D:\DjangoProject\Library\book\groups_permissions.py", line 37, in wrapper_func
+    raise PermissionDenied("You do not have permission to access this Page")
+django.core.exceptions.PermissionDenied: You do not have permission to access this Page
+2025-07-12 23:52:42,556 django.request 222 WARNING  Forbidden (Permission denied): /user-activity-list
+Traceback (most recent call last):
+  File "D:\DjangoProject\Library\.venv\lib\site-packages\django\core\handlers\exception.py", line 34, in inner
+    response = get_response(request)
+  File "D:\DjangoProject\Library\.venv\lib\site-packages\django\core\handlers\base.py", line 115, in _get_response
+    response = self.process_exception_by_middleware(e, request)
+  File "D:\DjangoProject\Library\.venv\lib\site-packages\django\core\handlers\base.py", line 113, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+  File "D:\DjangoProject\Library\.venv\lib\site-packages\django\views\generic\base.py", line 71, in view
+    return self.dispatch(request, *args, **kwargs)
+  File "D:\DjangoProject\Library\.venv\lib\site-packages\django\utils\decorators.py", line 45, in _wrapper
+    return bound_method(*args, **kwargs)
+  File "D:\DjangoProject\Library\book\groups_permissions.py", line 37, in wrapper_func
+    raise PermissionDenied("You do not have permission to access this Page")
+django.core.exceptions.PermissionDenied: You do not have permission to access this Page
+2025-07-12 23:52:52,731 django.utils.autoreload 217 INFO     D:\DjangoProject\Library\book\groups_permissions.py changed, reloading.
+2025-07-12 23:52:53,429 django.utils.autoreload 597 INFO     Watching for file changes with StatReloader
+2025-07-12 23:53:03,882 django.utils.autoreload 217 INFO     D:\DjangoProject\Library\book\groups_permissions.py changed, reloading.
+2025-07-12 23:53:04,555 django.utils.autoreload 597 INFO     Watching for file changes with StatReloader
+2025-07-12 23:53:40,398 book.views   220 INFO     Book  <<Best Book>> retrieved from db
+2025-07-12 23:58:24,545 django.utils.autoreload 217 INFO     D:\DjangoProject\Library\manage.py changed, reloading.
+2025-07-12 23:58:25,232 django.utils.autoreload 597 INFO     Watching for file changes with StatReloader
+2025-07-12 23:58:29,339 django.utils.autoreload 217 INFO     D:\DjangoProject\Library\core\__init__.py changed, reloading.
+2025-07-12 23:58:29,995 django.utils.autoreload 597 INFO     Watching for file changes with StatReloader
+2025-07-12 23:58:45,810 django.utils.autoreload 217 INFO     D:\DjangoProject\Library\core\settings.py changed, reloading.
+2025-07-12 23:58:46,469 django.utils.autoreload 597 INFO     Watching for file changes with StatReloader
+2025-07-12 23:59:09,909 django.utils.autoreload 217 INFO     D:\DjangoProject\Library\book\models.py changed, reloading.
+2025-07-12 23:59:10,589 django.utils.autoreload 597 INFO     Watching for file changes with StatReloader
+2025-07-12 23:59:23,255 django.utils.autoreload 217 INFO     D:\DjangoProject\Library\authentication\views.py changed, reloading.
+2025-07-12 23:59:23,898 django.utils.autoreload 597 INFO     Watching for file changes with StatReloader
+2025-07-12 23:59:33,656 django.utils.autoreload 217 INFO     D:\DjangoProject\Library\authentication\forms.py changed, reloading.
+2025-07-12 23:59:34,245 django.utils.autoreload 597 INFO     Watching for file changes with StatReloader
+2025-07-12 23:59:47,193 django.utils.autoreload 217 INFO     D:\DjangoProject\Library\book\forms.py changed, reloading.
+2025-07-12 23:59:47,786 django.utils.autoreload 597 INFO     Watching for file changes with StatReloader
+2025-07-12 23:59:53,411 django.utils.autoreload 217 INFO     D:\DjangoProject\Library\manage.py changed, reloading.
+2025-07-12 23:59:54,028 django.utils.autoreload 597 INFO     Watching for file changes with StatReloader
+2025-07-12 23:59:55,696 django.utils.autoreload 217 INFO     D:\DjangoProject\Library\manage.py changed, reloading.
+2025-07-12 23:59:56,391 django.utils.autoreload 597 INFO     Watching for file changes with StatReloader
+2025-07-13 00:00:29,608 django.utils.autoreload 597 INFO     Watching for file changes with StatReloader
+2025-07-13 00:00:45,186 django.utils.autoreload 217 INFO     D:\DjangoProject\Library\comment\models.py changed, reloading.
+2025-07-13 00:00:45,851 django.utils.autoreload 597 INFO     Watching for file changes with StatReloader
+2025-07-13 00:00:48,553 django.utils.autoreload 217 INFO     D:\DjangoProject\Library\core\__init__.py changed, reloading.
+2025-07-13 00:00:49,210 django.utils.autoreload 597 INFO     Watching for file changes with StatReloader
+2025-07-13 00:01:17,646 django.utils.autoreload 217 INFO     D:\DjangoProject\Library\core\settings.py changed, reloading.
+2025-07-13 00:01:18,308 django.utils.autoreload 597 INFO     Watching for file changes with StatReloader
+2025-07-13 00:01:25,317 django.utils.autoreload 217 INFO     D:\DjangoProject\Library\comment\admin.py changed, reloading.
+2025-07-13 00:01:26,025 django.utils.autoreload 597 INFO     Watching for file changes with StatReloader
+2025-07-13 00:01:30,901 django.utils.autoreload 217 INFO     D:\DjangoProject\Library\authentication\urls.py changed, reloading.
+2025-07-13 00:01:31,546 django.utils.autoreload 597 INFO     Watching for file changes with StatReloader
+2025-07-13 00:02:13,215 django.utils.autoreload 217 INFO     D:\DjangoProject\Library\util\useful.py changed, reloading.
+2025-07-13 00:02:13,885 django.utils.autoreload 597 INFO     Watching for file changes with StatReloader
+2025-07-13 00:03:05,303 django.server 154 ERROR    "GET /charts/ HTTP/1.1" 500 228823
+2025-07-13 00:03:05,720 django.server 154 WARNING  "GET /favicon.ico HTTP/1.1" 404 9884
+2025-07-13 00:03:08,884 django.server 154 ERROR    "GET / HTTP/1.1" 500 241231
+2025-07-13 00:04:46,235 django.utils.autoreload 217 INFO     D:\DjangoProject\Library\core\urls.py changed, reloading.
+2025-07-13 00:04:47,047 django.utils.autoreload 597 INFO     Watching for file changes with StatReloader
+2025-07-13 00:05:08,430 django.utils.autoreload 217 INFO     D:\DjangoProject\Library\Api\urls.py changed, reloading.
+2025-07-13 00:05:09,194 django.utils.autoreload 597 INFO     Watching for file changes with StatReloader
+2025-07-13 00:05:17,616 django.utils.autoreload 217 INFO     D:\DjangoProject\Library\Api\urls.py changed, reloading.
+2025-07-13 00:05:18,379 django.utils.autoreload 597 INFO     Watching for file changes with StatReloader
+2025-07-13 00:05:24,567 django.server 154 ERROR    "GET / HTTP/1.1" 500 238029
+2025-07-13 00:05:25,873 django.utils.autoreload 217 INFO     D:\DjangoProject\Library\Api\__init__.py changed, reloading.
+2025-07-13 00:05:26,578 django.utils.autoreload 597 INFO     Watching for file changes with StatReloader
+2025-07-13 00:05:29,936 django.server 154 ERROR    "GET / HTTP/1.1" 500 238155
+2025-07-13 00:05:30,170 django.server 154 WARNING  "GET /favicon.ico HTTP/1.1" 404 10108
+2025-07-13 00:05:32,578 django.server 154 INFO     "GET /admin/ HTTP/1.1" 200 7793
+2025-07-13 00:05:32,597 django.server 154 INFO     "GET /static/admin/css/base.css HTTP/1.1" 304 0
+2025-07-13 00:05:32,597 django.server 154 INFO     "GET /static/admin/css/responsive.css HTTP/1.1" 304 0
+2025-07-13 00:05:32,597 django.server 154 INFO     "GET /static/admin/css/dashboard.css HTTP/1.1" 304 0
+2025-07-13 00:05:32,651 django.server 154 INFO     "GET /static/admin/css/fonts.css HTTP/1.1" 304 0
+2025-07-13 00:05:32,657 django.server 154 INFO     "GET /static/admin/img/icon-changelink.svg HTTP/1.1" 304 0
+2025-07-13 00:05:32,657 django.server 154 INFO     "GET /static/admin/img/icon-addlink.svg HTTP/1.1" 304 0
+2025-07-13 00:05:32,666 django.server 154 INFO     "GET /static/admin/fonts/Roboto-Light-webfont.woff HTTP/1.1" 304 0
+2025-07-13 00:05:32,668 django.server 154 INFO     "GET /static/admin/fonts/Roboto-Regular-webfont.woff HTTP/1.1" 304 0
+2025-07-13 00:05:32,669 django.server 154 INFO     "GET /static/admin/fonts/Roboto-Bold-webfont.woff HTTP/1.1" 304 0
+2025-07-13 00:05:35,427 django.server 154 ERROR    "GET / HTTP/1.1" 500 237894
+2025-07-13 00:05:39,478 django.utils.autoreload 217 INFO     D:\DjangoProject\Library\comment\__init__.py changed, reloading.
+2025-07-13 00:05:40,149 django.utils.autoreload 597 INFO     Watching for file changes with StatReloader
+2025-07-13 00:06:04,726 django.utils.autoreload 217 INFO     D:\DjangoProject\Library\book\templatetags\book_extras.py changed, reloading.
+2025-07-13 00:06:05,439 django.utils.autoreload 597 INFO     Watching for file changes with StatReloader
+2025-07-13 00:06:11,664 django.utils.autoreload 217 INFO     D:\DjangoProject\Library\book\templatetags\__init__.py changed, reloading.
+2025-07-13 00:06:12,319 django.utils.autoreload 597 INFO     Watching for file changes with StatReloader
+2025-07-13 00:06:44,104 django.server 154 ERROR    "GET / HTTP/1.1" 500 238029
+2025-07-13 00:06:45,358 django.server 154 ERROR    "GET / HTTP/1.1" 500 238029
+2025-07-13 00:06:46,226 django.server 154 ERROR    "GET / HTTP/1.1" 500 238029
+2025-07-13 00:07:22,196 django.server 154 ERROR    "GET / HTTP/1.1" 500 238155
+2025-07-13 00:07:22,447 django.server 154 WARNING  "GET /favicon.ico HTTP/1.1" 404 10108
+2025-07-13 00:07:25,170 django.server 154 INFO     "GET /admin/ HTTP/1.1" 200 7793
+2025-07-13 00:07:28,320 django.server 154 ERROR    "GET / HTTP/1.1" 500 237894
+2025-07-13 00:07:31,077 django.utils.autoreload 217 INFO     D:\DjangoProject\Library\authentication\urls.py changed, reloading.
+2025-07-13 00:07:31,844 django.utils.autoreload 597 INFO     Watching for file changes with StatReloader
+2025-07-13 00:08:24,248 django.utils.autoreload 217 INFO     D:\DjangoProject\Library\authentication\urls.py changed, reloading.
+2025-07-13 00:08:24,905 django.utils.autoreload 597 INFO     Watching for file changes with StatReloader
+2025-07-13 00:09:03,425 django.utils.autoreload 217 INFO     D:\DjangoProject\Library\comment\views.py changed, reloading.
+2025-07-13 00:09:04,142 django.utils.autoreload 597 INFO     Watching for file changes with StatReloader
+2025-07-13 00:09:11,544 django.utils.autoreload 217 INFO     D:\DjangoProject\Library\comment\urls.py changed, reloading.
+2025-07-13 00:09:12,234 django.utils.autoreload 597 INFO     Watching for file changes with StatReloader
+2025-07-13 00:09:27,041 django.utils.autoreload 217 INFO     D:\DjangoProject\Library\comment\models.py changed, reloading.
+2025-07-13 00:09:27,728 django.utils.autoreload 597 INFO     Watching for file changes with StatReloader
+2025-07-13 00:09:33,904 django.utils.autoreload 217 INFO     D:\DjangoProject\Library\comment\forms.py changed, reloading.
+2025-07-13 00:09:34,601 django.utils.autoreload 597 INFO     Watching for file changes with StatReloader
+2025-07-13 00:09:41,945 django.utils.autoreload 217 INFO     D:\DjangoProject\Library\comment\views.py changed, reloading.
+2025-07-13 00:09:42,646 django.utils.autoreload 597 INFO     Watching for file changes with StatReloader
+2025-07-13 00:10:01,736 django.utils.autoreload 217 INFO     D:\DjangoProject\Library\comment\models.py changed, reloading.
+2025-07-13 00:10:02,436 django.utils.autoreload 597 INFO     Watching for file changes with StatReloader
+2025-07-13 00:15:19,595 django.utils.autoreload 597 INFO     Watching for file changes with StatReloader
+2025-07-13 00:15:23,683 django.server 154 INFO     "GET / HTTP/1.1" 200 48509
+2025-07-13 00:15:27,026 django.server 154 INFO     "GET /record-create/ HTTP/1.1" 200 17925
+2025-07-13 00:15:27,907 django.server 154 INFO     "GET /record-list/ HTTP/1.1" 200 25051
+2025-07-13 00:33:16,483 django.utils.autoreload 597 INFO     Watching for file changes with StatReloader
+2025-07-13 00:43:14,539 django.server 154 INFO     "GET /admin/ HTTP/1.1" 200 7793
+2025-07-13 00:43:14,556 django.server 154 INFO     "GET /static/admin/css/responsive.css HTTP/1.1" 304 0
+2025-07-13 00:43:14,558 django.server 154 INFO     "GET /static/admin/css/base.css HTTP/1.1" 304 0
+2025-07-13 00:43:14,558 django.server 154 INFO     "GET /static/admin/css/dashboard.css HTTP/1.1" 304 0
+2025-07-13 00:43:14,752 django.server 154 INFO     "GET /static/admin/css/fonts.css HTTP/1.1" 304 0
+2025-07-13 00:43:14,763 django.server 154 INFO     "GET /static/admin/img/icon-changelink.svg HTTP/1.1" 304 0
+2025-07-13 00:43:14,763 django.server 154 INFO     "GET /static/admin/fonts/Roboto-Light-webfont.woff HTTP/1.1" 304 0
+2025-07-13 00:43:14,764 django.server 154 INFO     "GET /static/admin/img/icon-addlink.svg HTTP/1.1" 304 0
+2025-07-13 00:43:14,770 django.server 154 INFO     "GET /static/admin/fonts/Roboto-Regular-webfont.woff HTTP/1.1" 304 0
+2025-07-13 00:43:14,770 django.server 154 INFO     "GET /static/admin/fonts/Roboto-Bold-webfont.woff HTTP/1.1" 304 0
+2025-07-13 00:43:17,484 django.server 154 INFO     "GET / HTTP/1.1" 200 48507

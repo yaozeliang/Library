@@ -1,76 +1,105 @@
+"""Book management forms for the Library Management System."""
+
 from django import forms
-from .models import Book,Publisher,Member,Profile,BorrowRecord
-from django.contrib.admin.widgets import AutocompleteSelect
 from django.contrib import admin
+from django.contrib.admin.widgets import AutocompleteSelect
 from django.urls import reverse
-from flatpickr import DatePickerInput, TimePickerInput, DateTimePickerInput
+from flatpickr import DatePickerInput, DateTimePickerInput, TimePickerInput
+
+from .models import Book, BorrowRecord, Member, Profile, Publisher
 
 
 class BookCreateEditForm(forms.ModelForm):
+    """Form for creating and editing books."""
+
     class Meta:
+        """Meta class for BookCreateEditForm."""
+
         model = Book
-        fields = ('author',
-                  'title',
-                  'description',
-                  'quantity', 
-                  'category',
-                  'publisher',
-                  'floor_number',
-                  "bookshelf_number")
+        fields = (
+            "author",
+            "title",
+            "description",
+            "quantity",
+            "category",
+            "publisher",
+            "floor_number",
+            "bookshelf_number",
+        )
 
 
 class PubCreateEditForm(forms.ModelForm):
+    """Form for creating and editing publishers."""
+
     class Meta:
+        """Meta class for PubCreateEditForm."""
+
         model = Publisher
-        fields = ('name',
-                  'city',
-                  'contact',
-                  )
+        fields = (
+            "name",
+            "city",
+            "contact",
+        )
         # fields="__all__"
 
+
 class MemberCreateEditForm(forms.ModelForm):
+    """Form for creating and editing members."""
+
     class Meta:
+        """Meta class for MemberCreateEditForm."""
+
         model = Member
-        fields = ('name',
-                  'gender',
-                  'age',
-                  'email',
-                  'city', 
-                  'phone_number',)
+        fields = (
+            "name",
+            "gender",
+            "age",
+            "email",
+            "city",
+            "phone_number",
+        )
 
 
 class ProfileForm(forms.ModelForm):
+    """Form for editing user profiles."""
 
-    
     class Meta:
+        """Meta class for ProfileForm."""
+
         model = Profile
-        fields = ( 'profile_pic',
-                  'bio', 
-                  'phone_number',
-                  'email')
+        fields = (
+            "profile_pic",
+            "bio",
+            "phone_number",
+            "email",
+        )
 
 
 class BorrowRecordCreateForm(forms.ModelForm):
+    """Form for creating borrow records."""
 
-    borrower = forms.CharField(label='Borrrower', 
-                    widget=forms.TextInput(attrs={'placeholder': 'Search Member...'}))
-    
-    book = forms.CharField(help_text='type book name')
+    borrower = forms.CharField(
+        label="Borrower",
+        widget=forms.TextInput(attrs={"placeholder": "Search Member..."}),
+    )
+
+    book = forms.CharField(help_text="type book name")
 
     class Meta:
+        """Meta class for BorrowRecordCreateForm."""
+
         model = BorrowRecord
-        fields=['borrower','book','quantity','start_day','end_day']
+        fields = ["borrower", "book", "quantity", "start_day", "end_day"]
         # widgets = {
         #     'start_day': DatePickerInput().start_of('event datetime'),
         #     'end_day': DatePickerInput().end_of('event datetime'),
         # }
         widgets = {
-            'start_day': DatePickerInput(options = {  "dateFormat": "Y-m-d", }),
-            'end_day': DatePickerInput(options = {  "dateFormat": "Y-m-d", }),
+            "start_day": DatePickerInput(options={"dateFormat": "Y-m-d"}),
+            "end_day": DatePickerInput(options={"dateFormat": "Y-m-d"}),
         }
         # widgets = {'start_day': forms.DateTimeInput(attrs={'class': 'datepicker'}),
         #            'end_day': forms.DateTimeInput(attrs={'class': 'datepicker'})}
-
 
         # widgets = {
         #     'start_day': DateTimePickerInput(format='%Y-%m-%d'),

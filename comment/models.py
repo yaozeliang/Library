@@ -1,26 +1,36 @@
-from django.db import models
-from book.models import Book,Category,Publisher,UserActivity,Profile,Member,BorrowRecord
+"""Comment models for the Library Management System."""
+
 from ckeditor.fields import RichTextField
 from django.contrib.auth.models import User
+from django.db import models
+from django.urls import reverse
 
 
 class Comment(models.Model):
+    """Comment model for user feedback and discussions."""
+
     book = models.ForeignKey(
-        Book,
+        "book.Book",
         on_delete=models.CASCADE,
-        related_name='comments'
+        related_name="comments",
+        null=True,
+        blank=True,
     )
-    user = models.ForeignKey(
-        User, 
-        on_delete=models.CASCADE, 
-        related_name='comments'
-    )
-    
-    body = RichTextField()
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="comments")
+    content = models.TextField(default="", blank=True)
+    body = RichTextField(default="", blank=True)  # Rich text field for compatibility with existing templates
     created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
 
     class Meta:
-        ordering = ('created_at',)
+        """Meta class for Comment model."""
 
-    def __str__(self):
-        return self.body[:20]
+        ordering = ["-created_at"]
+
+    def __str__(self) -> str:
+        """Return string representation of the comment."""
+        return f"Comment by {self.user.username} on {self.created_at}"
+
+    def get_absolute_url(self) -> str:
+        """Return the URL for the comment detail view."""
+        return reverse("comment_detail", kwargs={"pk": self.pk})
