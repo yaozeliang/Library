@@ -2,7 +2,15 @@
 
 from django.contrib import admin
 
-from .models import Book, BorrowRecord, Category, Member, Profile, Publisher, UserActivity
+from .models import (
+    Book,
+    BorrowRecord,
+    Category,
+    Member,
+    Profile,
+    Publisher,
+    UserActivity,
+)
 
 
 @admin.register(Book)
@@ -51,7 +59,14 @@ class ProfileAdmin(admin.ModelAdmin):
 class BorrowRecordAdmin(admin.ModelAdmin):
     """Admin configuration for BorrowRecord model."""
 
-    list_display = ("borrower", "book", "quantity", "start_day", "end_day", "return_status")
+    list_display = (
+        "borrower",
+        "book",
+        "quantity",
+        "start_day",
+        "end_day",
+        "return_status",
+    )
     list_filter = ("open_or_close", "start_day", "end_day")
     search_fields = ("borrower", "book")
 

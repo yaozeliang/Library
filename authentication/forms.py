@@ -16,7 +16,14 @@ class CustomUserCreationForm(UserCreationForm):
         """Meta class for CustomUserCreationForm."""
 
         model = User
-        fields = ("username", "email", "first_name", "last_name", "password1", "password2")
+        fields = (
+            "username",
+            "email",
+            "first_name",
+            "last_name",
+            "password1",
+            "password2",
+        )
 
     def save(self, commit=True):
         """Save the user with cleaned data."""

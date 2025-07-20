@@ -6,11 +6,7 @@ from typing import Any, Dict
 
 import requests
 from django import template
-from django.db.models.aggregates import Count
-from django.template.loader import get_template
 from django.utils import timezone
-
-from ..models import UserActivity
 
 register = template.Library()
 
@@ -85,7 +81,9 @@ def show_weather(context: Dict[str, Any]) -> Dict[str, Any]:
         if r["cod"] == 200:
             paris_weather = {
                 "city": "Paris",
-                "temperature": float("{0:.2f}".format((r["main"]["temp"] - 32) * 5 / 9)),
+                "temperature": float(
+                    "{0:.2f}".format((r["main"]["temp"] - 32) * 5 / 9)
+                ),
                 "description": r["weather"][0]["description"],
                 "icon": r["weather"][0]["icon"],
                 "country": r["sys"]["country"],

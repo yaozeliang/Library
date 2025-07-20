@@ -7,4 +7,4 @@ class AuthenticationConfig(AppConfig):
     """Configuration for the authentication app."""
 
     default_auto_field = "django.db.models.BigAutoField"
-    name = "authentication" 
+    name = "authentication"

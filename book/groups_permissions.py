@@ -1,14 +1,7 @@
-from .models import Book,Category,Publisher,UserActivity,Profile,Member,BorrowRecord
-from django.contrib.auth.models import Permission
-from django.contrib.contenttypes.models import ContentType
-from django.core.exceptions import PermissionDenied
-from django.utils.decorators import method_decorator
-from django.contrib.auth.decorators import user_passes_test
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
-from django.http import HttpResponse
+from django.core.exceptions import PermissionDenied
 
-
-user_groups = ['logs','api','download_data']
+user_groups = ["logs", "api", "download_data"]
 
 
 def check_superuser(user):
@@ -16,8 +9,8 @@ def check_superuser(user):
         raise PermissionDenied("You do not have permission to access this Page")
 
 
-def check_user_group(user,group_name):
-    user_group = user.groups.all().values_list('name',flat=True)
+def check_user_group(user, group_name):
+    user_group = user.groups.all().values_list("name", flat=True)
     if group_name not in user_group:
         raise PermissionDenied("You do not have permission to access this Page")
 
@@ -27,32 +20,19 @@ def allowed_groups(group_name=[]):
         def wrapper_func(request, *args, **kwargs):
             if request.user.is_superuser:
                 return view_func(request, *args, **kwargs)
-            user_groups = request.user.groups.values_list('name', flat=True)
+            user_groups = request.user.groups.values_list("name", flat=True)
             if any(g in group_name for g in user_groups):
                 return view_func(request, *args, **kwargs)
-            else:
-                raise PermissionDenied("You do not have permission to access this Page")
+            raise PermissionDenied("You do not have permission to access this Page")
+
         return wrapper_func
+
     return decorator
 
 
-
 class SuperUserRequiredMixin(LoginRequiredMixin, UserPassesTestMixin):
-
     def test_func(self):
         return self.request.user.is_superuser
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 # content_type = ContentType.objects.get_for_model(Book)
@@ -64,8 +44,7 @@ class SuperUserRequiredMixin(LoginRequiredMixin, UserPassesTestMixin):
 # )
 
 
-
 # view_log = Permission.objects.get(codename='view_useractivity')
 #  delete_log = Permission.objects.get(codename='delete_useractivity')
-# logs_group = Group.objects.get(name='logs') 
+# logs_group = Group.objects.get(name='logs')
 # logs_group.permissions.add(view_log,delete_log)

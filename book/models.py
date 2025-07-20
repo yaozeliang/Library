@@ -1,11 +1,10 @@
 """Book management models for the Library Management System."""
 
-from datetime import datetime, timedelta
+import uuid
+from datetime import timedelta
 from typing import Any
 
-import uuid
 from dateutil.relativedelta import relativedelta
-from django.conf import settings
 from django.contrib.auth.models import User
 from django.db import models
 from django.db.models.signals import post_save
@@ -108,7 +107,9 @@ class Book(models.Model):
 
     status = models.IntegerField(choices=BOOK_STATUS, default=1)
     floor_number = models.IntegerField(choices=FLOOR, default=1)
-    bookshelf_number = models.CharField("Bookshelf Number", max_length=10, default="0001")
+    bookshelf_number = models.CharField(
+        "Bookshelf Number", max_length=10, default="0001"
+    )
     updated_by = models.CharField(max_length=20, default="yaozeliang")
 
     def get_absolute_url(self) -> str:
@@ -125,7 +126,9 @@ class UserActivity(models.Model):
 
     created_by = models.CharField(default="", max_length=20)
     created_at = models.DateTimeField(auto_now_add=True)
-    operation_type = models.CharField(choices=OPERATION_TYPE, default="success", max_length=20)
+    operation_type = models.CharField(
+        choices=OPERATION_TYPE, default="success", max_length=20
+    )
     target_model = models.CharField(default="", max_length=20)
     detail = models.CharField(default="", max_length=50)
 
@@ -214,7 +217,7 @@ def create_user_profile(sender, instance, created, **kwargs):
 @receiver(post_save, sender=User)
 def save_user_profile(sender, instance, **kwargs):
     """Save the user profile when the user is saved."""
-    if hasattr(instance, 'profile'):
+    if hasattr(instance, "profile"):
         instance.profile.save()
 
 
@@ -248,10 +251,8 @@ class BorrowRecord(models.Model):
         if self.open_or_close == 0:
             if timezone.now() > self.end_day:
                 return "Overdue"
-            else:
-                return "On Time"
-        else:
-            return "Returned"
+            return "On Time"
+        return "Returned"
 
     @property
     def get_delay_number_days(self) -> int:
@@ -259,10 +260,8 @@ class BorrowRecord(models.Model):
         if self.open_or_close == 0:
             if timezone.now() > self.end_day:
                 return (timezone.now() - self.end_day).days
-            else:
-                return 0
-        else:
-            return self.delay_days
+            return 0
+        return self.delay_days
 
     def get_absolute_url(self) -> str:
         """Return the URL for the borrow record list view."""
@@ -281,10 +280,3 @@ class BorrowRecord(models.Model):
             else:
                 self.delay_days = 0
         return super().save(*args, **kwargs)
-
-
-
-
-
-
-

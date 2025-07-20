@@ -18,7 +18,9 @@ class Comment(models.Model):
     )
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="comments")
     content = models.TextField(default="", blank=True)
-    body = RichTextField(default="", blank=True)  # Rich text field for compatibility with existing templates
+    body = RichTextField(
+        default="", blank=True
+    )  # Rich text field for compatibility with existing templates
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 

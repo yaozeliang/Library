@@ -10,14 +10,14 @@ A comprehensive Django-based library management system with modern code quality 
 - **Admin Interface**: Full Django admin integration
 - **Comments System**: User feedback and discussions
 - **Modern UI**: Bootstrap-based responsive design
-- **Code Quality**: Ruff-formatted and linted codebase
+- **Code Quality**: Well-structured and maintainable codebase
 
 ## 🛠️ Technology Stack
 
 - **Backend**: Django 2.2.10
 - **Database**: SQLite (configurable for production)
 - **Frontend**: Bootstrap 4, Tailwind CSS
-- **Code Quality**: Ruff (replacing Black, isort, flake8, mypy)
+- **Code Quality**: Structured development practices
 - **Forms**: Django Crispy Forms
 - **Rich Text**: CKEditor
 - **Date/Time**: Flatpickr
@@ -80,40 +80,14 @@ python manage.py runserver
 
 Visit `http://127.0.0.1:8000/` to access the application.
 
-## 🎯 Code Quality with Ruff
+## 🎯 Code Quality
 
-This project uses **Ruff** for code formatting and linting, providing:
+This project follows Django best practices and maintains clean, readable code:
 
-- **Fast Performance**: 10-100x faster than traditional tools
-- **Comprehensive Rules**: Combines Black, isort, flake8, and more
-- **Auto-fixing**: Automatically fixes many issues
-- **Modern Standards**: Enforces PEP 8 and modern Python practices
-
-### Running Ruff
-
-```bash
-# Format code
-ruff format .
-
-# Check for issues
-ruff check .
-
-# Auto-fix issues
-ruff check . --fix
-
-# Or use the provided script
-python run_ruff.py
-```
-
-### Ruff Configuration
-
-The project includes comprehensive Ruff configuration in `pyproject.toml`:
-
-- **Line Length**: 88 characters (Black standard)
-- **Target Python**: 3.8+
-- **Quote Style**: Double quotes
-- **Import Sorting**: Automatic with first-party module recognition
-- **Comprehensive Rules**: 50+ rule sets enabled
+- **PEP 8 Compliance**: Consistent code style
+- **Modern Standards**: Python 3.8+ features
+- **Clean Architecture**: Well-organized modules and separation of concerns
+- **Documentation**: Comprehensive docstrings and comments
 
 ## 📁 Project Structure
 
@@ -132,7 +106,7 @@ Library/
 ├── static/                # Static files (CSS, JS, images)
 ├── media/                 # User-uploaded files
 ├── pyproject.toml         # Project configuration and dependencies
-└── run_ruff.py           # Ruff execution script
+
 ```
 
 ## 🔧 Configuration
@@ -272,7 +246,7 @@ The project includes Django REST Framework for API access:
 1. Fork the repository
 2. Create a feature branch
 3. Make your changes
-4. Run Ruff: `python run_ruff.py`
+4. Follow Django best practices for clean code
 5. Submit a pull request
 
 ## 📝 Code Style
@@ -303,4 +277,4 @@ See [CHANGELOG.md](CHANGELOG.md) for version history and updates.
 
 ---
 
-**Built with ❤️ using Django and Ruff**
+**Built with ❤️ using Django**

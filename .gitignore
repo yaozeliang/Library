@@ -161,7 +161,7 @@ datacenter/*.csv
 
 # Development files
 migrate_comments.py
-run_ruff.py
+
 
 # JavaScript
 node_modules/

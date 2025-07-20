@@ -1,10 +1,10 @@
 """URL configuration for the Library Management System."""
 
+import notifications.urls
 from django.conf import settings
 from django.conf.urls.static import static
 from django.contrib import admin
 from django.urls import include, path
-import notifications.urls
 
 urlpatterns = [
     path("admin/", admin.site.urls),
@@ -12,7 +12,9 @@ urlpatterns = [
     path("auth/", include("authentication.urls")),
     path("api/", include("Api.urls")),
     path("comment/", include("comment.urls", namespace="comment")),
-    path("inbox/notifications/", include(notifications.urls, namespace="notifications")),
+    path(
+        "inbox/notifications/", include(notifications.urls, namespace="notifications")
+    ),
 ]
 
 if settings.DEBUG:

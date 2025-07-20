@@ -21,10 +21,10 @@ class SignUpView(CreateView):
 def profile_view(request):
     """Display user profile."""
     from book.models import Profile
-    
+
     # Get or create profile for the user
     profile, created = Profile.objects.get_or_create(user=request.user)
-    
+
     return render(request, "profile/profile_detail.html", {"profile": profile})
 
 

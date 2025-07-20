@@ -7,7 +7,6 @@ Removes unnecessary files and directories for cloud deployment
 import os
 import shutil
 import sys
-from pathlib import Path
 
 
 def log_info(message):
@@ -52,18 +51,18 @@ def remove_directory(dir_path):
 def clean_log_files():
     """Clean log files."""
     log_info("Cleaning log files...")
-    
+
     log_files = [
         "logging/book.admin.log",
         "logging/performance.log",
         "logging/book.performance.log",
     ]
-    
+
     for log_file in log_files:
         if os.path.exists(log_file):
             try:
                 # Keep the file but empty it
-                with open(log_file, 'w') as f:
+                with open(log_file, "w") as f:
                     f.write("")
                 log_info(f"Cleared log file: {log_file}")
             except Exception as e:
@@ -73,7 +72,7 @@ def clean_log_files():
 def clean_cache_files():
     """Clean Python cache files."""
     log_info("Cleaning Python cache files...")
-    
+
     for root, dirs, files in os.walk("."):
         # Remove __pycache__ directories
         for dir_name in dirs[:]:
@@ -81,10 +80,10 @@ def clean_cache_files():
                 cache_path = os.path.join(root, dir_name)
                 remove_directory(cache_path)
                 dirs.remove(dir_name)
-        
+
         # Remove .pyc files
         for file_name in files:
-            if file_name.endswith(('.pyc', '.pyo')):
+            if file_name.endswith((".pyc", ".pyo")):
                 file_path = os.path.join(root, file_name)
                 remove_file(file_path)
 
@@ -92,20 +91,20 @@ def clean_cache_files():
 def clean_development_files():
     """Clean development-specific files."""
     log_info("Cleaning development files...")
-    
+
     dev_files = [
         "migrate_comments.py",
-        "run_ruff.py",
+
         "db.sqlite3",
         "db.sqlite3-journal",
         ".coverage",
         "coverage.xml",
         "htmlcov",
         ".pytest_cache",
-        ".ruff_cache",
+
         ".mypy_cache",
     ]
-    
+
     for item in dev_files:
         if os.path.isfile(item):
             remove_file(item)
@@ -116,7 +115,7 @@ def clean_development_files():
 def clean_virtual_environments():
     """Clean virtual environment directories."""
     log_info("Cleaning virtual environment directories...")
-    
+
     venv_dirs = [
         "env",
         "venv",
@@ -126,7 +125,7 @@ def clean_virtual_environments():
         "env.bak",
         "venv.bak",
     ]
-    
+
     for venv_dir in venv_dirs:
         if os.path.isdir(venv_dir):
             remove_directory(venv_dir)
@@ -135,11 +134,11 @@ def clean_virtual_environments():
 def clean_datacenter_files():
     """Clean datacenter CSV files."""
     log_info("Cleaning datacenter files...")
-    
+
     datacenter_path = "datacenter"
     if os.path.exists(datacenter_path):
         for file_name in os.listdir(datacenter_path):
-            if file_name.endswith('.csv'):
+            if file_name.endswith(".csv"):
                 file_path = os.path.join(datacenter_path, file_name)
                 remove_file(file_path)
 
@@ -147,7 +146,7 @@ def clean_datacenter_files():
 def clean_media_files():
     """Clean user-uploaded media files (optional)."""
     log_info("Cleaning media files...")
-    
+
     # Be careful with this - you might want to keep some media files
     # This is commented out by default
     # media_path = "media"
@@ -157,14 +156,14 @@ def clean_media_files():
     #             if not file_name.startswith('.'):
     #                 file_path = os.path.join(root, file_name)
     #                 remove_file(file_path)
-    
+
     log_warn("Media files cleanup skipped (uncomment in script if needed)")
 
 
 def clean_ide_files():
     """Clean IDE-specific files."""
     log_info("Cleaning IDE files...")
-    
+
     ide_items = [
         ".vscode",
         ".idea",
@@ -174,34 +173,34 @@ def clean_ide_files():
         ".spyproject",
         ".ropeproject",
     ]
-    
+
     for item in ide_items:
-        if '*' in item:
+        if "*" in item:
             # Handle glob patterns
             import glob
+
             for match in glob.glob(item):
                 if os.path.isfile(match):
                     remove_file(match)
                 elif os.path.isdir(match):
                     remove_directory(match)
-        else:
-            if os.path.isfile(item):
-                remove_file(item)
-            elif os.path.isdir(item):
-                remove_directory(item)
+        elif os.path.isfile(item):
+            remove_file(item)
+        elif os.path.isdir(item):
+            remove_directory(item)
 
 
 def clean_os_files():
     """Clean OS-specific files."""
     log_info("Cleaning OS files...")
-    
+
     os_files = [
         ".DS_Store",
         "Thumbs.db",
         "ehthumbs.db",
         "Desktop.ini",
     ]
-    
+
     for root, dirs, files in os.walk("."):
         for file_name in files:
             if file_name in os_files:
@@ -212,9 +211,9 @@ def clean_os_files():
 def clean_temporary_files():
     """Clean temporary files."""
     log_info("Cleaning temporary files...")
-    
-    temp_extensions = ['.tmp', '.temp', '.swp', '.swo', '~']
-    
+
+    temp_extensions = [".tmp", ".temp", ".swp", ".swo", "~"]
+
     for root, dirs, files in os.walk("."):
         for file_name in files:
             if any(file_name.endswith(ext) for ext in temp_extensions):
@@ -226,12 +225,14 @@ def main():
     """Main cleanup function."""
     print("🧹 Starting cleanup for cloud deployment...")
     print("=" * 50)
-    
+
     # Check if we're in the right directory
     if not os.path.exists("manage.py"):
-        log_error("manage.py not found. Please run this script from the Django project root.")
+        log_error(
+            "manage.py not found. Please run this script from the Django project root."
+        )
         sys.exit(1)
-    
+
     # Run cleanup functions
     clean_cache_files()
     clean_development_files()
@@ -242,11 +243,11 @@ def main():
     clean_ide_files()
     clean_os_files()
     clean_temporary_files()
-    
+
     print("=" * 50)
     log_info("Cleanup completed successfully!")
     log_info("Your project is now ready for cloud deployment.")
-    
+
     print("\n📋 Next steps:")
     print("1. Review the cleaned files")
     print("2. Update your .env file with production settings")
@@ -255,4 +256,4 @@ def main():
 
 
 if __name__ == "__main__":
-    main() 
+    main()

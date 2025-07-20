@@ -3,15 +3,10 @@
 import glob
 import os
 import shutil
-import sqlite3
-from copy import deepcopy
-from datetime import date, datetime, timedelta
-from typing import Any, Dict, List, Optional
+from datetime import datetime, timedelta
+from typing import Dict, List, Optional
 
-import numpy as np
 import pandas as pd
-
-from django.core.exceptions import PermissionDenied
 
 
 def get_mem_usage(df: pd.DataFrame) -> None:
@@ -20,7 +15,7 @@ def get_mem_usage(df: pd.DataFrame) -> None:
     Args:
         df: DataFrame to analyze.
     """
-    print(f"{df.memory_usage(deep=True).sum() / 1024 ** 2:3.2f}Mb")
+    print(f"{df.memory_usage(deep=True).sum() / 1024**2:3.2f}Mb")
 
 
 def get_general_info(df: pd.DataFrame) -> None:
@@ -41,11 +36,11 @@ def get_general_info(df: pd.DataFrame) -> None:
         {"column_name": df.columns, "percent_missing": percent_missing},
     )
     missing_value_df["percent_missing"] = [
-        "{:.2f}%".format(x) for x in missing_value_df["percent_missing"]
+        f"{x:.2f}%" for x in missing_value_df["percent_missing"]
     ]
     print(missing_value_df)
     print("=======================================")
-    print(f"Memory Use: {df.memory_usage(deep=True).sum() / 1024 ** 2:3.2f}Mb")
+    print(f"Memory Use: {df.memory_usage(deep=True).sum() / 1024**2:3.2f}Mb")
     print("=======================================")
     print("Missing Values in columns: ")
     print(df.isnull().sum())
@@ -196,5 +191,3 @@ def create_clean_dir(name: str) -> None:
     else:
         os.makedirs(name)
     os.chdir(name)
-
-

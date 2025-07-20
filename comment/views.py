@@ -81,8 +81,6 @@ def post_comment(request, book_id):
             new_comment.user = request.user
             new_comment.save()
             return redirect("book_detail", pk=book_id)
-        else:
-            return HttpResponse("Error in form, please rewrite")
+        return HttpResponse("Error in form, please rewrite")
     # Handle non-POST requests
-    else:
-        return HttpResponse("Comment only accepts POST requests")
+    return HttpResponse("Comment only accepts POST requests")

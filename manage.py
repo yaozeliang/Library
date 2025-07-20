@@ -1,7 +1,5 @@
 #!/usr/bin/env python
-"""Django Library Management System.
-
-"""
+"""Django Library Management System."""
 
 import os
 import sys

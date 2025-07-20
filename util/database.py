@@ -1,13 +1,10 @@
 """Database utility functions for the Library Management System."""
 
 import os
-import shutil
 import sqlite3
-from copy import deepcopy
-from datetime import date, datetime, timedelta
-from typing import Any, List, Optional
+from datetime import datetime
+from typing import List, Optional
 
-import numpy as np
 import pandas as pd
 
 
@@ -46,7 +43,7 @@ class Database:
             print(f"<< {self.db_name} >> 's version is {db_version}")
 
         except sqlite3.Error as error:
-            print(f"Error while getting data", error)
+            print("Error while getting data", error)
 
     def get_table_names(self) -> pd.DataFrame:
         """Get all table names from the database.
@@ -61,7 +58,7 @@ class Database:
             cols = [column[0] for column in query.description]
             cursor.close()
         except sqlite3.Error as error:
-            print(f"Failed to read data from sqlite table", error)
+            print("Failed to read data from sqlite table", error)
             return pd.DataFrame()
 
         results = pd.DataFrame.from_records(data=records, columns=cols).rename(
@@ -135,12 +132,17 @@ class Database:
                     f"Attention , creating new table <<{table_name}>> in Database <<{self.db_name}>> ",
                 )
 
-            df.to_sql(name=table_name, con=self.connection, if_exists="append", index=False)
+            df.to_sql(
+                name=table_name, con=self.connection, if_exists="append", index=False
+            )
 
             if drop_duplicate:
                 new_df = self.read_table(table_name).drop_duplicates()
                 new_df.to_sql(
-                    name=table_name, con=self.connection, if_exists="replace", index=False
+                    name=table_name,
+                    con=self.connection,
+                    if_exists="replace",
+                    index=False,
                 )
 
             print("Sql insert process finished.")

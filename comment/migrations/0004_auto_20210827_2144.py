@@ -4,38 +4,37 @@ from django.db import migrations
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('comment', '0003_auto_20210827_2055'),
+        ("comment", "0003_auto_20210827_2055"),
     ]
 
     operations = [
         migrations.AlterModelOptions(
-            name='comment',
-            options={'ordering': ('created_at',)},
+            name="comment",
+            options={"ordering": ("created_at",)},
         ),
         migrations.RemoveField(
-            model_name='comment',
-            name='level',
+            model_name="comment",
+            name="level",
         ),
         migrations.RemoveField(
-            model_name='comment',
-            name='lft',
+            model_name="comment",
+            name="lft",
         ),
         migrations.RemoveField(
-            model_name='comment',
-            name='parent',
+            model_name="comment",
+            name="parent",
         ),
         migrations.RemoveField(
-            model_name='comment',
-            name='reply_to',
+            model_name="comment",
+            name="reply_to",
         ),
         migrations.RemoveField(
-            model_name='comment',
-            name='rght',
+            model_name="comment",
+            name="rght",
         ),
         migrations.RemoveField(
-            model_name='comment',
-            name='tree_id',
+            model_name="comment",
+            name="tree_id",
         ),
     ]
