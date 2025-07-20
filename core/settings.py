@@ -39,6 +39,7 @@ INSTALLED_APPS = [
     "comment",
     "notifications",
     "flatpickr",
+    "storages",
 ]
 
 CRISPY_ALLOWED_TEMPLATE_PACKS = "tailwind"

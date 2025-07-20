@@ -137,32 +137,22 @@ jobs:
     - name: Set up Docker Buildx
       uses: docker/setup-buildx-action@v3
 
-    - name: Log in to Docker Hub
-      uses: docker/login-action@v3
+    - name: Set up Google Cloud CLI
+      uses: google-github-actions/setup-gcloud@v2
       with:
-        username: ${{ secrets.DOCKER_USERNAME }}
-        password: ${{ secrets.DOCKER_PASSWORD }}
+        service_account_key: ${{ secrets.GCP_SERVICE_ACCOUNT_KEY }}
+        project_id: ${{ secrets.GCP_PROJECT_ID }}
 
-    - name: Extract metadata
-      id: meta
-      uses: docker/metadata-action@v5
-      with:
-        images: ${{ secrets.DOCKER_USERNAME }}/library-management
-        tags: |
-          type=ref,event=branch
-          type=ref,event=pr
-          type=sha,prefix=sha-
-          type=raw,value=latest,enable={{is_default_branch}}
+    - name: Configure Docker for GCR
+      run: gcloud auth configure-docker
 
-    - name: Build and push Docker image
-      uses: docker/build-push-action@v5
-      with:
-        context: .
-        push: true
-        tags: ${{ steps.meta.outputs.tags }}
-        labels: ${{ steps.meta.outputs.labels }}
-        cache-from: type=gha
-        cache-to: type=gha,mode=max
+    - name: Build and push Docker image to GCR
+      run: |
+        IMAGE_NAME="gcr.io/${{ secrets.GCP_PROJECT_ID }}/django-library"
+        docker build -t $IMAGE_NAME:$GITHUB_SHA .
+        docker push $IMAGE_NAME:$GITHUB_SHA
+        docker tag $IMAGE_NAME:$GITHUB_SHA $IMAGE_NAME:latest
+        docker push $IMAGE_NAME:latest
 
   deploy:
     runs-on: ubuntu-latest
@@ -173,13 +163,32 @@ jobs:
     steps:
     - uses: actions/checkout@v4
 
-    - name: Deploy to production
+    - name: Set up Google Cloud CLI
+      uses: google-github-actions/setup-gcloud@v2
+      with:
+        service_account_key: ${{ secrets.GCP_SERVICE_ACCOUNT_KEY }}
+        project_id: ${{ secrets.GCP_PROJECT_ID }}
+
+    - name: Deploy to Cloud Run
       run: |
-        echo "Add your deployment steps here"
-        # Example deployment commands:
-        # - Deploy to AWS ECS
-        # - Deploy to Kubernetes
-        # - Deploy to Heroku
-        # - Deploy to DigitalOcean App Platform
-        # - Deploy to Railway
-        # - Deploy to Render 
+        gcloud run deploy django-library \
+          --image gcr.io/${{ secrets.GCP_PROJECT_ID }}/django-library:$GITHUB_SHA \
+          --platform managed \
+          --region us-central1 \
+          --allow-unauthenticated \
+          --set-env-vars="SECRET_KEY=${{ secrets.DJANGO_SECRET_KEY }}" \
+          --set-env-vars="DEBUG=False" \
+          --set-env-vars="GS_BUCKET_NAME=${{ secrets.GS_BUCKET_NAME }}" \
+          --set-env-vars="GS_PROJECT_ID=${{ secrets.GCP_PROJECT_ID }}" \
+          --set-env-vars="DJANGO_SETTINGS_MODULE=core.settings_production" \
+          --set-env-vars="ALLOWED_HOSTS=*.run.app,localhost,127.0.0.1" \
+          --memory=512Mi \
+          --cpu=1 \
+          --max-instances=10 \
+          --quiet
+
+    - name: Get Cloud Run URL
+      run: |
+        SERVICE_URL=$(gcloud run services describe django-library --platform managed --region us-central1 --format 'value(status.url)')
+        echo "🚀 Application deployed successfully!"
+        echo "📱 URL: $SERVICE_URL"

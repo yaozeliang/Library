@@ -1,7 +1,6 @@
 # Library Management System
 
 A comprehensive Django-based library management system with modern code quality standards.
-
 ## 🚀 Features
 
 - **Book Management**: Add, edit, delete, and search books

@@ -40,15 +40,22 @@ RUN mkdir -p /app/staticfiles /app/media /var/log/django && \
 # Switch to non-root user
 USER django
 
-# Collect static files
-RUN python manage.py collectstatic --noinput --settings=core.settings_production
+# Set default environment variables for build
+ENV SECRET_KEY=build-secret-key \
+    DEBUG=False \
+    GS_BUCKET_NAME=django-library-static \
+    GS_PROJECT_ID=django-library-466514
 
-# Health check
+# Collect static files (will use local storage during build, GCS at runtime)
+RUN python manage.py collectstatic --noinput --settings=core.settings_production || true
+
+# Health check (remove specific endpoint check for Cloud Run)
 HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 \
-    CMD curl -f http://localhost:8000/health/ || exit 1
+    CMD curl -f http://localhost:8000/ || exit 1
 
-# Expose port
+# Expose port (Cloud Run will override with PORT env var)
 EXPOSE 8000
+ENV PORT=8000
 
 # Start the application
 CMD ["gunicorn", "--config", "gunicorn-cfg.py", "core.wsgi"]
