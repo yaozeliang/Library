@@ -23,8 +23,8 @@ RUN groupadd -r django && useradd -r -g django django
 # Set working directory
 WORKDIR /app
 
-# Copy dependency files
-COPY pyproject.toml uv.lock* ./
+# Copy dependency files and README (required by pyproject.toml)
+COPY pyproject.toml uv.lock* README.md ./
 
 # Create virtual environment and install dependencies
 RUN uv venv && \
