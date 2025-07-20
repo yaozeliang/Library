@@ -111,7 +111,6 @@ dependencies = [
 dev = [
     "pytest>=7.0.0",
     "pytest-django>=4.5.0",
-    "pytest-cov>=4.0.0",
     "safety>=2.0.0",
     "bandit>=1.7.0",
 ]

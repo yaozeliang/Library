@@ -79,13 +79,7 @@ jobs:
       run: |
         uv run pytest
 
-    - name: Upload coverage reports
-      uses: codecov/codecov-action@v3
-      if: always()
-      with:
-        file: ./coverage.xml
-        flags: unittests
-        name: codecov-umbrella
+
 
   security:
     runs-on: ubuntu-latest
