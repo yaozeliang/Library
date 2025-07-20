@@ -75,9 +75,7 @@ jobs:
       run: |
         uv run python manage.py test
 
-    - name: Run pytest
-      run: |
-        uv run pytest
+
 
 
 
