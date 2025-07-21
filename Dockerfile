@@ -56,6 +56,4 @@ HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 \
 # Expose port (Cloud Run will override with PORT env var)
 EXPOSE 8000
 ENV PORT=8000
-
-# Start the application
 CMD ["gunicorn", "--config", "gunicorn-cfg.py", "core.wsgi"]
