@@ -40,14 +40,14 @@ RUN mkdir -p /app/staticfiles /app/media /var/log/django && \
 # Switch to non-root user
 USER django
 
-# Set default environment variables for build
+# Set default environment variables for build (use local storage)
 ENV SECRET_KEY=build-secret-key \
     DEBUG=False \
-    GS_BUCKET_NAME=django-library-static \
-    GS_PROJECT_ID=django-library-466514
+    GS_BUCKET_NAME=local-build-storage \
+    GS_PROJECT_ID=local-build
 
-# Collect static files (will use local storage during build, GCS at runtime)
-RUN python manage.py collectstatic --noinput --settings=core.settings_production || true
+# Collect static files using local storage during build
+RUN python manage.py collectstatic --noinput --settings=core.settings || true
 
 # Health check (remove specific endpoint check for Cloud Run)
 HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 \

@@ -121,12 +121,19 @@ jobs:
         service_account_key: ${{ secrets.GCP_SERVICE_ACCOUNT_KEY }}
         project_id: ${{ secrets.GCP_PROJECT_ID }}
 
-    - name: Configure Docker for GCR
-      run: gcloud auth configure-docker
+    - name: Configure Docker for Artifact Registry
+      run: gcloud auth configure-docker europe-west9-docker.pkg.dev
 
-    - name: Build and push Docker image to GCR
+    - name: Create Artifact Registry repository (if not exists)
       run: |
-        IMAGE_NAME="gcr.io/${{ secrets.GCP_PROJECT_ID }}/django-library"
+        gcloud artifacts repositories create django-library \
+          --repository-format=docker \
+          --location=europe-west9 \
+          --description="Django Library Management System" || echo "Repository already exists"
+
+    - name: Build and push Docker image to Artifact Registry
+      run: |
+        IMAGE_NAME="europe-west9-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/django-library/django-library"
         docker build -t $IMAGE_NAME:$GITHUB_SHA .
         docker push $IMAGE_NAME:$GITHUB_SHA
         docker tag $IMAGE_NAME:$GITHUB_SHA $IMAGE_NAME:latest
@@ -150,9 +157,9 @@ jobs:
     - name: Deploy to Cloud Run
       run: |
         gcloud run deploy django-library \
-          --image gcr.io/${{ secrets.GCP_PROJECT_ID }}/django-library:$GITHUB_SHA \
+          --image europe-west9-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/django-library/django-library:$GITHUB_SHA \
           --platform managed \
-          --region us-central1 \
+          --region europe-west9 \
           --allow-unauthenticated \
           --set-env-vars="SECRET_KEY=${{ secrets.DJANGO_SECRET_KEY }}" \
           --set-env-vars="DEBUG=False" \
@@ -167,6 +174,6 @@ jobs:
 
     - name: Get Cloud Run URL
       run: |
-        SERVICE_URL=$(gcloud run services describe django-library --platform managed --region us-central1 --format 'value(status.url)')
+        SERVICE_URL=$(gcloud run services describe django-library --platform managed --region europe-west9 --format 'value(status.url)')
         echo "🚀 Application deployed successfully!"
         echo "📱 URL: $SERVICE_URL"
