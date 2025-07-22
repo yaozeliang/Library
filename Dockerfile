@@ -28,7 +28,7 @@ COPY pyproject.toml uv.lock* README.md ./
 
 # Create virtual environment and install dependencies
 RUN uv venv && \
-    uv pip install --system .
+    uv pip install --system .[production]
 
 # Copy project files
 COPY --chown=django:django . .
