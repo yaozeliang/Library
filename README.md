@@ -13,7 +13,6 @@ A comprehensive Django-based library management system with modern code quality 
 - **Code Quality**: Well-structured and maintainable codebase
 
 ## 🛠️ Technology Stack
-
 - **Backend**: Django 2.2.10
 - **Database**: SQLite (configurable for production)
 - **Frontend**: Bootstrap 4, Tailwind CSS
