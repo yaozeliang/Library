@@ -9,7 +9,19 @@ from .settings import *  # noqa: F403
 
 # Security settings
 DEBUG = False
-ALLOWED_HOSTS = config("ALLOWED_HOSTS", default="localhost 127.0.0.1").split()
+allowed_hosts_str = config("ALLOWED_HOSTS", default="localhost 127.0.0.1")
+ALLOWED_HOSTS = allowed_hosts_str.split()
+
+# Always add the Cloud Run URL pattern
+ALLOWED_HOSTS.extend([
+    "*.europe-west1.run.app",
+    "*.run.app",  # Fallback for other regions
+])
+
+# Debug: Print ALLOWED_HOSTS to logs
+import logging
+logger = logging.getLogger(__name__)
+logger.info(f"ALLOWED_HOSTS configured as: {ALLOWED_HOSTS}")
 
 # Database configuration
 DATABASES = {
