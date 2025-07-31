@@ -9,7 +9,7 @@ from .settings import *  # noqa: F403
 
 # Security settings
 DEBUG = False
-ALLOWED_HOSTS = config("ALLOWED_HOSTS", default="localhost,127.0.0.1").split(",")
+ALLOWED_HOSTS = config("ALLOWED_HOSTS", default="localhost 127.0.0.1").split()
 
 # Database configuration
 DATABASES = {
