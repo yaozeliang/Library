@@ -26,9 +26,10 @@ WORKDIR /app
 # Copy dependency files and README (required by pyproject.toml)
 COPY pyproject.toml uv.lock* README.md ./
 
-# Create virtual environment and install dependencies
-RUN uv venv && \
-    uv pip install --system .[production]
+# Install dependencies system-wide
+RUN uv pip install --system --no-cache-dir .[production] && \
+    which gunicorn && \
+    gunicorn --version
 
 # Copy project files
 COPY --chown=django:django . .

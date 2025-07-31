@@ -174,7 +174,7 @@ jobs:
           --set-env-vars="GS_BUCKET_NAME=${{ secrets.GS_BUCKET_NAME }}" \
           --set-env-vars="GS_PROJECT_ID=${{ secrets.GCP_PROJECT_ID }}" \
           --set-env-vars="DJANGO_SETTINGS_MODULE=core.settings_production" \
-          --set-env-vars="ALLOWED_HOSTS=*.run.app localhost 127.0.0.1" \
+          --set-env-vars="ALLOWED_HOSTS=*.europe-west1.run.app localhost 127.0.0.1" \
           --memory=512Mi \
           --cpu=1 \
           --max-instances=10 \
