@@ -40,7 +40,7 @@ Open http://127.0.0.1:8000/. The home page requires a login, so you are sent to 
 
 `uv` is optional and matches CI: `uv sync --dev`, then `uv run python manage.py migrate` and `uv run python manage.py runserver`.
 
-To connect to Postgres as well as SQLite, install the production extra so `psycopg2` is present:
+`psycopg2` is a direct dependency, so a normal install can open Postgres. The production extra adds Gunicorn, Redis, and Sentry:
 
 ```bash
 pip install -e ".[production]"
@@ -73,7 +73,7 @@ Changing an avatar (including clearing it) should not 500 the home or profile pa
 
 Leave `DATABASE_URL` unset to keep SQLite (`db.sqlite3` via `core.settings`).
 
-`DATABASE_URL` is supported; the variable and a placeholder shape are in `env.example`. `core/settings_production.py` loads it with `dj-database-url`. Set `DJANGO_SETTINGS_MODULE=core.settings_production` when you want that configuration.
+`DATABASE_URL` is supported in both `core.settings` and `core.settings_production` through `core/db_config.py`. An empty value keeps SQLite. Postgres uses `core.postgresql_backend`, because Django 2.2 only looks up constraints in schema `public` and this project keeps tables in schema `library` via `search_path`. The variable and a placeholder shape are in `env.example`. Set `DJANGO_SETTINGS_MODULE=core.settings_production` for the production configuration.
 
 Demo/staging Postgres is **schema isolation on the shared personal-site database**, not a separate database named `library`. Tables belong in schema `library`. The application role is `library_app`. Set the connection `search_path` to `library` (URL-encoded `options=-csearch_path%3Dlibrary`).
 
@@ -107,7 +107,7 @@ The current public demo is an independent sslip.io host, not fillerwiki.
 
 Copy `env.example` to `.env` for local overrides (`SECRET_KEY`, `DEBUG`, `SERVER`, and optionally `DATABASE_URL`). `.env` is local only. Do not commit it or any real database password.
 
-`core.settings` (what `manage.py` uses by default) turns `DEBUG` on and uses SQLite. Production settings read `ALLOWED_HOSTS`, `DATABASE_URL`, and the other variables listed in `env.example`.
+`core.settings` (what `manage.py` uses by default) turns `DEBUG` on and uses SQLite unless `DATABASE_URL` is set. Production settings read `ALLOWED_HOSTS`, `DATABASE_URL`, and the other variables listed in `env.example`.
 
 ## Project layout
 
