@@ -1,279 +1,148 @@
 # Library Management System
 
-A comprehensive Django-based library management system with modern code quality standards.
-## 🚀 Features
+Django 2.2 monolith for a small library: catalog, members, borrowing, and staff login. Local development uses SQLite. Demo and staging can use Postgres on a shared personal-site database, isolated in schema `library`.
 
-- **Book Management**: Add, edit, delete, and search books
-- **Member Management**: Manage library members with card system
-- **Borrowing System**: Track book borrowing and returns
-- **User Authentication**: Secure login and registration
-- **Admin Interface**: Full Django admin integration
-- **Comments System**: User feedback and discussions
-- **Modern UI**: Bootstrap-based responsive design
-- **Code Quality**: Well-structured and maintainable codebase
+## Features
 
-## 🛠️ Technology Stack
-- **Backend**: Django 2.2.10
-- **Database**: SQLite (configurable for production)
-- **Frontend**: Bootstrap 4, Tailwind CSS
-- **Code Quality**: Structured development practices
-- **Forms**: Django Crispy Forms
-- **Rich Text**: CKEditor
-- **Date/Time**: Flatpickr
-- **API**: Django REST Framework
+- Books, categories, and publishers
+- Members and library cards
+- Borrow and return records
+- Login, signup, and user profiles (`/auth/`)
+- Comments
+- Django admin
+- JSON API under `/api/`
+- Bootstrap 4 and Tailwind templates (django-crispy-forms, CKEditor, Flatpickr)
 
-## 📋 Requirements
+## Stack
 
-- Python 3.8+
-- Django 2.2.10
-- See `pyproject.toml` for complete dependencies
+- **Python:** 3.8. Django 2.2 does not run reliably on Python 3.13.
+- **Django:** 2.2.10
+- **Database:** SQLite by default. Optional Postgres through `DATABASE_URL` (see below).
+- **Other:** Django REST Framework, WhiteNoise, and (in the production extra) Gunicorn and `psycopg2`.
 
-## 🚀 Quick Start
+Dependencies live in `pyproject.toml`. There is no root `requirements.txt`.
 
-### 1. Clone the Repository
+## Quick start
+
+From a Python 3.8 environment:
 
 ```bash
-git clone <repository-url>
+git clone https://github.com/yaozeliang/Library.git
 cd Library
-```
-
-### 2. Set Up Virtual Environment
-
-```bash
-# Using venv
-python -m venv .venv
-source .venv/bin/activate  # On Windows: .venv\Scripts\activate
-
-# Or using uv (recommended)
-uv venv
-source .venv/bin/activate
-```
-
-### 3. Install Dependencies
-
-```bash
-# Using pip
-pip install -r requirements.txt
-
-# Or using uv
-uv pip install -e .
-```
-
-### 4. Run Migrations
-
-```bash
+python3.8 -m venv .venv
+source .venv/bin/activate  # Windows: .venv\Scripts\activate
+pip install -e .
 python manage.py migrate
-```
-
-### 5. Create Superuser
-
-```bash
-python manage.py createsuperuser
-```
-
-### 6. Run Development Server
-
-```bash
 python manage.py runserver
 ```
 
-Visit `http://127.0.0.1:8000/` to access the application.
+Open http://127.0.0.1:8000/. The home page requires a login, so you are sent to http://127.0.0.1:8000/auth/login/.
 
-## 🎯 Code Quality
+`uv` is optional and matches CI: `uv sync --dev`, then `uv run python manage.py migrate` and `uv run python manage.py runserver`.
 
-This project follows Django best practices and maintains clean, readable code:
+To connect to Postgres as well as SQLite, install the production extra so `psycopg2` is present:
 
-- **PEP 8 Compliance**: Consistent code style
-- **Modern Standards**: Python 3.8+ features
-- **Clean Architecture**: Well-organized modules and separation of concerns
-- **Documentation**: Comprehensive docstrings and comments
+```bash
+pip install -e ".[production]"
+```
 
-## 📁 Project Structure
+### Demo data
+
+After `migrate`, seed demo users and a fake catalog (local or demo/staging only):
+
+```bash
+python scripts/seed_library_demo.py
+```
+
+Do not run that script against a production database. For a private local superuser instead of the demo accounts, use `python manage.py createsuperuser`.
+
+## Demo accounts
+
+These accounts are for local demo data and the staging/demo site only. Do not use them in production.
+
+| Username | Password | Role |
+| --- | --- | --- |
+| `admin` | `admin` | superuser |
+| `staff` | `staff` | staff |
+
+`scripts/seed_library_demo.py` creates them, along with the fake catalog. Sign in at `/auth/login/`.
+
+Changing an avatar (including clearing it) should not 500 the home or profile page. `HomeView` treats an empty `profile_pic` as “no avatar” instead of reading `.url` on a missing file. The book tests cover that regression.
+
+## Optional Postgres
+
+Leave `DATABASE_URL` unset to keep SQLite (`db.sqlite3` via `core.settings`).
+
+`DATABASE_URL` is supported; the variable and a placeholder shape are in `env.example`. `core/settings_production.py` loads it with `dj-database-url`. Set `DJANGO_SETTINGS_MODULE=core.settings_production` when you want that configuration.
+
+Demo/staging Postgres is **schema isolation on the shared personal-site database**, not a separate database named `library`. Tables belong in schema `library`. The application role is `library_app`. Set the connection `search_path` to `library` (URL-encoded `options=-csearch_path%3Dlibrary`).
+
+```bash
+# Placeholder only. Do not commit a real password, .env, or connection string.
+export DJANGO_SETTINGS_MODULE=core.settings_production
+export DATABASE_URL='postgres://library_app:<password>@<host>:<port>/<database>?sslmode=require&options=-csearch_path%3Dlibrary'
+python manage.py migrate
+python scripts/seed_library_demo.py
+```
+
+Schema creation, grants, and the rest of the ops steps are in [DEVOPS_POSTGRES.md](DEVOPS_POSTGRES.md).
+
+## Testing
+
+```bash
+python manage.py test
+```
+
+Book tests include the empty-avatar regression (home/profile after an avatar change). CI runs the same command on Python 3.8.
+
+## Demo / staging
+
+The public demo is moving off fillerwiki onto an independent host. Devops chooses that host; this repo does not pin a permanent demo URL.
+
+- Site: `https://<demo-host>/` (the demo / staging URL provided by Devops)
+- Login: `https://<demo-host>/auth/login/`
+- Accounts: `admin` / `admin` and `staff` / `staff` (demo only; see above)
+
+## Configuration
+
+Copy `env.example` to `.env` for local overrides (`SECRET_KEY`, `DEBUG`, `SERVER`, and optionally `DATABASE_URL`). `.env` is local only. Do not commit it or any real database password.
+
+`core.settings` (what `manage.py` uses by default) turns `DEBUG` on and uses SQLite. Production settings read `ALLOWED_HOSTS`, `DATABASE_URL`, and the other variables listed in `env.example`.
+
+## Project layout
 
 ```
 Library/
-├── core/                   # Django project settings
-├── book/                   # Book management app
-│   ├── models.py          # Book, Member, BorrowRecord models
-│   ├── views.py           # Book management views
-│   ├── forms.py           # Book-related forms
-│   └── admin.py           # Admin interface
-├── authentication/         # User authentication app
-├── comment/               # Comments system
-├── util/                  # Utility functions
-├── templates/             # HTML templates
-├── static/                # Static files (CSS, JS, images)
-├── media/                 # User-uploaded files
-├── pyproject.toml         # Project configuration and dependencies
-
+├── core/                  # settings, URLs, WSGI
+├── book/                  # catalog, members, borrow records, home
+├── authentication/        # /auth/ login, signup, profile
+├── comment/               # comments
+├── Api/                   # /api/ JSON endpoints
+├── scripts/               # seed_library_demo.py
+├── templates/             # HTML
+├── static/                # CSS, JS, images
+├── pyproject.toml         # dependencies
+├── env.example            # variable names, no real secrets
+└── DEVOPS_POSTGRES.md     # schema and role setup for ops
 ```
 
-## 🔧 Configuration
+## API
 
-### Environment Variables
+Base path `/api/`. Useful routes include:
 
-Create a `.env` file in the project root:
+- `/api/` overview
+- `/api/book-list/`, `/api/book-detail/<id>/`
+- `/api/members/`
+- `/api/category-list/`, `/api/publisher-list/`
 
-```env
-SECRET_KEY=your-secret-key-here
-DEBUG=True
-SERVER=127.0.0.1
-```
+Django admin is `/admin/`.
 
-### Database Configuration
+## Deployment
 
-The project uses SQLite by default. For production, update `settings.py`:
+The image in `Dockerfile` is Python 3.8 and is the container path in this repo (`gunicorn`, production extra). `core/settings_production.py` is the production settings module.
 
-```python
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'your_db_name',
-        'USER': 'your_db_user',
-        'PASSWORD': 'your_db_password',
-        'HOST': 'localhost',
-        'PORT': '5432',
-    }
-}
-```
+Older Heroku and Railway command lists are not how this demo is hosted. Use the independent demo / staging URL from Devops, and Postgres as described in [DEVOPS_POSTGRES.md](DEVOPS_POSTGRES.md).
 
-## 🧪 Testing
+## License
 
-```bash
-# Run tests
-python manage.py test
-
-# Run with coverage
-coverage run --source='.' manage.py test
-coverage report
-```
-
-## 🚀 Deployment
-
-### Pre-deployment Preparation
-
-1. **Clean up unnecessary files**:
-   ```bash
-   python cleanup.py
-   ```
-
-2. **Set up environment variables**:
-   ```bash
-   cp env.example .env
-   # Edit .env with your production settings
-   ```
-
-3. **Install production dependencies**:
-   ```bash
-   uv sync --extra production
-   ```
-
-### Deployment Options
-
-#### Docker Deployment
-```bash
-# Build the Docker image
-docker build -t library-management .
-
-# Run with environment variables
-docker run -p 8000:8000 --env-file .env library-management
-
-# Or use Docker Compose
-docker-compose up --build
-```
-
-#### Heroku Deployment
-```bash
-# Install Heroku CLI and login
-heroku create your-app-name
-heroku config:set SECRET_KEY=your-secret-key
-heroku config:set DATABASE_URL=your-database-url
-git push heroku main
-```
-
-#### Railway Deployment
-```bash
-# Install Railway CLI
-railway login
-railway init
-railway add postgresql
-railway deploy
-```
-
-#### AWS ECS/Fargate
-1. Build and push Docker image to ECR
-2. Create ECS task definition
-3. Deploy to ECS service
-
-### Environment Variables
-
-Required environment variables for production:
-- `SECRET_KEY`: Django secret key
-- `DATABASE_URL`: Database connection string
-- `ALLOWED_HOSTS`: Comma-separated list of allowed hosts
-- `REDIS_URL`: Redis connection string (optional)
-- `EMAIL_HOST_USER`: SMTP email username
-- `EMAIL_HOST_PASSWORD`: SMTP email password
-
-### Security Considerations
-
-1. **Change default admin URL** in production
-2. **Use HTTPS** in production
-3. **Set up proper CORS** if needed
-4. **Configure CSP headers**
-5. **Use environment variables** for sensitive data
-6. **Enable security middleware**
-7. **Set up monitoring** with Sentry
-
-### Manual Deployment
-
-1. Set `DEBUG = False` in settings
-2. Configure production database
-3. Collect static files: `python manage.py collectstatic`
-4. Set up web server (nginx + gunicorn)
-
-## 📊 API Documentation
-
-The project includes Django REST Framework for API access:
-
-- **Books API**: `/api/books/`
-- **Members API**: `/api/members/`
-- **Borrow Records API**: `/api/borrow-records/`
-
-## 🤝 Contributing
-
-1. Fork the repository
-2. Create a feature branch
-3. Make your changes
-4. Follow Django best practices for clean code
-5. Submit a pull request
-
-## 📝 Code Style
-
-This project follows strict Python code quality standards:
-
-- **PEP 8**: Python style guide compliance
-- **Type Hints**: Full type annotation
-- **Docstrings**: Comprehensive documentation
-- **Import Sorting**: Automatic import organization
-- **Line Length**: 88 characters maximum
-
-## 📄 License
-
-This project is licensed under the MIT License - see the [LICENSE.md](LICENSE.md) file for details.
-
-## 🆘 Support
-
-For support and questions:
-
-1. Check the documentation
-2. Search existing issues
-3. Create a new issue with detailed information
-
-## 🔄 Changelog
-
-See [CHANGELOG.md](CHANGELOG.md) for version history and updates.
-
----
-
-**Built with ❤️ using Django**
+MIT. See [LICENSE.md](LICENSE.md).
