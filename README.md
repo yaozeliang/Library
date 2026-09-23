@@ -97,10 +97,10 @@ Book tests include the empty-avatar regression (home/profile after an avatar cha
 
 ## Demo / staging
 
-The public demo is moving off fillerwiki onto an independent host. Devops chooses that host; this repo does not pin a permanent demo URL.
+The current public demo is an independent sslip.io host, not fillerwiki.
 
-- Site: `https://<demo-host>/` (the demo / staging URL provided by Devops)
-- Login: `https://<demo-host>/auth/login/`
+- Site: https://library.167-172-169-210.sslip.io/
+- Login: https://library.167-172-169-210.sslip.io/auth/login/
 - Accounts: `admin` / `admin` and `staff` / `staff` (demo only; see above)
 
 ## Configuration
@@ -141,7 +141,7 @@ Django admin is `/admin/`.
 
 The image in `Dockerfile` is Python 3.8 and is the container path in this repo (`gunicorn`, production extra). `core/settings_production.py` is the production settings module.
 
-Older Heroku and Railway command lists are not how this demo is hosted. Use the independent demo / staging URL from Devops, and Postgres as described in [DEVOPS_POSTGRES.md](DEVOPS_POSTGRES.md).
+Older Heroku and Railway command lists are not how this demo is hosted. The current demo is https://library.167-172-169-210.sslip.io/. Postgres setup is in [DEVOPS_POSTGRES.md](DEVOPS_POSTGRES.md).
 
 ## License
 
