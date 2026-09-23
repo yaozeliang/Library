@@ -70,6 +70,17 @@ allowed_models = [
 # HomePage
 
 
+def _avatar_url(username):
+    """Return a profile picture URL, or '' when the user has none.
+
+    An empty ImageField has no file; reading ``.url`` raises ValueError.
+    """
+    profile = Profile.objects.filter(user__username=username).first()
+    if profile is None or not profile.profile_pic:
+        return ""
+    return profile.profile_pic.url
+
+
 class HomeView(LoginRequiredMixin, TemplateView):
     login_url = "login"
     template_name = "index.html"
@@ -91,10 +102,8 @@ class HomeView(LoginRequiredMixin, TemplateView):
 
         user_activities = UserActivity.objects.order_by("-created_at")[:5]
         user_avatar = {
-            e.created_by: Profile.objects.get(
-                user__username=e.created_by
-            ).profile_pic.url
-            for e in user_activities
+            activity.created_by: _avatar_url(activity.created_by)
+            for activity in user_activities
         }
         short_inventory = Book.objects.order_by("quantity")[:5]
 
@@ -552,8 +561,6 @@ class ActivityListView(LoginRequiredMixin, ListView):
     search_value = ""
     created_by = ""
     order_field = "-created_at"
-    all_users = User.objects.values()
-    user_list = [x["username"] for x in all_users]
 
     # def dispatch(self, *args, **kwargs):
     #     return super(ActivityListView, self).dispatch(*args, **kwargs)
@@ -589,7 +596,9 @@ class ActivityListView(LoginRequiredMixin, ListView):
         context = super(ActivityListView, self).get_context_data(*args, **kwargs)
         context["count_total"] = self.count_total
         context["search"] = self.search_value
-        context["user_list"] = self.user_list
+        context["user_list"] = list(
+            User.objects.values_list("username", flat=True)
+        )
         context["created_by"] = self.created_by
         return context
 
@@ -775,6 +784,10 @@ class ProfileUpdateView(LoginRequiredMixin, UpdateView):
     login_url = "login"
     form_class = ProfileForm
     template_name = "profile/profile_update.html"
+
+    def get_queryset(self):
+        """Limit updates to the signed-in user's own profile."""
+        return Profile.objects.filter(user=self.request.user)
 
 
 # Borrow Records

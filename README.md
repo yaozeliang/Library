@@ -14,7 +14,7 @@ A comprehensive Django-based library management system with modern code quality 
 
 ## 🛠️ Technology Stack
 - **Backend**: Django 2.2.10
-- **Database**: SQLite (configurable for production)
+- **Database**: SQLite locally, or Postgres via `DATABASE_URL`
 - **Frontend**: Bootstrap 4, Tailwind CSS
 - **Code Quality**: Structured development practices
 - **Forms**: Django Crispy Forms
@@ -60,6 +60,8 @@ uv pip install -e .
 ```
 
 ### 4. Run Migrations
+
+SQLite is used when `DATABASE_URL` is unset. For DigitalOcean Managed Postgres, set `DATABASE_URL` (database `defaultdb`, schema `library`) and then migrate. See [Database](#database).
 
 ```bash
 python manage.py migrate
@@ -120,21 +122,17 @@ DEBUG=True
 SERVER=127.0.0.1
 ```
 
-### Database Configuration
+### Database
 
-The project uses SQLite by default. For production, update `settings.py`:
+Local development uses SQLite when `DATABASE_URL` is unset.
 
-```python
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'your_db_name',
-        'USER': 'your_db_user',
-        'PASSWORD': 'your_db_password',
-        'HOST': 'localhost',
-        'PORT': '5432',
-    }
-}
+For DigitalOcean Managed Postgres, create the `library` schema on database `defaultdb`, set `DATABASE_URL`, then migrate. Include `sslmode=require` and a URL-encoded `search_path` so Django uses schema `library`:
+
+```bash
+# CREATE SCHEMA IF NOT EXISTS library;
+# Do not commit this URL or a .env file.
+export DATABASE_URL='postgres://USER:PASSWORD@HOST:PORT/defaultdb?sslmode=require&options=-csearch_path%3Dlibrary'
+python manage.py migrate
 ```
 
 ## 🧪 Testing

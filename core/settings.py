@@ -7,6 +7,8 @@ import os
 
 from decouple import config
 
+from core.db_config import databases_from_url
+
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
@@ -125,12 +127,9 @@ CRISPY_TEMPLATE_PACK = "bootstrap4"
 
 WSGI_APPLICATION = "core.wsgi.application"
 
-DATABASES = {
-    "default": {
-        "ENGINE": "django.db.backends.sqlite3",
-        "NAME": "db.sqlite3",
-    },
-}
+# Postgres when DATABASE_URL is set (for example DigitalOcean Managed Postgres,
+# database defaultdb, schema library). SQLite when it is unset.
+DATABASES = databases_from_url(config("DATABASE_URL", default=""))
 
 # Password validation
 # https://docs.djangoproject.com/en/3.0/ref/settings/#auth-password-validators

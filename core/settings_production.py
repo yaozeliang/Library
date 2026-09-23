@@ -2,7 +2,6 @@
 
 import os
 
-import dj_database_url
 from decouple import config
 
 from .settings import *  # noqa: F403
@@ -23,12 +22,8 @@ import logging
 logger = logging.getLogger(__name__)
 logger.info(f"ALLOWED_HOSTS configured as: {ALLOWED_HOSTS}")
 
-# Database configuration
-DATABASES = {
-    "default": dj_database_url.config(
-        default=config("DATABASE_URL", default="sqlite:///db.sqlite3")
-    )
-}
+# Database: inherited from core.settings. Set DATABASE_URL for Postgres
+# (defaultdb / schema library). Unset DATABASE_URL keeps SQLite.
 
 # Google Cloud Storage Configuration
 GS_BUCKET_NAME = config("GS_BUCKET_NAME", default="django-library-static")
