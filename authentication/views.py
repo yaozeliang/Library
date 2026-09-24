@@ -2,11 +2,27 @@
 
 from django.contrib.auth import login
 from django.contrib.auth.decorators import login_required
+from django.contrib.auth.views import LogoutView
 from django.shortcuts import redirect, render
 from django.urls import reverse_lazy
 from django.views.generic import CreateView
 
 from .forms import CustomUserCreationForm
+
+
+class PostOnlyLogoutView(LogoutView):
+    """Log out only on POST so a cross-site GET cannot end the session.
+
+    Django 2.2's LogoutView logs the user out inside ``dispatch`` before it
+    checks ``http_method_names``, so GET has to be rejected first.
+    """
+
+    http_method_names = ["post", "head", "options"]
+
+    def dispatch(self, request, *args, **kwargs):
+        if request.method.lower() != "post":
+            return self.http_method_not_allowed(request, *args, **kwargs)
+        return super().dispatch(request, *args, **kwargs)
 
 
 class SignUpView(CreateView):

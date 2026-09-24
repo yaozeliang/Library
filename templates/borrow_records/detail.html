@@ -116,7 +116,7 @@
 
                                 {% if record.open_or_close == 0 %}
 
-                                <a href="{% url 'record_close' record.pk %}" class='btn btn-danger'>Close Record (Book returned)</a>
+                                <form method="post" action="{% url 'record_close' record.pk %}" style="display:inline">{% csrf_token %}<button type="submit" class="btn btn-danger">Close Record (Book returned)</button></form>
                                 {% endif %}
                             </div>
                         </div>

@@ -322,7 +322,7 @@ class BookUpdateView(LoginRequiredMixin, UpdateView):
 class BookDeleteView(LoginRequiredMixin, View):
     login_url = "login"
 
-    def get(self, request, *args, **kwargs):
+    def post(self, request, *args, **kwargs):
         book_pk = kwargs["pk"]
         delete_book = Book.objects.get(pk=book_pk)
         model_name = delete_book.__class__.__name__
@@ -401,7 +401,7 @@ class CategoryCreateView(LoginRequiredMixin, CreateView):
 class CategoryDeleteView(LoginRequiredMixin, View):
     login_url = "login"
 
-    def get(self, request, *args, **kwargs):
+    def post(self, request, *args, **kwargs):
         cat_pk = kwargs["pk"]
         delete_cat = Category.objects.get(pk=cat_pk)
         model_name = delete_cat.__class__.__name__
@@ -528,7 +528,7 @@ class PublisherUpdateView(LoginRequiredMixin, UpdateView):
 class PublisherDeleteView(LoginRequiredMixin, View):
     login_url = "login"
 
-    def get(self, request, *args, **kwargs):
+    def post(self, request, *args, **kwargs):
         pub_pk = kwargs["pk"]
         delete_pub = Publisher.objects.get(pk=pub_pk)
         model_name = delete_pub.__class__.__name__
@@ -608,7 +608,7 @@ class ActivityListView(LoginRequiredMixin, ListView):
 class ActivityDeleteView(LoginRequiredMixin, View):
     login_url = "login"
 
-    def get(self, request, *args, **kwargs):
+    def post(self, request, *args, **kwargs):
         log_pk = kwargs["pk"]
         delete_log = UserActivity.objects.get(pk=log_pk)
         messages.error(request, "Activity Removed")
@@ -717,7 +717,7 @@ class MemberUpdateView(LoginRequiredMixin, UpdateView):
 class MemberDeleteView(LoginRequiredMixin, View):
     login_url = "login"
 
-    def get(self, request, *args, **kwargs):
+    def post(self, request, *args, **kwargs):
         member_pk = kwargs["pk"]
         delete_member = Member.objects.get(pk=member_pk)
         model_name = delete_member.__class__.__name__
@@ -931,7 +931,7 @@ class BorrowRecordListView(LoginRequiredMixin, ListView):
 class BorrowRecordDeleteView(LoginRequiredMixin, View):
     login_url = "login"
 
-    def get(self, request, *args, **kwargs):
+    def post(self, request, *args, **kwargs):
         record_pk = kwargs["pk"]
         delete_record = BorrowRecord.objects.get(pk=record_pk)
         model_name = delete_record.__class__.__name__
@@ -949,7 +949,7 @@ class BorrowRecordDeleteView(LoginRequiredMixin, View):
 
 
 class BorrowRecordClose(LoginRequiredMixin, View):
-    def get(self, request, *args, **kwargs):
+    def post(self, request, *args, **kwargs):
         close_record = BorrowRecord.objects.get(pk=self.kwargs["pk"])
         close_record.closed_by = self.request.user.username
         close_record.final_status = close_record.return_status
@@ -1120,10 +1120,9 @@ class NoticeListView(SuperUserRequiredMixin, ListView):
 class NoticeUpdateView(SuperUserRequiredMixin, View):
     """Update Status of Notification"""
 
-    # 处理 get 请求
-    def get(self, request):
+    def post(self, request):
         # 获取未读消息
-        notice_id = request.GET.get("notice_id")
+        notice_id = request.POST.get("notice_id")
         # 更新单条通知
         if notice_id:
             request.user.notifications.get(id=notice_id).mark_as_read()

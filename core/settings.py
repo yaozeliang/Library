@@ -8,12 +8,13 @@ import os
 from decouple import config
 
 from core.db_config import databases_from_url
+from core.production_config import LOCAL_DEV_SECRET_KEY
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
-# SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = config("SECRET_KEY", default="S#perS3crEt_1122")
+# Local installs may omit SECRET_KEY. Production settings refuse this placeholder.
+SECRET_KEY = config("SECRET_KEY", default=LOCAL_DEV_SECRET_KEY)
 
 # SECURITY WARNING: don't run with debug turned on in production!
 # DEBUG = config('DEBUG', default=True, cast=bool)
@@ -92,10 +93,10 @@ CKEDITOR_CONFIGS = {
 }
 
 REST_FRAMEWORK = {
-    # Use Django's standard `django.contrib.auth` permissions,
-    # or allow read-only access for unauthenticated users.
+    # Every API view requires a logged-in user, including reads.
+    # Views may still set a stricter permission_classes list.
     "DEFAULT_PERMISSION_CLASSES": [
-        "rest_framework.permissions.DjangoModelPermissionsOrAnonReadOnly",
+        "rest_framework.permissions.IsAuthenticated",
     ],
     "DEFAULT_PAGINATION_CLASS": "rest_framework.pagination.PageNumberPagination",
     "PAGE_SIZE": 10,

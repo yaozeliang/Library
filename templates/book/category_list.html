@@ -83,7 +83,7 @@
                                                 <th scope="row">{{cat.id}}</th>
                                                 <td>{{cat.name}}</td>
                                                 <td>{{ cat.created_at|date:"Y-m-d H:i" }}  </td>
-                                                <td><a href="{% url 'category_delete' cat.pk %}" class="badge badge-danger"><i class="feather icon-trash-2"></i>&nbsp;Delete</a></td>
+                                                <td><form method="post" action="{% url 'category_delete' cat.pk %}" style="display:inline">{% csrf_token %}<button type="submit" class="badge badge-danger border-0"><i class="feather icon-trash-2"></i>&nbsp;Delete</button></form></td>
 
                                             </tr>
                                             {% endfor %}

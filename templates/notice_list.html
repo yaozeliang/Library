@@ -45,7 +45,7 @@
 
                             <div class="card-block ">
                                 <div class="row mt-4 ml-4">
-                                    <a href="{% url 'notice_update' %}" class="btn btn-dark" role="button">Clear All</a>
+                                    <form method="post" action="{% url 'notice_update' %}">{% csrf_token %}<button type="submit" class="btn btn-dark">Clear All</button></form>
                                 </div>
                                 <div class="row mt-2 ml-4">
                                     <ul class="list-group">

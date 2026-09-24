@@ -91,7 +91,7 @@
                                                 <td>{{ member.expired_at|date:"Y-m-d" }} </td>
                                                 <td>
                                                     <a href="{% url 'member_update' member.pk %}" class="badge badge-info"><i class="feather icon-edit"></i>&nbsp;Edit</a>&nbsp;
-                                                    <a href="{% url 'member_delete' member.pk %}" class="badge badge-danger"><i class="feather icon-trash-2"></i>&nbsp;Delete</a></td>
+                                                    <form method="post" action="{% url 'member_delete' member.pk %}" style="display:inline">{% csrf_token %}<button type="submit" class="badge badge-danger border-0"><i class="feather icon-trash-2"></i>&nbsp;Delete</button></form></td>
                                                     
                                             </tr>
                                             {% endfor %}

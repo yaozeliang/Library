@@ -107,7 +107,9 @@ The current public demo is an independent sslip.io host, not fillerwiki.
 
 Copy `env.example` to `.env` for local overrides (`SECRET_KEY`, `DEBUG`, `SERVER`, and optionally `DATABASE_URL`). `.env` is local only. Do not commit it or any real database password.
 
-`core.settings` (what `manage.py` uses by default) turns `DEBUG` on and uses SQLite unless `DATABASE_URL` is set. Production settings read `ALLOWED_HOSTS`, `DATABASE_URL`, and the other variables listed in `env.example`.
+`core.settings` (what `manage.py` uses by default) turns `DEBUG` on and uses SQLite unless `DATABASE_URL` is set. Production settings (`DJANGO_SETTINGS_MODULE=core.settings_production`) require a unique `SECRET_KEY` in the environment, default `DEBUG` to false, and read `ALLOWED_HOSTS`, `DATABASE_URL`, and the other variables in `env.example`. They refuse placeholder secret keys, including the old hardcoded default. Set `SECRET_KEY` on the demo host before deploying this change.
+
+The JSON API requires a logged-in user for reads and writes. Deletes, borrow close, notification clear, and logout accept POST only.
 
 ## Project layout
 

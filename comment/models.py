@@ -5,6 +5,8 @@ from django.contrib.auth.models import User
 from django.db import models
 from django.urls import reverse
 
+from .sanitize import sanitize_comment_html
+
 
 class Comment(models.Model):
     """Comment model for user feedback and discussions."""
@@ -28,6 +30,11 @@ class Comment(models.Model):
         """Meta class for Comment model."""
 
         ordering = ["-created_at"]
+
+    def save(self, *args, **kwargs):
+        """Persist body only after unsafe HTML has been removed."""
+        self.body = sanitize_comment_html(self.body)
+        return super().save(*args, **kwargs)
 
     def __str__(self) -> str:
         """Return string representation of the comment."""
