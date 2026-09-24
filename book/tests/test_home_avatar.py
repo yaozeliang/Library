@@ -57,6 +57,7 @@ class HomeAvatarTests(TestCase):
 
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, "alice")
+        self.assertContains(response, "assets/images/user/avatar-2.jpg")
 
     def test_home_renders_when_activity_author_has_no_profile(self):
         UserActivity.objects.create(
