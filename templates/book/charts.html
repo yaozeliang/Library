@@ -1,44 +1,63 @@
 {% extends "layouts/base.html" %}
 
-{% block title %} Charts Morris {% endblock %} 
+{% block title %}Charts{% endblock %}
 
 <!-- Specific CSS goes HERE -->
 {% block stylesheets %}
-
-    <link rel="stylesheet" href="/static/assets/plugins/chart-morris/css/morris.css">
-
+<style>
+  .chart-plot {
+    height: 400px;
+    width: 100%;
+    min-width: 0;
+  }
+  .chart-plot.chart-empty,
+  .chart-plot > .chart-empty {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+    margin: 0;
+    padding: 1.5rem;
+    text-align: center;
+    color: #6c757d;
+  }
+  .chart-plot .highcharts-container,
+  .chart-plot svg {
+    max-width: 100%;
+  }
+</style>
 {% endblock stylesheets %}
 
 {% block content %}
 
 <div class="pcoded-content">
     <div class="pcoded-inner-content">
-        <!-- [ breadcrumb ] start -->
         <div class="page-header">
             <div class="page-block">
                 <div class="row align-items-center">
-                    <!-- <div class="col-md-12">
+                    <div class="col-md-12">
                         <div class="page-header-title">
-                            <h5 class="m-b-10">Morris Chart</h5>
+                            <h5 class="m-b-10">Charts</h5>
                         </div>
-
-                    </div> -->
+                    </div>
                 </div>
             </div>
         </div>
         <div class="main-body">
             <div class="page-wrapper">
-                <!-- [ Main Content ] start -->
                 <div class="row">
-                    <!-- [ Morris Chart ] start -->
                     <div class="col-xl-6">
                         <div class="card">
                             <div class="card-header">
                                 <h5>Books in stock</h5>
                             </div>
-                            <div class="card-block" >
+                            <div class="card-block">
                                 <figure class="highcharts-figure">
-                                    <div id="book-count" style="height:400px"></div>
+                                    <div id="book-count" class="chart-plot">
+                                        {% if not top_5_book_titles %}
+                                        <p class="chart-empty">No books in stock yet.</p>
+                                        {% endif %}
+                                    </div>
                                 </figure>
                             </div>
                         </div>
@@ -51,9 +70,12 @@
                             </div>
                             <div class="card-block">
                                 <figure class="highcharts-figure">
-                                <div id="top-borrow" style="height:400px"></div>
-                            </figure>
-
+                                    <div id="top-borrow" class="chart-plot">
+                                        {% if not top_borrow_titles %}
+                                        <p class="chart-empty">No borrow history yet.</p>
+                                        {% endif %}
+                                    </div>
+                                </figure>
                             </div>
                         </div>
                     </div>
@@ -65,13 +87,15 @@
                             </div>
                             <div class="card-block">
                                 <figure class="highcharts-figure">
-                                <div id="record-status" style="height:400px"></div>
+                                    <div id="record-status" class="chart-plot">
+                                        {% if not r_open and not r_close %}
+                                        <p class="chart-empty">No borrow records yet.</p>
+                                        {% endif %}
+                                    </div>
                                 </figure>
-
                             </div>
                         </div>
                     </div>
-
 
                     <div class="col-xl-6">
                         <div class="card">
@@ -80,23 +104,23 @@
                             </div>
                             <div class="card-block">
                                 <figure class="highcharts-figure">
-                                <div id="monthly-member" style="height:400px"></div>
+                                    <div id="monthly-member" class="chart-plot">
+                                        {% if not months_member %}
+                                        <p class="chart-empty">No members yet.</p>
+                                        {% endif %}
+                                    </div>
                                 </figure>
-
                             </div>
                         </div>
                     </div>
-      
                 </div>
             </div>
         </div>
     </div>
 </div>
 
-
 {% endblock content %}
 
-<!-- Specific Page JS goes HERE  -->
 {% block javascripts %}
 {{ top_5_book_titles|json_script:"chart-top-5-titles" }}
 {{ top_5_book__quantities|json_script:"chart-top-5-qty" }}
@@ -106,161 +130,202 @@
 {{ r_close|json_script:"chart-r-close" }}
 {{ months_member|json_script:"chart-months-member" }}
 {{ count_monthly_member|json_script:"chart-monthly-member" }}
-<script type="text/javascript" src="https://code.highcharts.com/highcharts.js"> </script> 
-<script type="text/javascript" src="https://code.highcharts.com/modules/exporting.js"> </script> 
-<script type="text/javascript" src="https://code.highcharts.com/modules/export-data.js"></script> 
-<script type="text/javascript" src="https://code.highcharts.com/modules/accessibility.js"></script> 
-<script type="text/javascript" src="https://code.highcharts.com/modules/cylinder.js"></script>
-<script type="text/javascript" src="https://code.highcharts.com/highcharts-3d.js"></script>
-<script type="text/javascript">
-  var chart_top_stock_book = new Highcharts.Chart({
-    chart: {
-      renderTo: 'book-count',
-      type: 'column',
-      options3d: {
-        enabled: true,
-        alpha: 5,
-        beta: 15,
-        depth: 50,
+<script src="https://cdn.jsdelivr.net/npm/highcharts@11.4.8/highcharts.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/highcharts@11.4.8/modules/exporting.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/highcharts@11.4.8/modules/export-data.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/highcharts@11.4.8/modules/accessibility.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/highcharts@11.4.8/modules/cylinder.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/highcharts@11.4.8/highcharts-3d.js"></script>
+<script>
+(function () {
+  var chartIds = ["book-count", "top-borrow", "record-status", "monthly-member"];
+
+  function readJson(id) {
+    var node = document.getElementById(id);
+    if (!node || !node.textContent) {
+      return null;
+    }
+    try {
+      return JSON.parse(node.textContent);
+    } catch (err) {
+      return null;
+    }
+  }
+
+  function showEmpty(id, message) {
+    var node = document.getElementById(id);
+    if (!node) {
+      return;
+    }
+    node.classList.add("chart-empty");
+    node.textContent = message;
+  }
+
+  function reflowCharts() {
+    if (typeof Highcharts === "undefined" || !Highcharts.charts) {
+      return;
+    }
+    Highcharts.charts.forEach(function (chart) {
+      if (chart) {
+        chart.reflow();
       }
-    },
-    title: {
-          text: 'Top 5 in Stock'
-      },
-      xAxis: {
-          categories: JSON.parse(document.getElementById('chart-top-5-titles').textContent)
-      },
-      yAxis: {title: {text: 'Stock'}},
-      series: [{
-          type: 'column',
-          name: 'Quantity',
-          data: JSON.parse(document.getElementById('chart-top-5-qty').textContent),
-      }]
-  });
+    });
+  }
 
-  new Highcharts.Chart({
-    chart: {
-      renderTo: 'top-borrow',
-      type: 'column',
-    },
-    title: {
-          text: 'Most borrowed books'
-      },
-      xAxis: {
-          categories: JSON.parse(document.getElementById('chart-top-borrow-titles').textContent),
-   
-      },
-      yAxis: {title: {text: 'Counts'}},
-      series: [{
-          type: 'column',
-          name: 'Count',
-          data: JSON.parse(document.getElementById('chart-top-borrow-times').textContent),
-          color:"#47CC8A",
-      }]
-  });
+  if (typeof Highcharts === "undefined") {
+    chartIds.forEach(function (id) {
+      var node = document.getElementById(id);
+      if (node && !node.querySelector(".chart-empty")) {
+        showEmpty(id, "Charts could not be loaded.");
+      }
+    });
+    return;
+  }
 
+  var stockTitles = readJson("chart-top-5-titles") || [];
+  var stockQuantities = readJson("chart-top-5-qty") || [];
+  if (!stockTitles.length || !stockQuantities.length) {
+    showEmpty("book-count", "No books in stock yet.");
+  } else {
+    try {
+      new Highcharts.Chart({
+        chart: {
+          renderTo: "book-count",
+          type: "column",
+          options3d: {
+            enabled: true,
+            alpha: 5,
+            beta: 15,
+            depth: 50
+          }
+        },
+        title: { text: "Top 5 in Stock" },
+        xAxis: { categories: stockTitles },
+        yAxis: { title: { text: "Stock" } },
+        series: [{
+          type: "column",
+          name: "Quantity",
+          data: stockQuantities
+        }]
+      });
+    } catch (err) {
+      showEmpty("book-count", "This chart could not be drawn.");
+    }
+  }
 
-  new Highcharts.Chart({
-    chart: {
-        type: 'pie',
-        renderTo: 'record-status',
-    },
+  var borrowTitles = readJson("chart-top-borrow-titles") || [];
+  var borrowTimes = readJson("chart-top-borrow-times") || [];
+  if (!borrowTitles.length || !borrowTimes.length) {
+    showEmpty("top-borrow", "No borrow history yet.");
+  } else {
+    try {
+      new Highcharts.Chart({
+        chart: {
+          renderTo: "top-borrow",
+          type: "column"
+        },
+        title: { text: "Most borrowed books" },
+        xAxis: { categories: borrowTitles },
+        yAxis: { title: { text: "Counts" } },
+        series: [{
+          type: "column",
+          name: "Count",
+          data: borrowTimes,
+          color: "#47CC8A"
+        }]
+      });
+    } catch (err) {
+      showEmpty("top-borrow", "This chart could not be drawn.");
+    }
+  }
 
-    tooltip: {
-        pointFormat: '{series.name}: <b>{point.percentage:.1f}%</b>'
-    },
-
-    title: {
-          text: 'Open / Closed '
-      },
-   accessibility: {
-        point: {
-            valueSuffix: '%'
-        }
-    },
-    plotOptions: {
-        pie: {
+  var openCount = Number(readJson("chart-r-open") || 0);
+  var closeCount = Number(readJson("chart-r-close") || 0);
+  if (!openCount && !closeCount) {
+    showEmpty("record-status", "No borrow records yet.");
+  } else {
+    try {
+      new Highcharts.Chart({
+        chart: {
+          type: "pie",
+          renderTo: "record-status"
+        },
+        tooltip: {
+          pointFormat: "{series.name}: <b>{point.percentage:.1f}%</b>"
+        },
+        title: { text: "Open / Closed " },
+        accessibility: {
+          point: { valueSuffix: "%" }
+        },
+        plotOptions: {
+          pie: {
             allowPointSelect: true,
-            cursor: 'pointer',
+            cursor: "pointer",
             dataLabels: {
-                enabled: true,
-                format: '<b>{point.name}</b>: {point.y:.0f}'  }    
-        }
-    },
-    series: [{
-        name: 'Record',
-        colorByPoint: true,
-        data: [{
-            name: 'Open',
-            y: JSON.parse(document.getElementById('chart-r-open').textContent),
-            color:"#F28B5B",
-        }, 
-            
-            { name: 'Closed',
-              y: JSON.parse(document.getElementById('chart-r-close').textContent),
-              color:"#A169E7",
+              enabled: true,
+              format: "<b>{point.name}</b>: {point.y:.0f}"
             }
-        ]
-    }]
-});
-
-
-new Highcharts.chart('monthly-member', {
-
-title: {
-    text: 'New joined member / month'
-},
-
-subtitle: {
-    text: 'Count total by month'
-},
-
-yAxis: {
-    title: {
-        text: 'Total count'
-    }
-},
-
-xAxis: {
-    categories: JSON.parse(document.getElementById('chart-months-member').textContent)
-},
-
-legend: {
-    layout: 'vertical',
-    align: 'right',
-    verticalAlign: 'middle'
-},
-
-plotOptions: {
-    series: {
-        label: {
-            connectorAllowed: false
+          }
         },
+        series: [{
+          name: "Record",
+          colorByPoint: true,
+          data: [
+            { name: "Open", y: openCount, color: "#F28B5B" },
+            { name: "Closed", y: closeCount, color: "#A169E7" }
+          ]
+        }]
+      });
+    } catch (err) {
+      showEmpty("record-status", "This chart could not be drawn.");
     }
-},
+  }
 
-series: [{
-    name: 'Member',
-    data: JSON.parse(document.getElementById('chart-monthly-member').textContent)
-}],
-
-responsive: {
-    rules: [{
-        condition: {
-            maxWidth: 500
+  var memberMonths = readJson("chart-months-member") || [];
+  var memberCounts = readJson("chart-monthly-member") || [];
+  if (!memberMonths.length || !memberCounts.length) {
+    showEmpty("monthly-member", "No members yet.");
+  } else {
+    try {
+      Highcharts.chart("monthly-member", {
+        title: { text: "New joined member / month" },
+        subtitle: { text: "Count total by month" },
+        yAxis: { title: { text: "Total count" } },
+        xAxis: { categories: memberMonths },
+        legend: {
+          layout: "vertical",
+          align: "right",
+          verticalAlign: "middle"
         },
-        chartOptions: {
-            legend: {
-                layout: 'horizontal',
-                align: 'center',
-                verticalAlign: 'bottom'
+        plotOptions: {
+          series: {
+            label: { connectorAllowed: false }
+          }
+        },
+        series: [{
+          name: "Member",
+          data: memberCounts
+        }],
+        responsive: {
+          rules: [{
+            condition: { maxWidth: 500 },
+            chartOptions: {
+              legend: {
+                layout: "horizontal",
+                align: "center",
+                verticalAlign: "bottom"
+              }
             }
+          }]
         }
-    }]
-}
+      });
+    } catch (err) {
+      showEmpty("monthly-member", "This chart could not be drawn.");
+    }
+  }
 
-});
-
+  window.addEventListener("resize", reflowCharts);
+  window.addEventListener("load", reflowCharts);
+})();
 </script>
-
 {% endblock javascripts %}
