@@ -39,14 +39,18 @@ GS_PROJECT_ID = config("GS_PROJECT_ID", default="django-library-466514")
 
 # Static files (CSS, JavaScript, Images)
 STATIC_URL = f"https://storage.googleapis.com/{GS_BUCKET_NAME}/static/"
-STATICFILES_STORAGE = "storages.backends.gcloud.GoogleCloudStorage"
 STATICFILES_DIRS = [
     os.path.join(BASE_DIR, "static"),
 ]
 
 # Media files
 MEDIA_URL = f"https://storage.googleapis.com/{GS_BUCKET_NAME}/media/"
-DEFAULT_FILE_STORAGE = "storages.backends.gcloud.GoogleCloudStorage"
+
+# Django 5.1 removed STATICFILES_STORAGE and DEFAULT_FILE_STORAGE.
+STORAGES = {
+    "default": {"BACKEND": "storages.backends.gcloud.GoogleCloudStorage"},
+    "staticfiles": {"BACKEND": "storages.backends.gcloud.GoogleCloudStorage"},
+}
 
 # GCS Settings
 GS_DEFAULT_ACL = "publicRead"
@@ -57,9 +61,14 @@ GS_CACHE_CONTROL = "max-age=86400"  # 1 day
 if not GS_BUCKET_NAME or GS_BUCKET_NAME == "your-bucket-name":
     STATIC_URL = "/static/"
     STATIC_ROOT = os.path.join(BASE_DIR, "staticfiles")
-    STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
     MEDIA_URL = "/media/"
     MEDIA_ROOT = os.path.join(BASE_DIR, "media")
+    STORAGES = {
+        "default": {"BACKEND": "django.core.files.storage.FileSystemStorage"},
+        "staticfiles": {
+            "BACKEND": "whitenoise.storage.CompressedManifestStaticFilesStorage"
+        },
+    }
 
 # Security settings
 SECURE_SSL_REDIRECT = config("SECURE_SSL_REDIRECT", default=True, cast=bool)
@@ -71,7 +80,6 @@ SECURE_HSTS_PRELOAD = config("SECURE_HSTS_PRELOAD", default=True, cast=bool)
 SECURE_CONTENT_TYPE_NOSNIFF = config(
     "SECURE_CONTENT_TYPE_NOSNIFF", default=True, cast=bool
 )
-SECURE_BROWSER_XSS_FILTER = config("SECURE_BROWSER_XSS_FILTER", default=True, cast=bool)
 SECURE_REFERRER_POLICY = config(
     "SECURE_REFERRER_POLICY", default="strict-origin-when-cross-origin"
 )
@@ -140,8 +148,7 @@ EMAIL_HOST_USER = config("EMAIL_HOST_USER", default="")
 EMAIL_HOST_PASSWORD = config("EMAIL_HOST_PASSWORD", default="")
 DEFAULT_FROM_EMAIL = config("DEFAULT_FROM_EMAIL", default="noreply@library.com")
 
-# Django 2.2 cannot load django.core.cache.backends.redis.RedisCache, and that
-# backend rejects CLIENT_CLASS. Use django-redis 5.2 instead.
+# Built-in Redis cache (Django 4+). Do not pass django-redis CLIENT_CLASS.
 CACHES = caches_from_redis_url(config("REDIS_URL", default=""))
 
 # Session configuration

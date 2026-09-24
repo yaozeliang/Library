@@ -1,6 +1,6 @@
 # Library Management System
 
-Django 2.2 monolith for a small library: catalog, members, borrowing, and staff login. Local development uses SQLite. Demo and staging can use Postgres on a shared personal-site database, isolated in schema `library`.
+Django 5.2 LTS monolith for a small library: catalog, members, borrowing, and staff login. Local development uses SQLite. Demo and staging can use Postgres on a shared personal-site database, isolated in schema `library`.
 
 ## Features
 
@@ -15,8 +15,8 @@ Django 2.2 monolith for a small library: catalog, members, borrowing, and staff 
 
 ## Stack
 
-- **Python:** 3.8. Django 2.2 does not run reliably on Python 3.13.
-- **Django:** 2.2.10
+- **Python:** 3.12 (Django 5.2 supports 3.10 through 3.13; CI and the image use 3.12).
+- **Django:** 5.2 LTS
 - **Database:** SQLite by default. Optional Postgres through `DATABASE_URL` (see below).
 - **Other:** Django REST Framework, WhiteNoise, and (in the production extra) Gunicorn and `psycopg2`.
 
@@ -24,12 +24,12 @@ Dependencies live in `pyproject.toml`. There is no root `requirements.txt`.
 
 ## Quick start
 
-From a Python 3.8 environment:
+From a Python 3.12 environment:
 
 ```bash
 git clone https://github.com/yaozeliang/Library.git
 cd Library
-python3.8 -m venv .venv
+python3.12 -m venv .venv
 source .venv/bin/activate  # Windows: .venv\Scripts\activate
 pip install -e .
 python manage.py migrate
@@ -73,7 +73,7 @@ Changing an avatar (including clearing it) should not 500 the home or profile pa
 
 Leave `DATABASE_URL` unset to keep SQLite (`db.sqlite3` via `core.settings`).
 
-`DATABASE_URL` is supported in both `core.settings` and `core.settings_production` through `core/db_config.py`. An empty value keeps SQLite. Postgres uses `core.postgresql_backend`, because Django 2.2 only looks up constraints in schema `public` and this project keeps tables in schema `library` via `search_path`. The variable and a placeholder shape are in `env.example`. Set `DJANGO_SETTINGS_MODULE=core.settings_production` for the production configuration.
+`DATABASE_URL` is supported in both `core.settings` and `core.settings_production` through `core/db_config.py`. An empty value keeps SQLite. Postgres uses `core.postgresql_backend` so constraint lookups follow `search_path` (schema `library` on the shared demo database). The variable and a placeholder shape are in `env.example`. Set `DJANGO_SETTINGS_MODULE=core.settings_production` for the production configuration.
 
 Demo/staging Postgres is **schema isolation on the shared personal-site database**, not a separate database named `library`. Tables belong in schema `library`. The application role is `library_app`. Set the connection `search_path` to `library` (URL-encoded `options=-csearch_path%3Dlibrary`).
 
@@ -93,7 +93,7 @@ Schema creation, grants, and the rest of the ops steps are in [DEVOPS_POSTGRES.m
 python manage.py test
 ```
 
-Book tests include the empty-avatar regression (home/profile after an avatar change). CI runs the same command on Python 3.8.
+Book tests include the empty-avatar regression (home/profile after an avatar change). CI runs the same command on Python 3.12.
 
 ## Demo / staging
 
@@ -141,7 +141,9 @@ Django admin is `/admin/`.
 
 ## Deployment
 
-The image in `Dockerfile` is Python 3.8 and is the container path in this repo (`gunicorn`, production extra). `core/settings_production.py` is the production settings module.
+The image in `Dockerfile` is Python 3.12 and Django 5.2 LTS (`gunicorn`, production extra). `core/settings_production.py` is the production settings module. The production Redis cache uses Django's built-in Redis backend and the `redis` package from the production extra. It does not use django-redis or `CLIENT_CLASS`.
+
+Primary keys stay integer (`AutoField`) so migrate does not rewrite existing id columns. `book.0036` only changes the `BorrowRecord.end_day` default to a callable. After pulling this upgrade, run `python manage.py migrate` on schema `library`. Django 4.2 is past end of support (April 2026); this repo tracks Django 5.2 LTS.
 
 Older Heroku and Railway command lists are not how this demo is hosted. The current demo is https://library.167-172-169-210.sslip.io/. Postgres setup is in [DEVOPS_POSTGRES.md](DEVOPS_POSTGRES.md).
 

@@ -7,9 +7,13 @@ SQLITE_CONFIG = {
     "NAME": "db.sqlite3",
 }
 
-# Django 2.2's stock backend only sees schema public. This wrapper follows
-# the connection search_path (schema library on DigitalOcean).
-POSTGRES_ENGINE = "django.db.backends.postgresql_psycopg2"
+# Wrapper so constraint checks follow search_path (schema library).
+# Django 5.2 already uses pg_table_is_visible; the backend still rewrites
+# any leftover public-only SQL.
+POSTGRES_ENGINES = {
+    "django.db.backends.postgresql_psycopg2",
+    "django.db.backends.postgresql",
+}
 SCHEMA_AWARE_ENGINE = "core.postgresql_backend"
 
 
@@ -27,6 +31,6 @@ def databases_from_url(database_url, conn_max_age=0):
     if not database_url:
         return {"default": dict(SQLITE_CONFIG)}
     database = dj_database_url.parse(database_url, conn_max_age=conn_max_age)
-    if database.get("ENGINE") == POSTGRES_ENGINE:
+    if database.get("ENGINE") in POSTGRES_ENGINES:
         database["ENGINE"] = SCHEMA_AWARE_ENGINE
     return {"default": database}

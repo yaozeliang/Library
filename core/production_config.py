@@ -1,8 +1,8 @@
 """Guards used by production settings.
 
-Django 2.2 has no ``django.core.cache.backends.redis.RedisCache`` (that backend
-arrived in Django 4.0). The ``CLIENT_CLASS`` option belongs to django-redis,
-which on Django 2.2 must stay at 5.2.x.
+Django 4.0+ provides ``django.core.cache.backends.redis.RedisCache``. That
+backend does not accept django-redis' ``CLIENT_CLASS`` option, so production
+uses the built-in backend and the ``redis`` package.
 """
 
 from django.core.exceptions import ImproperlyConfigured
@@ -24,8 +24,7 @@ INSECURE_SECRET_KEYS = frozenset(
     }
 )
 
-# django-redis 5.2. The built-in Redis cache backend does not exist on Django 2.2.
-DJANGO_22_REDIS_BACKEND = "django_redis.cache.RedisCache"
+REDIS_CACHE_BACKEND = "django.core.cache.backends.redis.RedisCache"
 
 
 def require_production_secret_key(secret_key):
@@ -47,21 +46,16 @@ def production_debug(value=None):
 
 
 def caches_from_redis_url(redis_url, key_prefix="library", timeout=300):
-    """Cache settings that import on Django 2.2.
+    """Cache settings for Django's built-in Redis backend.
 
-    An empty URL still points at local Redis, matching the previous default.
-    The backend is django-redis, not Django 4's RedisCache, because Django 2.2
-    cannot load ``django.core.cache.backends.redis`` and that backend does not
-    accept ``CLIENT_CLASS``.
+    An empty URL still points at local Redis. ``CLIENT_CLASS`` is omitted
+    because the built-in backend rejects django-redis options.
     """
     location = (redis_url or "").strip() or "redis://localhost:6379/1"
     return {
         "default": {
-            "BACKEND": DJANGO_22_REDIS_BACKEND,
+            "BACKEND": REDIS_CACHE_BACKEND,
             "LOCATION": location,
-            "OPTIONS": {
-                "CLIENT_CLASS": "django_redis.client.DefaultClient",
-            },
             "KEY_PREFIX": key_prefix,
             "TIMEOUT": timeout,
         }

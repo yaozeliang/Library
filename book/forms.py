@@ -1,7 +1,7 @@
 """Book management forms for the Library Management System."""
 
 from django import forms
-from flatpickr import DatePickerInput
+from django_flatpickr.widgets import DatePickerInput
 
 from .models import Book, BorrowRecord, Member, Profile, Publisher
 
@@ -92,8 +92,8 @@ class BorrowRecordCreateForm(forms.ModelForm):
         #     'end_day': DatePickerInput().end_of('event datetime'),
         # }
         widgets = {
-            "start_day": DatePickerInput(options={"dateFormat": "Y-m-d"}),
-            "end_day": DatePickerInput(options={"dateFormat": "Y-m-d"}),
+            "start_day": DatePickerInput(),
+            "end_day": DatePickerInput(),
         }
         # widgets = {'start_day': forms.DateTimeInput(attrs={'class': 'datepicker'}),
         #            'end_day': forms.DateTimeInput(attrs={'class': 'datepicker'})}

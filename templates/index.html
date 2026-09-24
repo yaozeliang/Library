@@ -323,22 +323,22 @@
                                                         <td>{{ log.created_at | timesince }}</td>
                                                         <td>{{log.get_operation_type_display}} </td>
     
-                                                        {% ifequal log.operation_type "success" %}
+                                                        {% if log.operation_type == "success" %}
                                                             <td class="text-right"><i class="fas fa-circle text-c-green f-10"></i></td>
-                                                        {% endifequal %}
+                                                        {% endif %}
     
-                                                        {% ifequal log.operation_type "warning" %}
+                                                        {% if log.operation_type == "warning" %}
                                                             <td class="text-right"><i class="fas fa-circle text-c-yellow f-10"></i></td>
-                                                        {% endifequal %}
+                                                        {% endif %}
     
-                                                        {% ifequal log.operation_type "danger" %}
+                                                        {% if log.operation_type == "danger" %}
                                                             <td class="text-right"><i class="fas fa-circle text-c-red f-10"></i></td>
-                                                        {% endifequal %}
+                                                        {% endif %}
 
 
-                                                        {% ifequal log.operation_type "info" %}
+                                                        {% if log.operation_type == "info" %}
                                                         <td class="text-right"><i class="fas fa-circle text-c-blue f-10"></i></td>
-                                                    {% endifequal %}
+                                                    {% endif %}
     
                                                     </tr>
     

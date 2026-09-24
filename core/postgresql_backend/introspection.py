@@ -1,7 +1,8 @@
 """Postgres introspection that uses the connection search_path.
 
-Django 2.2 looks up constraints and sequences in schema ``public`` only.
-DigitalOcean connections set ``search_path`` to ``library``.
+Django 5.2 already calls ``pg_table_is_visible``. This wrapper still rewrites
+older ``public``-only constraint SQL if a backend query still contains it, so
+``search_path=library`` is not ignored.
 """
 
 from contextlib import contextmanager
