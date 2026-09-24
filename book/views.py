@@ -139,7 +139,8 @@ class HomeView(LoginRequiredMixin, TemplateView):
 # Global Serch
 @login_required(login_url="login")
 def global_serach(request):
-    search_value = request.POST.get("global_search")
+    # GET and a missing field yield None. icontains rejects None and 500s.
+    search_value = request.POST.get("global_search") or ""
     if search_value == "":
         return HttpResponseRedirect("/")
 
