@@ -1,18 +1,18 @@
 version = 1
-revision = 2
+revision = 3
 requires-python = ">=3.8"
 resolution-markers = [
     "python_full_version >= '3.13'",
     "python_full_version >= '3.11' and python_full_version < '3.13'",
     "python_full_version == '3.10.*'",
     "python_full_version == '3.9.*' and platform_machine != 'aarch64' and platform_machine != 'arm64'",
-    "python_full_version >= '3.8.1' and python_full_version < '3.9' and platform_machine != 'aarch64' and platform_machine != 'arm64'",
-    "python_full_version < '3.8.1' and platform_machine != 'aarch64' and platform_machine != 'arm64'",
     "python_full_version == '3.9.*' and platform_machine == 'aarch64'",
-    "python_full_version >= '3.8.1' and python_full_version < '3.9' and platform_machine == 'aarch64'",
-    "python_full_version < '3.8.1' and platform_machine == 'aarch64'",
     "python_full_version == '3.9.*' and platform_machine == 'arm64'",
+    "python_full_version >= '3.8.1' and python_full_version < '3.9' and platform_machine != 'aarch64' and platform_machine != 'arm64'",
+    "python_full_version >= '3.8.1' and python_full_version < '3.9' and platform_machine == 'aarch64'",
     "python_full_version >= '3.8.1' and python_full_version < '3.9' and platform_machine == 'arm64'",
+    "python_full_version < '3.8.1' and platform_machine != 'aarch64' and platform_machine != 'arm64'",
+    "python_full_version < '3.8.1' and platform_machine == 'aarch64'",
     "python_full_version < '3.8.1' and platform_machine == 'arm64'",
 ]
 
@@ -96,17 +96,17 @@ version = "1.7.10"
 source = { registry = "https://pypi.org/simple" }
 resolution-markers = [
     "python_full_version >= '3.8.1' and python_full_version < '3.9' and platform_machine != 'aarch64' and platform_machine != 'arm64'",
-    "python_full_version < '3.8.1' and platform_machine != 'aarch64' and platform_machine != 'arm64'",
     "python_full_version >= '3.8.1' and python_full_version < '3.9' and platform_machine == 'aarch64'",
-    "python_full_version < '3.8.1' and platform_machine == 'aarch64'",
     "python_full_version >= '3.8.1' and python_full_version < '3.9' and platform_machine == 'arm64'",
+    "python_full_version < '3.8.1' and platform_machine != 'aarch64' and platform_machine != 'arm64'",
+    "python_full_version < '3.8.1' and platform_machine == 'aarch64'",
     "python_full_version < '3.8.1' and platform_machine == 'arm64'",
 ]
 dependencies = [
-    { name = "colorama", marker = "python_full_version < '3.9' and sys_platform == 'win32'" },
-    { name = "pyyaml", marker = "python_full_version < '3.9'" },
-    { name = "rich", marker = "python_full_version < '3.9'" },
-    { name = "stevedore", version = "5.3.0", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version < '3.9'" },
+    { name = "colorama", marker = "sys_platform == 'win32'" },
+    { name = "pyyaml" },
+    { name = "rich" },
+    { name = "stevedore", version = "5.3.0", source = { registry = "https://pypi.org/simple" } },
 ]
 sdist = { url = "https://files.pythonhosted.org/packages/38/26/bdd962d6ee781f6229c3fb83483cf9e09d87959150a9000789806d750f3c/bandit-1.7.10.tar.gz", hash = "sha256:59ed5caf5d92b6ada4bf65bc6437feea4a9da1093384445fed4d472acc6cff7b", size = 4228540, upload-time = "2024-09-23T17:33:34.099Z" }
 wheels = [
@@ -126,10 +126,10 @@ resolution-markers = [
     "python_full_version == '3.9.*' and platform_machine == 'arm64'",
 ]
 dependencies = [
-    { name = "colorama", marker = "python_full_version >= '3.9' and sys_platform == 'win32'" },
-    { name = "pyyaml", marker = "python_full_version >= '3.9'" },
-    { name = "rich", marker = "python_full_version >= '3.9'" },
-    { name = "stevedore", version = "5.4.1", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version >= '3.9'" },
+    { name = "colorama", marker = "sys_platform == 'win32'" },
+    { name = "pyyaml" },
+    { name = "rich" },
+    { name = "stevedore", version = "5.4.1", source = { registry = "https://pypi.org/simple" } },
 ]
 sdist = { url = "https://files.pythonhosted.org/packages/fb/b5/7eb834e213d6f73aace21938e5e90425c92e5f42abafaf8a6d5d21beed51/bandit-1.8.6.tar.gz", hash = "sha256:dbfe9c25fc6961c2078593de55fd19f2559f9e45b99f1272341f5b95dea4e56b", size = 4240271, upload-time = "2025-07-06T03:10:50.9Z" }
 wheels = [
@@ -238,17 +238,17 @@ version = "8.1.8"
 source = { registry = "https://pypi.org/simple" }
 resolution-markers = [
     "python_full_version == '3.9.*' and platform_machine != 'aarch64' and platform_machine != 'arm64'",
-    "python_full_version >= '3.8.1' and python_full_version < '3.9' and platform_machine != 'aarch64' and platform_machine != 'arm64'",
-    "python_full_version < '3.8.1' and platform_machine != 'aarch64' and platform_machine != 'arm64'",
     "python_full_version == '3.9.*' and platform_machine == 'aarch64'",
-    "python_full_version >= '3.8.1' and python_full_version < '3.9' and platform_machine == 'aarch64'",
-    "python_full_version < '3.8.1' and platform_machine == 'aarch64'",
     "python_full_version == '3.9.*' and platform_machine == 'arm64'",
+    "python_full_version >= '3.8.1' and python_full_version < '3.9' and platform_machine != 'aarch64' and platform_machine != 'arm64'",
+    "python_full_version >= '3.8.1' and python_full_version < '3.9' and platform_machine == 'aarch64'",
     "python_full_version >= '3.8.1' and python_full_version < '3.9' and platform_machine == 'arm64'",
+    "python_full_version < '3.8.1' and platform_machine != 'aarch64' and platform_machine != 'arm64'",
+    "python_full_version < '3.8.1' and platform_machine == 'aarch64'",
     "python_full_version < '3.8.1' and platform_machine == 'arm64'",
 ]
 dependencies = [
-    { name = "colorama", marker = "python_full_version < '3.10' and sys_platform == 'win32'" },
+    { name = "colorama", marker = "sys_platform == 'win32'" },
 ]
 sdist = { url = "https://files.pythonhosted.org/packages/b9/2e/0090cbf739cee7d23781ad4b89a9894a41538e4fcf4c31dcdd705b78eb8b/click-8.1.8.tar.gz", hash = "sha256:ed53c9d8990d83c2a27deae68e4ee337473f6330c040a31d4225c9574d16096a", size = 226593, upload-time = "2024-12-21T18:38:44.339Z" }
 wheels = [
@@ -265,7 +265,7 @@ resolution-markers = [
     "python_full_version == '3.10.*'",
 ]
 dependencies = [
-    { name = "colorama", marker = "python_full_version >= '3.10' and sys_platform == 'win32'" },
+    { name = "colorama", marker = "sys_platform == 'win32'" },
 ]
 sdist = { url = "https://files.pythonhosted.org/packages/60/6c/8ca2efa64cf75a977a0d7fac081354553ebe483345c734fb6b6515d96bbc/click-8.2.1.tar.gz", hash = "sha256:27c491cc05d968d271d5a1db13e3b5a184636d9d930f148c50b038f0d0646202", size = 286342, upload-time = "2025-05-20T23:19:49.832Z" }
 wheels = [
@@ -586,7 +586,7 @@ name = "exceptiongroup"
 version = "1.3.0"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
-    { name = "typing-extensions", version = "4.13.2", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version < '3.9'" },
+    { name = "typing-extensions", version = "4.13.2", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version < '3.9' or python_full_version >= '3.11'" },
     { name = "typing-extensions", version = "4.14.1", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version >= '3.9' and python_full_version < '3.11'" },
 ]
 sdist = { url = "https://files.pythonhosted.org/packages/0b/9f/a65090624ecf468cdca03533906e7c69ed7588582240cfe7cc9e770b50eb/exceptiongroup-1.3.0.tar.gz", hash = "sha256:b241f5885f560bc56a59ee63ca4c6a8bfa46ae4ad651af316d4e81817bb9fd88", size = 29749, upload-time = "2025-05-10T17:42:51.123Z" }
@@ -662,10 +662,10 @@ version = "1.5.0"
 source = { registry = "https://pypi.org/simple" }
 resolution-markers = [
     "python_full_version >= '3.8.1' and python_full_version < '3.9' and platform_machine != 'aarch64' and platform_machine != 'arm64'",
-    "python_full_version < '3.8.1' and platform_machine != 'aarch64' and platform_machine != 'arm64'",
     "python_full_version >= '3.8.1' and python_full_version < '3.9' and platform_machine == 'aarch64'",
-    "python_full_version < '3.8.1' and platform_machine == 'aarch64'",
     "python_full_version >= '3.8.1' and python_full_version < '3.9' and platform_machine == 'arm64'",
+    "python_full_version < '3.8.1' and platform_machine != 'aarch64' and platform_machine != 'arm64'",
+    "python_full_version < '3.8.1' and platform_machine == 'aarch64'",
     "python_full_version < '3.8.1' and platform_machine == 'arm64'",
 ]
 sdist = { url = "https://files.pythonhosted.org/packages/d3/a5/4bb58448fffd36ede39684044df93a396c13d1ea3516f585767f9f960352/google-crc32c-1.5.0.tar.gz", hash = "sha256:89284716bc6a5a415d4eaa11b1726d2d60a0cd12aadf5439828353662ede9dd7", size = 12689, upload-time = "2022-09-01T14:33:40.108Z" }
@@ -826,14 +826,14 @@ version = "8.5.0"
 source = { registry = "https://pypi.org/simple" }
 resolution-markers = [
     "python_full_version >= '3.8.1' and python_full_version < '3.9' and platform_machine != 'aarch64' and platform_machine != 'arm64'",
-    "python_full_version < '3.8.1' and platform_machine != 'aarch64' and platform_machine != 'arm64'",
     "python_full_version >= '3.8.1' and python_full_version < '3.9' and platform_machine == 'aarch64'",
-    "python_full_version < '3.8.1' and platform_machine == 'aarch64'",
     "python_full_version >= '3.8.1' and python_full_version < '3.9' and platform_machine == 'arm64'",
+    "python_full_version < '3.8.1' and platform_machine != 'aarch64' and platform_machine != 'arm64'",
+    "python_full_version < '3.8.1' and platform_machine == 'aarch64'",
     "python_full_version < '3.8.1' and platform_machine == 'arm64'",
 ]
 dependencies = [
-    { name = "zipp", version = "3.20.2", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version < '3.9'" },
+    { name = "zipp", version = "3.20.2", source = { registry = "https://pypi.org/simple" } },
 ]
 sdist = { url = "https://files.pythonhosted.org/packages/cd/12/33e59336dca5be0c398a7482335911a33aa0e20776128f038019f1a95f1b/importlib_metadata-8.5.0.tar.gz", hash = "sha256:71522656f0abace1d072b9e5481a48f07c138e00f079c38c8f883823f9c26bd7", size = 55304, upload-time = "2024-09-11T14:56:08.937Z" }
 wheels = [
@@ -850,7 +850,7 @@ resolution-markers = [
     "python_full_version == '3.9.*' and platform_machine == 'arm64'",
 ]
 dependencies = [
-    { name = "zipp", version = "3.23.0", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version == '3.9.*'" },
+    { name = "zipp", version = "3.23.0", source = { registry = "https://pypi.org/simple" } },
 ]
 sdist = { url = "https://files.pythonhosted.org/packages/76/66/650a33bd90f786193e4de4b3ad86ea60b53c89b669a5c7be931fac31cdb0/importlib_metadata-8.7.0.tar.gz", hash = "sha256:d13b81ad223b890aa16c5471f2ac3056cf76c5f10f82d6f9292f0b415f389000", size = 56641, upload-time = "2025-04-27T15:29:01.736Z" }
 wheels = [
@@ -862,7 +862,7 @@ name = "importlib-resources"
 version = "6.4.5"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
-    { name = "zipp", version = "3.20.2", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version < '3.9'" },
+    { name = "zipp", version = "3.20.2", source = { registry = "https://pypi.org/simple" } },
 ]
 sdist = { url = "https://files.pythonhosted.org/packages/98/be/f3e8c6081b684f176b761e6a2fef02a0be939740ed6f54109a2951d806f3/importlib_resources-6.4.5.tar.gz", hash = "sha256:980862a1d16c9e147a59603677fa2aa5fd82b87f223b6cb870695bcfce830065", size = 43372, upload-time = "2024-09-09T17:03:14.677Z" }
 wheels = [
@@ -1155,6 +1155,7 @@ dependencies = [
     { name = "pillow" },
     { name = "prometheus-client" },
     { name = "prompt-toolkit" },
+    { name = "psycopg2-binary" },
     { name = "pycodestyle", version = "2.9.1", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version < '3.8.1'" },
     { name = "pycodestyle", version = "2.12.1", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version >= '3.8.1' and python_full_version < '3.9'" },
     { name = "pycodestyle", version = "2.14.0", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version >= '3.9'" },
@@ -1248,7 +1249,7 @@ requires-dist = [
     { name = "django-notification", specifier = "==1.3.3" },
     { name = "django-notifications-hq", specifier = "==1.6.0" },
     { name = "django-phonenumber-field", specifier = "==6.0.0" },
-    { name = "django-redis", marker = "extra == 'production'", specifier = ">=5.0.0" },
+    { name = "django-redis", marker = "extra == 'production'", specifier = ">=5.2.0,<5.3.0" },
     { name = "django-storages", extras = ["google"], specifier = "==1.12.3" },
     { name = "django-user-accounts", specifier = "==3.1.0" },
     { name = "djangorestframework", specifier = "==3.13.1" },
@@ -1289,6 +1290,7 @@ requires-dist = [
     { name = "pillow", specifier = "==8.4.0" },
     { name = "prometheus-client", specifier = "==0.12.0" },
     { name = "prompt-toolkit", specifier = "==3.0.24" },
+    { name = "psycopg2-binary", specifier = ">=2.9.0" },
     { name = "psycopg2-binary", marker = "extra == 'production'", specifier = ">=2.9.0" },
     { name = "pycodestyle", specifier = ">=2.8.0" },
     { name = "pycparser", specifier = "==2.21" },
@@ -1686,10 +1688,10 @@ version = "1.5.0"
 source = { registry = "https://pypi.org/simple" }
 resolution-markers = [
     "python_full_version >= '3.8.1' and python_full_version < '3.9' and platform_machine != 'aarch64' and platform_machine != 'arm64'",
-    "python_full_version < '3.8.1' and platform_machine != 'aarch64' and platform_machine != 'arm64'",
     "python_full_version >= '3.8.1' and python_full_version < '3.9' and platform_machine == 'aarch64'",
-    "python_full_version < '3.8.1' and platform_machine == 'aarch64'",
     "python_full_version >= '3.8.1' and python_full_version < '3.9' and platform_machine == 'arm64'",
+    "python_full_version < '3.8.1' and platform_machine != 'aarch64' and platform_machine != 'arm64'",
+    "python_full_version < '3.8.1' and platform_machine == 'aarch64'",
     "python_full_version < '3.8.1' and platform_machine == 'arm64'",
 ]
 sdist = { url = "https://files.pythonhosted.org/packages/96/2d/02d4312c973c6050a18b314a5ad0b3210edb65a906f868e31c111dede4a6/pluggy-1.5.0.tar.gz", hash = "sha256:2cffa88e94fdc978c4c574f15f9e59b7f4201d439195c3715ca9e2486f1d0cf1", size = 67955, upload-time = "2024-04-20T21:34:42.531Z" }
@@ -1754,10 +1756,10 @@ version = "5.29.5"
 source = { registry = "https://pypi.org/simple" }
 resolution-markers = [
     "python_full_version >= '3.8.1' and python_full_version < '3.9' and platform_machine != 'aarch64' and platform_machine != 'arm64'",
-    "python_full_version < '3.8.1' and platform_machine != 'aarch64' and platform_machine != 'arm64'",
     "python_full_version >= '3.8.1' and python_full_version < '3.9' and platform_machine == 'aarch64'",
-    "python_full_version < '3.8.1' and platform_machine == 'aarch64'",
     "python_full_version >= '3.8.1' and python_full_version < '3.9' and platform_machine == 'arm64'",
+    "python_full_version < '3.8.1' and platform_machine != 'aarch64' and platform_machine != 'arm64'",
+    "python_full_version < '3.8.1' and platform_machine == 'aarch64'",
     "python_full_version < '3.8.1' and platform_machine == 'arm64'",
 ]
 sdist = { url = "https://files.pythonhosted.org/packages/43/29/d09e70352e4e88c9c7a198d5645d7277811448d76c23b00345670f7c8a38/protobuf-5.29.5.tar.gz", hash = "sha256:bc1463bafd4b0929216c35f437a8e28731a2b7fe3d98bb77a600efced5a15c84", size = 425226, upload-time = "2025-05-28T23:51:59.82Z" }
@@ -2008,19 +2010,19 @@ version = "8.3.5"
 source = { registry = "https://pypi.org/simple" }
 resolution-markers = [
     "python_full_version >= '3.8.1' and python_full_version < '3.9' and platform_machine != 'aarch64' and platform_machine != 'arm64'",
-    "python_full_version < '3.8.1' and platform_machine != 'aarch64' and platform_machine != 'arm64'",
     "python_full_version >= '3.8.1' and python_full_version < '3.9' and platform_machine == 'aarch64'",
-    "python_full_version < '3.8.1' and platform_machine == 'aarch64'",
     "python_full_version >= '3.8.1' and python_full_version < '3.9' and platform_machine == 'arm64'",
+    "python_full_version < '3.8.1' and platform_machine != 'aarch64' and platform_machine != 'arm64'",
+    "python_full_version < '3.8.1' and platform_machine == 'aarch64'",
     "python_full_version < '3.8.1' and platform_machine == 'arm64'",
 ]
 dependencies = [
-    { name = "colorama", marker = "python_full_version < '3.9' and sys_platform == 'win32'" },
-    { name = "exceptiongroup", marker = "python_full_version < '3.9'" },
-    { name = "iniconfig", marker = "python_full_version < '3.9'" },
-    { name = "packaging", marker = "python_full_version < '3.9'" },
-    { name = "pluggy", version = "1.5.0", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version < '3.9'" },
-    { name = "tomli", marker = "python_full_version < '3.9'" },
+    { name = "colorama", marker = "sys_platform == 'win32'" },
+    { name = "exceptiongroup" },
+    { name = "iniconfig" },
+    { name = "packaging" },
+    { name = "pluggy", version = "1.5.0", source = { registry = "https://pypi.org/simple" } },
+    { name = "tomli" },
 ]
 sdist = { url = "https://files.pythonhosted.org/packages/ae/3c/c9d525a414d506893f0cd8a8d0de7706446213181570cdbd766691164e40/pytest-8.3.5.tar.gz", hash = "sha256:f4efe70cc14e511565ac476b57c279e12a855b11f48f212af1080ef2263d3845", size = 1450891, upload-time = "2025-03-02T12:54:54.503Z" }
 wheels = [
@@ -2040,13 +2042,13 @@ resolution-markers = [
     "python_full_version == '3.9.*' and platform_machine == 'arm64'",
 ]
 dependencies = [
-    { name = "colorama", marker = "python_full_version >= '3.9' and sys_platform == 'win32'" },
-    { name = "exceptiongroup", marker = "python_full_version >= '3.9' and python_full_version < '3.11'" },
-    { name = "iniconfig", marker = "python_full_version >= '3.9'" },
-    { name = "packaging", marker = "python_full_version >= '3.9'" },
-    { name = "pluggy", version = "1.6.0", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version >= '3.9'" },
-    { name = "pygments", marker = "python_full_version >= '3.9'" },
-    { name = "tomli", marker = "python_full_version >= '3.9' and python_full_version < '3.11'" },
+    { name = "colorama", marker = "sys_platform == 'win32'" },
+    { name = "exceptiongroup", marker = "python_full_version < '3.11'" },
+    { name = "iniconfig" },
+    { name = "packaging" },
+    { name = "pluggy", version = "1.6.0", source = { registry = "https://pypi.org/simple" } },
+    { name = "pygments" },
+    { name = "tomli", marker = "python_full_version < '3.11'" },
 ]
 sdist = { url = "https://files.pythonhosted.org/packages/08/ba/45911d754e8eba3d5a841a5ce61a65a685ff1798421ac054f85aa8747dfb/pytest-8.4.1.tar.gz", hash = "sha256:7c67fd69174877359ed9371ec3af8a3d2b04741818c51e5e99cc1742251fa93c", size = 1517714, upload-time = "2025-06-18T05:48:06.109Z" }
 wheels = [
@@ -2125,10 +2127,10 @@ version = "2.0.14"
 source = { registry = "https://pypi.org/simple" }
 resolution-markers = [
     "python_full_version >= '3.8.1' and python_full_version < '3.9' and platform_machine != 'aarch64' and platform_machine != 'arm64'",
-    "python_full_version < '3.8.1' and platform_machine != 'aarch64' and platform_machine != 'arm64'",
     "python_full_version >= '3.8.1' and python_full_version < '3.9' and platform_machine == 'aarch64'",
-    "python_full_version < '3.8.1' and platform_machine == 'aarch64'",
     "python_full_version >= '3.8.1' and python_full_version < '3.9' and platform_machine == 'arm64'",
+    "python_full_version < '3.8.1' and platform_machine != 'aarch64' and platform_machine != 'arm64'",
+    "python_full_version < '3.8.1' and platform_machine == 'aarch64'",
     "python_full_version < '3.8.1' and platform_machine == 'arm64'",
 ]
 sdist = { url = "https://files.pythonhosted.org/packages/f1/82/90f8750423cba4b9b6c842df227609fb60704482d7abf6dd47e2babc055a/pywinpty-2.0.14.tar.gz", hash = "sha256:18bd9529e4a5daf2d9719aa17788ba6013e594ae94c5a0c27e83df3278b0660e", size = 27769, upload-time = "2024-10-17T16:01:43.197Z" }
@@ -2297,14 +2299,14 @@ version = "6.1.1"
 source = { registry = "https://pypi.org/simple" }
 resolution-markers = [
     "python_full_version >= '3.8.1' and python_full_version < '3.9' and platform_machine != 'aarch64' and platform_machine != 'arm64'",
-    "python_full_version < '3.8.1' and platform_machine != 'aarch64' and platform_machine != 'arm64'",
     "python_full_version >= '3.8.1' and python_full_version < '3.9' and platform_machine == 'aarch64'",
-    "python_full_version < '3.8.1' and platform_machine == 'aarch64'",
     "python_full_version >= '3.8.1' and python_full_version < '3.9' and platform_machine == 'arm64'",
+    "python_full_version < '3.8.1' and platform_machine != 'aarch64' and platform_machine != 'arm64'",
+    "python_full_version < '3.8.1' and platform_machine == 'aarch64'",
     "python_full_version < '3.8.1' and platform_machine == 'arm64'",
 ]
 dependencies = [
-    { name = "async-timeout", marker = "python_full_version < '3.9'" },
+    { name = "async-timeout" },
 ]
 sdist = { url = "https://files.pythonhosted.org/packages/07/8b/14ef373ffe71c0d2fde93c204eab78472ea13c021d9aee63b0e11bd65896/redis-6.1.1.tar.gz", hash = "sha256:88c689325b5b41cedcbdbdfd4d937ea86cf6dab2222a83e86d8a466e4b3d2600", size = 4629515, upload-time = "2025-06-02T11:44:04.137Z" }
 wheels = [
@@ -2324,7 +2326,7 @@ resolution-markers = [
     "python_full_version == '3.9.*' and platform_machine == 'arm64'",
 ]
 dependencies = [
-    { name = "async-timeout", marker = "python_full_version >= '3.9' and python_full_version < '3.11.3'" },
+    { name = "async-timeout", marker = "python_full_version < '3.11.3'" },
 ]
 sdist = { url = "https://files.pythonhosted.org/packages/ea/9a/0551e01ba52b944f97480721656578c8a7c46b51b99d66814f85fe3a4f3e/redis-6.2.0.tar.gz", hash = "sha256:e821f129b75dde6cb99dd35e5c76e8c49512a5a0d8dfdc560b2fbd44b85ca977", size = 4639129, upload-time = "2025-05-28T05:01:18.91Z" }
 wheels = [
@@ -2391,10 +2393,10 @@ version = "0.2.8"
 source = { registry = "https://pypi.org/simple" }
 resolution-markers = [
     "python_full_version >= '3.8.1' and python_full_version < '3.9' and platform_machine != 'aarch64' and platform_machine != 'arm64'",
-    "python_full_version < '3.8.1' and platform_machine != 'aarch64' and platform_machine != 'arm64'",
     "python_full_version >= '3.8.1' and python_full_version < '3.9' and platform_machine == 'aarch64'",
-    "python_full_version < '3.8.1' and platform_machine == 'aarch64'",
     "python_full_version >= '3.8.1' and python_full_version < '3.9' and platform_machine == 'arm64'",
+    "python_full_version < '3.8.1' and platform_machine != 'aarch64' and platform_machine != 'arm64'",
+    "python_full_version < '3.8.1' and platform_machine == 'aarch64'",
     "python_full_version < '3.8.1' and platform_machine == 'arm64'",
 ]
 sdist = { url = "https://files.pythonhosted.org/packages/46/ab/bab9eb1566cd16f060b54055dd39cf6a34bfa0240c53a7218c43e974295b/ruamel.yaml.clib-0.2.8.tar.gz", hash = "sha256:beb2e0404003de9a4cab9753a8805a8fe9320ee6673136ed7f04255fe60bb512", size = 213824, upload-time = "2023-10-03T18:12:42.315Z" }
@@ -2549,10 +2551,10 @@ version = "75.3.2"
 source = { registry = "https://pypi.org/simple" }
 resolution-markers = [
     "python_full_version >= '3.8.1' and python_full_version < '3.9' and platform_machine != 'aarch64' and platform_machine != 'arm64'",
-    "python_full_version < '3.8.1' and platform_machine != 'aarch64' and platform_machine != 'arm64'",
     "python_full_version >= '3.8.1' and python_full_version < '3.9' and platform_machine == 'aarch64'",
-    "python_full_version < '3.8.1' and platform_machine == 'aarch64'",
     "python_full_version >= '3.8.1' and python_full_version < '3.9' and platform_machine == 'arm64'",
+    "python_full_version < '3.8.1' and platform_machine != 'aarch64' and platform_machine != 'arm64'",
+    "python_full_version < '3.8.1' and platform_machine == 'aarch64'",
     "python_full_version < '3.8.1' and platform_machine == 'arm64'",
 ]
 sdist = { url = "https://files.pythonhosted.org/packages/5c/01/771ea46cce201dd42cff043a5eea929d1c030fb3d1c2ee2729d02ca7814c/setuptools-75.3.2.tar.gz", hash = "sha256:3c1383e1038b68556a382c1e8ded8887cd20141b0eb5708a6c8d277de49364f5", size = 1354489, upload-time = "2025-03-12T00:02:19.004Z" }
@@ -2610,14 +2612,14 @@ version = "5.3.0"
 source = { registry = "https://pypi.org/simple" }
 resolution-markers = [
     "python_full_version >= '3.8.1' and python_full_version < '3.9' and platform_machine != 'aarch64' and platform_machine != 'arm64'",
-    "python_full_version < '3.8.1' and platform_machine != 'aarch64' and platform_machine != 'arm64'",
     "python_full_version >= '3.8.1' and python_full_version < '3.9' and platform_machine == 'aarch64'",
-    "python_full_version < '3.8.1' and platform_machine == 'aarch64'",
     "python_full_version >= '3.8.1' and python_full_version < '3.9' and platform_machine == 'arm64'",
+    "python_full_version < '3.8.1' and platform_machine != 'aarch64' and platform_machine != 'arm64'",
+    "python_full_version < '3.8.1' and platform_machine == 'aarch64'",
     "python_full_version < '3.8.1' and platform_machine == 'arm64'",
 ]
 dependencies = [
-    { name = "pbr", marker = "python_full_version < '3.9'" },
+    { name = "pbr" },
 ]
 sdist = { url = "https://files.pythonhosted.org/packages/c4/59/f8aefa21020054f553bf7e3b405caec7f8d1f432d9cb47e34aaa244d8d03/stevedore-5.3.0.tar.gz", hash = "sha256:9a64265f4060312828151c204efbe9b7a9852a0d9228756344dbc7e4023e375a", size = 513768, upload-time = "2024-08-22T13:45:52.001Z" }
 wheels = [
@@ -2637,7 +2639,7 @@ resolution-markers = [
     "python_full_version == '3.9.*' and platform_machine == 'arm64'",
 ]
 dependencies = [
-    { name = "pbr", marker = "python_full_version >= '3.9'" },
+    { name = "pbr" },
 ]
 sdist = { url = "https://files.pythonhosted.org/packages/28/3f/13cacea96900bbd31bb05c6b74135f85d15564fc583802be56976c940470/stevedore-5.4.1.tar.gz", hash = "sha256:3135b5ae50fe12816ef291baff420acb727fcd356106e3e9cbfa9e5985cd6f4b", size = 513858, upload-time = "2025-02-20T14:03:57.285Z" }
 wheels = [
@@ -2764,10 +2766,10 @@ version = "4.13.2"
 source = { registry = "https://pypi.org/simple" }
 resolution-markers = [
     "python_full_version >= '3.8.1' and python_full_version < '3.9' and platform_machine != 'aarch64' and platform_machine != 'arm64'",
-    "python_full_version < '3.8.1' and platform_machine != 'aarch64' and platform_machine != 'arm64'",
     "python_full_version >= '3.8.1' and python_full_version < '3.9' and platform_machine == 'aarch64'",
-    "python_full_version < '3.8.1' and platform_machine == 'aarch64'",
     "python_full_version >= '3.8.1' and python_full_version < '3.9' and platform_machine == 'arm64'",
+    "python_full_version < '3.8.1' and platform_machine != 'aarch64' and platform_machine != 'arm64'",
+    "python_full_version < '3.8.1' and platform_machine == 'aarch64'",
     "python_full_version < '3.8.1' and platform_machine == 'arm64'",
 ]
 sdist = { url = "https://files.pythonhosted.org/packages/f6/37/23083fcd6e35492953e8d2aaaa68b860eb422b34627b13f2ce3eb6106061/typing_extensions-4.13.2.tar.gz", hash = "sha256:e6c81219bd689f51865d9e372991c540bda33a0379d5573cddb9a3a23f7caaef", size = 106967, upload-time = "2025-04-10T14:19:05.416Z" }
@@ -2838,10 +2840,10 @@ version = "6.7.0"
 source = { registry = "https://pypi.org/simple" }
 resolution-markers = [
     "python_full_version >= '3.8.1' and python_full_version < '3.9' and platform_machine != 'aarch64' and platform_machine != 'arm64'",
-    "python_full_version < '3.8.1' and platform_machine != 'aarch64' and platform_machine != 'arm64'",
     "python_full_version >= '3.8.1' and python_full_version < '3.9' and platform_machine == 'aarch64'",
-    "python_full_version < '3.8.1' and platform_machine == 'aarch64'",
     "python_full_version >= '3.8.1' and python_full_version < '3.9' and platform_machine == 'arm64'",
+    "python_full_version < '3.8.1' and platform_machine != 'aarch64' and platform_machine != 'arm64'",
+    "python_full_version < '3.8.1' and platform_machine == 'aarch64'",
     "python_full_version < '3.8.1' and platform_machine == 'arm64'",
 ]
 sdist = { url = "https://files.pythonhosted.org/packages/64/b8/86451d63ef5e1a9c480b52759d9db25ba85c3420ebdaf039057ed152a4c1/whitenoise-6.7.0.tar.gz", hash = "sha256:58c7a6cd811e275a6c91af22e96e87da0b1109e9a53bb7464116ef4c963bf636", size = 24973, upload-time = "2024-06-19T16:20:09.11Z" }
@@ -2884,10 +2886,10 @@ version = "3.20.2"
 source = { registry = "https://pypi.org/simple" }
 resolution-markers = [
     "python_full_version >= '3.8.1' and python_full_version < '3.9' and platform_machine != 'aarch64' and platform_machine != 'arm64'",
-    "python_full_version < '3.8.1' and platform_machine != 'aarch64' and platform_machine != 'arm64'",
     "python_full_version >= '3.8.1' and python_full_version < '3.9' and platform_machine == 'aarch64'",
-    "python_full_version < '3.8.1' and platform_machine == 'aarch64'",
     "python_full_version >= '3.8.1' and python_full_version < '3.9' and platform_machine == 'arm64'",
+    "python_full_version < '3.8.1' and platform_machine != 'aarch64' and platform_machine != 'arm64'",
+    "python_full_version < '3.8.1' and platform_machine == 'aarch64'",
     "python_full_version < '3.8.1' and platform_machine == 'arm64'",
 ]
 sdist = { url = "https://files.pythonhosted.org/packages/54/bf/5c0000c44ebc80123ecbdddba1f5dcd94a5ada602a9c225d84b5aaa55e86/zipp-3.20.2.tar.gz", hash = "sha256:bc9eb26f4506fda01b81bcde0ca78103b6e62f991b381fec825435c836edbc29", size = 24199, upload-time = "2024-09-13T13:44:16.101Z" }

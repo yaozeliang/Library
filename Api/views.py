@@ -1,18 +1,14 @@
 
 # Create your views here.
 from django.http import Http404
-from rest_framework import permissions
+from rest_framework import permissions, status
 from rest_framework.decorators import api_view, permission_classes
-from rest_framework.permissions import (
-    IsAuthenticatedOrReadOnly,
-)
 from rest_framework.response import Response
-from rest_framework.views import APIView, status
+from rest_framework.views import APIView
 
 from book.groups_permissions import check_user_group
 from book.models import Book, Category, Member, Publisher
 
-from .permissions import IsOwnerOrReadOnly
 from .serializers import (
     BookSerializer,
     CategorySerializer,
@@ -175,7 +171,7 @@ def PublisherDelete(request, pk):
 
 
 class MemberList(APIView):
-    permission_classes = [IsAuthenticatedOrReadOnly]
+    permission_classes = [permissions.IsAuthenticated]
 
     def get(self, request, format=None):
         members = Member.objects.all()
@@ -191,7 +187,7 @@ class MemberList(APIView):
 
 
 class MemberDetail(APIView):
-    permission_classes = [IsAuthenticatedOrReadOnly, IsOwnerOrReadOnly]
+    permission_classes = [permissions.IsAuthenticated]
 
     def get_object(self, pk):
         try:

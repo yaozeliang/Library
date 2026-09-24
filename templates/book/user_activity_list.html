@@ -95,8 +95,7 @@
                                                 <td>{{activity.target_model}}</td>
                                                 <td>{{ activity.created_at|date:"Y-m-d H:i" }} </td>
                                                 <td>{{ activity.detail}} </td>
-                                                <td><a href="{% url 'user_activity_delete' activity.pk %}"
-                                                        class="badge badge-warning">Delete</a></td>
+                                                <td><form method="post" action="{% url 'user_activity_delete' activity.pk %}" style="display:inline">{% csrf_token %}<button type="submit" class="badge badge-warning border-0">Delete</button></form></td>
                                             </tr>
 
                                             {% endfor %}

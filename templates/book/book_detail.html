@@ -1,5 +1,5 @@
 {% extends "layouts/base.html" %}
-{% load crispy_forms_tags %}
+{% load crispy_forms_tags comment_extras %}
 {% block title %} Management{% endblock %} 
 
 <!-- Specific CSS goes HERE -->
@@ -193,7 +193,7 @@
                                              {{ comment.created_at|date:"Y/m/d H:i" }}
                                         </span> :
                                     </p>
-                                    <p>{{ comment.body|safe }}</p>
+                                    <p>{{ comment.body|sanitize_rich_text }}</p>
 
                                 {% endfor %}
                             </div>

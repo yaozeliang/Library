@@ -98,6 +98,14 @@
 
 <!-- Specific Page JS goes HERE  -->
 {% block javascripts %}
+{{ top_5_book_titles|json_script:"chart-top-5-titles" }}
+{{ top_5_book__quantities|json_script:"chart-top-5-qty" }}
+{{ top_borrow_titles|json_script:"chart-top-borrow-titles" }}
+{{ top_borrow_times|json_script:"chart-top-borrow-times" }}
+{{ r_open|json_script:"chart-r-open" }}
+{{ r_close|json_script:"chart-r-close" }}
+{{ months_member|json_script:"chart-months-member" }}
+{{ count_monthly_member|json_script:"chart-monthly-member" }}
 <script type="text/javascript" src="https://code.highcharts.com/highcharts.js"> </script> 
 <script type="text/javascript" src="https://code.highcharts.com/modules/exporting.js"> </script> 
 <script type="text/javascript" src="https://code.highcharts.com/modules/export-data.js"></script> 
@@ -120,13 +128,13 @@
           text: 'Top 5 in Stock'
       },
       xAxis: {
-          categories: {{top_5_book_titles|safe}}
+          categories: JSON.parse(document.getElementById('chart-top-5-titles').textContent)
       },
       yAxis: {title: {text: 'Stock'}},
       series: [{
           type: 'column',
           name: 'Quantity',
-          data: {{top_5_book__quantities}},
+          data: JSON.parse(document.getElementById('chart-top-5-qty').textContent),
       }]
   });
 
@@ -139,14 +147,14 @@
           text: 'Most borrowed books'
       },
       xAxis: {
-          categories: {{top_borrow_titles|safe}},
+          categories: JSON.parse(document.getElementById('chart-top-borrow-titles').textContent),
    
       },
       yAxis: {title: {text: 'Counts'}},
       series: [{
           type: 'column',
           name: 'Count',
-          data: {{top_borrow_times}},
+          data: JSON.parse(document.getElementById('chart-top-borrow-times').textContent),
           color:"#47CC8A",
       }]
   });
@@ -184,12 +192,12 @@
         colorByPoint: true,
         data: [{
             name: 'Open',
-            y: {{r_open |safe}},
+            y: JSON.parse(document.getElementById('chart-r-open').textContent),
             color:"#F28B5B",
         }, 
             
             { name: 'Closed',
-              y: {{r_close |safe}},
+              y: JSON.parse(document.getElementById('chart-r-close').textContent),
               color:"#A169E7",
             }
         ]
@@ -214,7 +222,7 @@ yAxis: {
 },
 
 xAxis: {
-    categories: {{months_member|safe}}
+    categories: JSON.parse(document.getElementById('chart-months-member').textContent)
 },
 
 legend: {
@@ -233,7 +241,7 @@ plotOptions: {
 
 series: [{
     name: 'Member',
-    data: {{count_monthly_member|safe}}
+    data: JSON.parse(document.getElementById('chart-monthly-member').textContent)
 }],
 
 responsive: {

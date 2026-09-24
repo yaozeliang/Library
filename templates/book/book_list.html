@@ -91,7 +91,7 @@
                                                 <td>                                
                                                     <a href="{% url 'book_detail' book.id%}" class="badge badge-warning"><i class="feather icon-eye"></i></a>
                                                     <a href="{% url 'book_update' book.id%}" class="badge badge-info"><i class="feather icon-edit"></i>&nbsp;Update</a>&nbsp;
-                                                    <a href="{% url 'book_delete' book.id%}" class="badge badge-danger"><i class="feather icon-trash-2"></i>&nbsp;Delete</a>&nbsp;
+                                                    <form method="post" action="{% url 'book_delete' book.id %}" style="display:inline">{% csrf_token %}<button type="submit" class="badge badge-danger border-0"><i class="feather icon-trash-2"></i>&nbsp;Delete</button></form>&nbsp;
                                                 </td>
 
                                             </tr>

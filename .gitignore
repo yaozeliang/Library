@@ -104,6 +104,7 @@ celerybeat.pid
 
 # Environments
 .env
+.env.library.postgres
 .venv
 env/
 venv/

@@ -70,6 +70,17 @@ allowed_models = [
 # HomePage
 
 
+def _avatar_url(username):
+    """Return a profile picture URL, or '' when the user has none.
+
+    An empty ImageField has no file; reading ``.url`` raises ValueError.
+    """
+    profile = Profile.objects.filter(user__username=username).first()
+    if profile is None or not profile.profile_pic:
+        return ""
+    return profile.profile_pic.url
+
+
 class HomeView(LoginRequiredMixin, TemplateView):
     login_url = "login"
     template_name = "index.html"
@@ -91,10 +102,8 @@ class HomeView(LoginRequiredMixin, TemplateView):
 
         user_activities = UserActivity.objects.order_by("-created_at")[:5]
         user_avatar = {
-            e.created_by: Profile.objects.get(
-                user__username=e.created_by
-            ).profile_pic.url
-            for e in user_activities
+            activity.created_by: _avatar_url(activity.created_by)
+            for activity in user_activities
         }
         short_inventory = Book.objects.order_by("quantity")[:5]
 
@@ -313,7 +322,7 @@ class BookUpdateView(LoginRequiredMixin, UpdateView):
 class BookDeleteView(LoginRequiredMixin, View):
     login_url = "login"
 
-    def get(self, request, *args, **kwargs):
+    def post(self, request, *args, **kwargs):
         book_pk = kwargs["pk"]
         delete_book = Book.objects.get(pk=book_pk)
         model_name = delete_book.__class__.__name__
@@ -392,7 +401,7 @@ class CategoryCreateView(LoginRequiredMixin, CreateView):
 class CategoryDeleteView(LoginRequiredMixin, View):
     login_url = "login"
 
-    def get(self, request, *args, **kwargs):
+    def post(self, request, *args, **kwargs):
         cat_pk = kwargs["pk"]
         delete_cat = Category.objects.get(pk=cat_pk)
         model_name = delete_cat.__class__.__name__
@@ -519,7 +528,7 @@ class PublisherUpdateView(LoginRequiredMixin, UpdateView):
 class PublisherDeleteView(LoginRequiredMixin, View):
     login_url = "login"
 
-    def get(self, request, *args, **kwargs):
+    def post(self, request, *args, **kwargs):
         pub_pk = kwargs["pk"]
         delete_pub = Publisher.objects.get(pk=pub_pk)
         model_name = delete_pub.__class__.__name__
@@ -552,8 +561,6 @@ class ActivityListView(LoginRequiredMixin, ListView):
     search_value = ""
     created_by = ""
     order_field = "-created_at"
-    all_users = User.objects.values()
-    user_list = [x["username"] for x in all_users]
 
     # def dispatch(self, *args, **kwargs):
     #     return super(ActivityListView, self).dispatch(*args, **kwargs)
@@ -589,7 +596,9 @@ class ActivityListView(LoginRequiredMixin, ListView):
         context = super(ActivityListView, self).get_context_data(*args, **kwargs)
         context["count_total"] = self.count_total
         context["search"] = self.search_value
-        context["user_list"] = self.user_list
+        context["user_list"] = list(
+            User.objects.values_list("username", flat=True)
+        )
         context["created_by"] = self.created_by
         return context
 
@@ -599,7 +608,7 @@ class ActivityListView(LoginRequiredMixin, ListView):
 class ActivityDeleteView(LoginRequiredMixin, View):
     login_url = "login"
 
-    def get(self, request, *args, **kwargs):
+    def post(self, request, *args, **kwargs):
         log_pk = kwargs["pk"]
         delete_log = UserActivity.objects.get(pk=log_pk)
         messages.error(request, "Activity Removed")
@@ -708,7 +717,7 @@ class MemberUpdateView(LoginRequiredMixin, UpdateView):
 class MemberDeleteView(LoginRequiredMixin, View):
     login_url = "login"
 
-    def get(self, request, *args, **kwargs):
+    def post(self, request, *args, **kwargs):
         member_pk = kwargs["pk"]
         delete_member = Member.objects.get(pk=member_pk)
         model_name = delete_member.__class__.__name__
@@ -775,6 +784,10 @@ class ProfileUpdateView(LoginRequiredMixin, UpdateView):
     login_url = "login"
     form_class = ProfileForm
     template_name = "profile/profile_update.html"
+
+    def get_queryset(self):
+        """Limit updates to the signed-in user's own profile."""
+        return Profile.objects.filter(user=self.request.user)
 
 
 # Borrow Records
@@ -918,7 +931,7 @@ class BorrowRecordListView(LoginRequiredMixin, ListView):
 class BorrowRecordDeleteView(LoginRequiredMixin, View):
     login_url = "login"
 
-    def get(self, request, *args, **kwargs):
+    def post(self, request, *args, **kwargs):
         record_pk = kwargs["pk"]
         delete_record = BorrowRecord.objects.get(pk=record_pk)
         model_name = delete_record.__class__.__name__
@@ -936,7 +949,7 @@ class BorrowRecordDeleteView(LoginRequiredMixin, View):
 
 
 class BorrowRecordClose(LoginRequiredMixin, View):
-    def get(self, request, *args, **kwargs):
+    def post(self, request, *args, **kwargs):
         close_record = BorrowRecord.objects.get(pk=self.kwargs["pk"])
         close_record.closed_by = self.request.user.username
         close_record.final_status = close_record.return_status
@@ -1107,10 +1120,9 @@ class NoticeListView(SuperUserRequiredMixin, ListView):
 class NoticeUpdateView(SuperUserRequiredMixin, View):
     """Update Status of Notification"""
 
-    # 处理 get 请求
-    def get(self, request):
+    def post(self, request):
         # 获取未读消息
-        notice_id = request.GET.get("notice_id")
+        notice_id = request.POST.get("notice_id")
         # 更新单条通知
         if notice_id:
             request.user.notifications.get(id=notice_id).mark_as_read()

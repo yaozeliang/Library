@@ -2,13 +2,20 @@
 
 import os
 
-import dj_database_url
 from decouple import config
+
+from core.production_config import (
+    caches_from_redis_url,
+    production_debug,
+    require_production_secret_key,
+)
 
 from .settings import *  # noqa: F403
 
-# Security settings
-DEBUG = False
+# Fail at startup when SECRET_KEY is missing or still a committed placeholder.
+SECRET_KEY = require_production_secret_key(config("SECRET_KEY", default=""))
+# Default off. Set DEBUG=True in the environment only for a short-lived debug.
+DEBUG = production_debug(config("DEBUG", default=False, cast=bool))
 allowed_hosts_str = config("ALLOWED_HOSTS", default="localhost 127.0.0.1")
 ALLOWED_HOSTS = allowed_hosts_str.split()
 
@@ -23,12 +30,8 @@ import logging
 logger = logging.getLogger(__name__)
 logger.info(f"ALLOWED_HOSTS configured as: {ALLOWED_HOSTS}")
 
-# Database configuration
-DATABASES = {
-    "default": dj_database_url.config(
-        default=config("DATABASE_URL", default="sqlite:///db.sqlite3")
-    )
-}
+# Database: inherited from core.settings. Set DATABASE_URL for Postgres
+# (defaultdb / schema library). Unset DATABASE_URL keeps SQLite.
 
 # Google Cloud Storage Configuration
 GS_BUCKET_NAME = config("GS_BUCKET_NAME", default="django-library-static")
@@ -137,18 +140,9 @@ EMAIL_HOST_USER = config("EMAIL_HOST_USER", default="")
 EMAIL_HOST_PASSWORD = config("EMAIL_HOST_PASSWORD", default="")
 DEFAULT_FROM_EMAIL = config("DEFAULT_FROM_EMAIL", default="noreply@library.com")
 
-# Cache configuration
-CACHES = {
-    "default": {
-        "BACKEND": "django.core.cache.backends.redis.RedisCache",
-        "LOCATION": config("REDIS_URL", default="redis://localhost:6379/1"),
-        "OPTIONS": {
-            "CLIENT_CLASS": "django_redis.client.DefaultClient",
-        },
-        "KEY_PREFIX": "library",
-        "TIMEOUT": 300,
-    }
-}
+# Django 2.2 cannot load django.core.cache.backends.redis.RedisCache, and that
+# backend rejects CLIENT_CLASS. Use django-redis 5.2 instead.
+CACHES = caches_from_redis_url(config("REDIS_URL", default=""))
 
 # Session configuration
 SESSION_ENGINE = "django.contrib.sessions.backends.cache"

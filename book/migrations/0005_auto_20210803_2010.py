@@ -5,6 +5,123 @@ import datetime
 from django.db import migrations, models
 from django.utils.timezone import utc
 
+# BorrowRecord.book / borrower store a title and a member name (CharField).
+# Migration 0002 originally created those fields as foreign keys. 0004 renamed
+# book_name_id to book_id and left the FK in place. AlterField then renamed the
+# column to book and cast it to varchar while the FK still existed, so Postgres
+# rejected constraint book_borrowrecord_book_id_..._fk_book_book_id:
+# varchar cannot reference book_book.id (integer). Django misses that FK when
+# introspection only looks at schema public and search_path is library.
+# Databases that already applied the old 0002–0004 still have the integer
+# columns; this operation converts them. Fresh migrates already have varchar
+# columns and skip the conversion.
+
+_TABLE = "book_borrowrecord"
+_INTEGER_TYPES = ("integer", "bigint", "smallint")
+_NAME_COLUMNS = (("book_id", "book"), ("borrower_id", "borrower"))
+
+
+def convert_borrow_record_name_columns(apps, schema_editor):
+    """Turn leftover integer FK columns into varchar name columns."""
+    vendor = schema_editor.connection.vendor
+    for fk_column, char_column in _NAME_COLUMNS:
+        if vendor == "postgresql":
+            _postgres_convert_name_column(
+                schema_editor, fk_column, char_column
+            )
+        elif vendor == "sqlite":
+            _sqlite_convert_name_column(
+                schema_editor, fk_column, char_column
+            )
+
+
+def _postgres_convert_name_column(schema_editor, fk_column, char_column):
+    quote = schema_editor.quote_name
+    with schema_editor.connection.cursor() as cursor:
+        cursor.execute(
+            """
+            SELECT column_name, data_type
+            FROM information_schema.columns
+            WHERE table_schema = current_schema()
+              AND table_name = %s
+              AND column_name = ANY(%s)
+            """,
+            [_TABLE, [fk_column, char_column]],
+        )
+        columns = dict(cursor.fetchall())
+
+    has_fk_column = fk_column in columns
+    char_is_integer = columns.get(char_column) in _INTEGER_TYPES
+    if not has_fk_column and not char_is_integer:
+        return
+
+    _postgres_drop_foreign_keys(
+        schema_editor, [fk_column, char_column, "book_name_id"]
+    )
+    if has_fk_column and char_column not in columns:
+        schema_editor.execute(
+            "ALTER TABLE %s RENAME COLUMN %s TO %s"
+            % (quote(_TABLE), quote(fk_column), quote(char_column))
+        )
+    elif has_fk_column:
+        schema_editor.execute(
+            "UPDATE %s SET %s = %s::varchar(20)"
+            % (quote(_TABLE), quote(char_column), quote(fk_column))
+        )
+        schema_editor.execute(
+            "ALTER TABLE %s DROP COLUMN %s" % (quote(_TABLE), quote(fk_column))
+        )
+    schema_editor.execute(
+        "ALTER TABLE %s ALTER COLUMN %s TYPE varchar(20) USING %s::varchar(20)"
+        % (quote(_TABLE), quote(char_column), quote(char_column))
+    )
+
+
+def _postgres_drop_foreign_keys(schema_editor, column_names):
+    quote = schema_editor.quote_name
+    with schema_editor.connection.cursor() as cursor:
+        cursor.execute(
+            """
+            SELECT DISTINCT c.conname
+            FROM pg_constraint c
+            JOIN pg_class t ON c.conrelid = t.oid
+            JOIN pg_namespace n ON t.relnamespace = n.oid
+            JOIN pg_attribute a
+              ON a.attrelid = t.oid AND a.attnum = ANY (c.conkey)
+            WHERE c.contype = 'f'
+              AND n.nspname = current_schema()
+              AND t.relname = %s
+              AND a.attname = ANY(%s)
+            """,
+            [_TABLE, list(column_names)],
+        )
+        constraint_names = [row[0] for row in cursor.fetchall()]
+    for name in constraint_names:
+        schema_editor.execute(
+            "ALTER TABLE %s DROP CONSTRAINT %s" % (quote(_TABLE), quote(name))
+        )
+
+
+def _sqlite_convert_name_column(schema_editor, fk_column, char_column):
+    quote = schema_editor.quote_name
+    with schema_editor.connection.cursor() as cursor:
+        cursor.execute("PRAGMA table_info(%s)" % quote(_TABLE))
+        column_names = {row[1] for row in cursor.fetchall()}
+    if fk_column not in column_names:
+        return
+    if char_column not in column_names:
+        schema_editor.execute(
+            "ALTER TABLE %s ADD COLUMN %s varchar(20) NOT NULL DEFAULT ''"
+            % (quote(_TABLE), quote(char_column))
+        )
+    schema_editor.execute(
+        "UPDATE %s SET %s = CAST(%s AS text)"
+        % (quote(_TABLE), quote(char_column), quote(fk_column))
+    )
+    schema_editor.execute(
+        "ALTER TABLE %s DROP COLUMN %s" % (quote(_TABLE), quote(fk_column))
+    )
+
 
 class Migration(migrations.Migration):
     dependencies = [
@@ -12,15 +129,9 @@ class Migration(migrations.Migration):
     ]
 
     operations = [
-        migrations.AlterField(
-            model_name="borrowrecord",
-            name="book",
-            field=models.CharField(max_length=20),
-        ),
-        migrations.AlterField(
-            model_name="borrowrecord",
-            name="borrower",
-            field=models.CharField(max_length=20),
+        migrations.RunPython(
+            convert_borrow_record_name_columns,
+            migrations.RunPython.noop,
         ),
         migrations.AlterField(
             model_name="borrowrecord",

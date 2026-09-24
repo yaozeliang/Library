@@ -99,7 +99,7 @@
                                                 <td>
                                                     <a href="{% url 'record_detail' record.pk %}" class="badge badge-warning badge-bg"><i class="feather icon-eye"></i>&nbsp;check</a>
 
-                                                    <a href="{% url 'record_delete' record.pk %}" class="badge badge-danger"><i class="feather icon-trash-2"></i>&nbsp;Delete</a>
+                                                    <form method="post" action="{% url 'record_delete' record.pk %}" style="display:inline">{% csrf_token %}<button type="submit" class="badge badge-danger border-0"><i class="feather icon-trash-2"></i>&nbsp;Delete</button></form>
                                                 </td>
                                                     
                                             </tr>
