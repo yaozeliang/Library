@@ -1,8 +1,8 @@
 {% extends "layouts/base-fullscreen.html" %}
 
-{% block title %} Login {% endblock %}
+{% block title %} Register {% endblock %}
 
-{% block content %}   
+{% block content %}
 
     <div class="auth-wrapper">
         <div class="auth-content">
@@ -24,7 +24,7 @@
                             {{ msg | safe }}
                         {% else %}
                             Add your credentials
-                        {% endif %} 
+                        {% endif %}
                     </span>
 
                     <br />
@@ -32,17 +32,33 @@
 
                     <form role="form" method="post" action="">
 
-                        {% csrf_token %}                    
+                        {% csrf_token %}
 
                         <div class="input-group mb-3">
                             {{ form.username }}
                         </div>
                         <span class="text-error">{{ form.username.errors }}</span>
 
+                        {% if form.email %}
                         <div class="input-group mb-3">
                             {{ form.email }}
                         </div>
                         <span class="text-error">{{ form.email.errors }}</span>
+                        {% endif %}
+
+                        {% if form.first_name %}
+                        <div class="input-group mb-3">
+                            {{ form.first_name }}
+                        </div>
+                        <span class="text-error">{{ form.first_name.errors }}</span>
+                        {% endif %}
+
+                        {% if form.last_name %}
+                        <div class="input-group mb-3">
+                            {{ form.last_name }}
+                        </div>
+                        <span class="text-error">{{ form.last_name.errors }}</span>
+                        {% endif %}
 
                         <div class="input-group mb-4">
                             {{ form.password1 }}
@@ -53,7 +69,7 @@
                             {{ form.password2 }}
                         </div>
                         <span class="text-error">{{ form.password2.errors }}</span>
-                        
+
                         <div class="form-group text-left">
                             <div class="checkbox checkbox-fill d-inline">
                                 <input type="checkbox" name="checkbox-fill-1" id="checkbox-fill-a1" checked="">
@@ -64,10 +80,10 @@
 
                     </form>
 
-                    <p class="mb-0 text-muted">Already have an account? <a href="{% url 'login' %}" >Login</a></p>
+                    <p class="mb-0 text-muted">Already have an account? <a href="{% url 'login' %}">Login</a></p>
                     <br />
                     <p class="mb-2 text-muted">
-                        &copy; <a target="_blank" href="">Hephaestus</a> 
+                        &copy; <a target="_blank" href="">Hephaestus</a>
                         - <a target="_blank" href="">2026</a>.
                     </p>
                 </div>

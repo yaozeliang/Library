@@ -1,0 +1,339 @@
+/* Small-screen layout fixes for auth pages and the signed-in shell.
+   Loaded after the Datta Able stylesheet so these rules win. */
+
+html {
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  overflow-x: hidden;
+}
+
+img,
+svg,
+canvas,
+video {
+  max-width: 100%;
+}
+
+.pcoded-main-container,
+.pcoded-wrapper,
+.pcoded-content,
+.pcoded-inner-content,
+.main-body,
+.page-wrapper {
+  max-width: 100%;
+  min-width: 0;
+}
+
+/* Auth card: vendor CSS locks the card at 390px and, under 768px,
+   caps the page at 360px with overflow hidden, which clips the form. */
+.auth-wrapper {
+  box-sizing: border-box;
+  width: 100%;
+  min-width: 0;
+  max-width: 100%;
+  overflow-x: hidden;
+  overflow-y: auto;
+  align-items: flex-start;
+  justify-content: center;
+  padding: 1.5rem 1rem;
+}
+
+.auth-wrapper .auth-content {
+  box-sizing: border-box;
+  width: 100%;
+  max-width: 390px;
+  margin: auto;
+  padding: 0;
+}
+
+.auth-wrapper .card,
+.auth-wrapper .card-body {
+  max-width: 100%;
+}
+
+.library-auth-title {
+  font-size: 1.75rem;
+  font-weight: 600;
+  line-height: 1.2;
+  margin: 0 0 0.35rem;
+}
+
+.auth-wrapper .input-group {
+  display: flex;
+  width: 100%;
+  max-width: 100%;
+}
+
+.auth-wrapper .input-group > input,
+.auth-wrapper .input-group > .form-control {
+  display: block;
+  flex: 1 1 auto;
+  width: 100%;
+  min-width: 0;
+  max-width: 100%;
+  height: calc(1.5em + 0.75rem + 2px);
+  padding: 0.375rem 0.75rem;
+  font-size: 1rem;
+  line-height: 1.5;
+  color: #495057;
+  background-color: #fff;
+  border: 1px solid #ced4da;
+  border-radius: 0.25rem;
+}
+
+.auth-wrapper .checkbox,
+.auth-wrapper .checkbox label,
+.auth-wrapper .cr {
+  white-space: normal;
+}
+
+.auth-wrapper .text-error,
+.auth-wrapper .text-error ul {
+  display: block;
+  max-width: 100%;
+  margin: 0 0 0.75rem;
+  padding: 0;
+  text-align: left;
+  overflow-wrap: anywhere;
+}
+
+@media only screen and (max-width: 768px) {
+  .auth-wrapper {
+    max-width: 100%;
+  }
+
+  .auth-wrapper .btn {
+    width: 100%;
+    min-height: 44px;
+  }
+}
+
+/* Top bar: search, weather, and the account menu share one row of
+   fixed columns and overflow on phones. The sidebar toggle also lives
+   inside the off-canvas brand, so it is not reachable below 992px. */
+.library-topnav {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem 0.75rem;
+  width: 100%;
+  max-width: 100%;
+  padding: 0.75rem 1rem;
+  margin: 0;
+  background: #fff;
+  box-sizing: border-box;
+}
+
+.library-menu-toggle.mobile-menu {
+  position: static;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  flex: 0 0 44px;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  cursor: pointer;
+}
+
+.library-menu-toggle.mobile-menu span {
+  width: 18px;
+  background-color: #3f4d67;
+}
+
+.library-menu-toggle.mobile-menu span:before,
+.library-menu-toggle.mobile-menu span:after {
+  background-color: #3f4d67;
+}
+
+.library-topnav-search {
+  flex: 1 1 12rem;
+  min-width: 0;
+}
+
+.library-search-form {
+  display: flex;
+  flex-flow: row nowrap;
+  align-items: center;
+  width: 100%;
+  gap: 0.5rem;
+}
+
+.library-search-form .form-control {
+  flex: 1 1 auto;
+  width: 1%;
+  min-width: 0;
+  margin-right: 0;
+}
+
+.library-search-form .btn {
+  flex: 0 0 auto;
+  white-space: nowrap;
+  min-height: 38px;
+}
+
+.library-topnav-weather {
+  flex: 1 1 10rem;
+  min-width: 0;
+  max-width: 100%;
+  overflow: hidden;
+}
+
+.library-topnav-weather .media {
+  float: none;
+  display: flex;
+  align-items: center;
+  margin: 0;
+  max-width: 100%;
+}
+
+.library-topnav-weather .media-content,
+.library-topnav-weather .content,
+.library-topnav-weather p {
+  min-width: 0;
+  margin-bottom: 0;
+}
+
+.library-topnav-weather .title,
+.library-topnav-weather .subtitle {
+  display: block;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.library-topnav-account {
+  margin-left: auto;
+  min-width: 0;
+  max-width: 100%;
+}
+
+.library-account-toggle {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  max-width: 100%;
+  min-height: 44px;
+  margin: 0;
+  cursor: pointer;
+}
+
+.library-account-toggle img {
+  width: 30px;
+  height: 30px;
+  flex: 0 0 30px;
+  border-radius: 50%;
+}
+
+.library-account-name {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  max-width: 9rem;
+}
+
+.library-topnav .dropdown-menu {
+  right: 0;
+  left: auto;
+}
+
+@media (max-width: 767.98px) {
+  .library-topnav-weather {
+    display: none;
+  }
+
+  .library-account-name {
+    max-width: 6.5rem;
+  }
+}
+
+@media (max-width: 575.98px) {
+  .library-topnav {
+    padding: 0.5rem 0.75rem;
+  }
+
+  /* Bootstrap rows use a 15px negative margin. Padding narrower than
+     that lets the row stick out and scroll the page sideways. */
+  .pcoded-content {
+    padding: 1rem 15px;
+  }
+}
+
+/* List toolbars use col-8 / col-4 (and similar) with no breakpoint,
+   so sort links and inline search stay side by side on a phone. */
+@media (max-width: 767.98px) {
+  .card-block .row > .col-2,
+  .card-block .row > .col-4,
+  .card-block .row > .col-6,
+  .card-block .row > .col-8,
+  .card-block .row > .col-10,
+  .tab-pane .row > .col-4,
+  .tab-pane .row > .col-6,
+  .tab-pane .row > .col-8 {
+    flex: 0 0 100%;
+    max-width: 100%;
+  }
+
+  .card-block .form-inline,
+  .card-block .form-inline .form-group,
+  .card-block .form-inline .form-control {
+    width: 100%;
+    margin-left: 0;
+    margin-right: 0;
+  }
+
+  .card-block .form-inline {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: stretch;
+    gap: 0.5rem;
+  }
+
+  .card-block .form-inline .btn {
+    margin-left: 0;
+  }
+
+  .nav-tabs {
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .nav-tabs .nav-link {
+    white-space: nowrap;
+  }
+
+  .pagination {
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+
+  .card-header h5,
+  .page-header-title h5 {
+    overflow-wrap: anywhere;
+  }
+}
+
+.table-responsive {
+  -webkit-overflow-scrolling: touch;
+}
+
+/* Crispy / Bootstrap form controls should not force a horizontal scroll. */
+.card-block .form-control,
+.card-block .custom-select,
+.card-block select,
+.card-block textarea,
+.card-block .input-group {
+  max-width: 100%;
+}
+
+@media (max-width: 575.98px) {
+  .card-block .btn {
+    white-space: normal;
+  }
+}
