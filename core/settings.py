@@ -34,6 +34,7 @@ INSTALLED_APPS = [
     "django.contrib.staticfiles",
     "book",
     "crispy_forms",
+    "crispy_bootstrap4",
     "crispy_tailwind",
     "phonenumber_field",
     "bootstrap4",
@@ -42,12 +43,12 @@ INSTALLED_APPS = [
     "ckeditor",
     "comment",
     "notifications",
-    "flatpickr",
+    "django_flatpickr",
     "storages",
 ]
 
-CRISPY_ALLOWED_TEMPLATE_PACKS = "tailwind"
-CRISPY_TEMPLATE_PACK = "tailwind"
+CRISPY_ALLOWED_TEMPLATE_PACKS = ("bootstrap4", "tailwind")
+CRISPY_TEMPLATE_PACK = "bootstrap4"
 
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
@@ -124,8 +125,6 @@ TEMPLATES = [
     },
 ]
 
-CRISPY_TEMPLATE_PACK = "bootstrap4"
-
 WSGI_APPLICATION = "core.wsgi.application"
 
 # Postgres when DATABASE_URL is set (for example DigitalOcean Managed Postgres,
@@ -162,8 +161,6 @@ TIME_ZONE = "UTC"
 TIME_ZONE = "Europe/Paris"
 
 USE_I18N = True
-
-USE_L10N = True
 
 USE_TZ = True
 
@@ -231,7 +228,6 @@ STATICFILES_DIRS = [
 MEDIA_URL = "/media/"
 MEDIA_ROOT = os.path.join(BASE_DIR, "media")
 
-# Default primary key field type
-# https://docs.djangoproject.com/en/3.2/ref/settings/#default-auto-field
-
-DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
+# Existing tables use integer primary keys created under Django 2.2.
+# BigAutoField would rewrite every id column on migrate.
+DEFAULT_AUTO_FIELD = "django.db.models.AutoField"

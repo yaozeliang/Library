@@ -1,6 +1,7 @@
 """Strip unsafe HTML from reader-authored rich text before it is rendered."""
 
 import bleach
+from bleach.css_sanitizer import CSSSanitizer
 
 ALLOWED_TAGS = [
     "p",
@@ -29,7 +30,9 @@ ALLOWED_ATTRIBUTES = {
     "span": ["style"],
 }
 
-ALLOWED_STYLES = ["color", "background-color", "font-weight"]
+CSS_SANITIZER = CSSSanitizer(
+    allowed_css_properties=["color", "background-color", "font-weight"]
+)
 
 
 def sanitize_comment_html(value):
@@ -40,7 +43,7 @@ def sanitize_comment_html(value):
         str(value),
         tags=ALLOWED_TAGS,
         attributes=ALLOWED_ATTRIBUTES,
-        styles=ALLOWED_STYLES,
         protocols=["http", "https", "mailto"],
+        css_sanitizer=CSS_SANITIZER,
         strip=True,
     )

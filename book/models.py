@@ -44,6 +44,11 @@ BORROW_RECORD_STATUS = (
 )
 
 
+def default_borrow_end_day():
+    """Return a due date one week from now. A callable so migrate stays stable."""
+    return timezone.now() + timedelta(days=7)
+
+
 class Category(models.Model):
     """Book category model."""
 
@@ -193,7 +198,8 @@ class Profile(models.Model):
             (x, y) = image.size
             new_x = 400
             new_y = int(new_x * (y / x))
-            resized_image = image.resize((new_x, new_y), Image.LANCZOS)
+            resample = getattr(Image, "Resampling", Image).LANCZOS
+            resized_image = image.resize((new_x, new_y), resample)
             resized_image.save(self.profile_pic.path)
 
         return profile
@@ -233,7 +239,7 @@ class BorrowRecord(models.Model):
     quantity = models.PositiveIntegerField(default=1)
 
     start_day = models.DateTimeField(default=timezone.now)
-    end_day = models.DateTimeField(default=timezone.now() + timedelta(days=7))
+    end_day = models.DateTimeField(default=default_borrow_end_day)
     periode = models.PositiveIntegerField(default=0)
 
     open_or_close = models.IntegerField(choices=BORROW_RECORD_STATUS, default=0)

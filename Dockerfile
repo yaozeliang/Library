@@ -1,5 +1,5 @@
-# Use Python 3.8 slim image for better compatibility
-FROM python:3.8-slim as base
+# Python 3.12 matches Django 5.2 LTS.
+FROM python:3.12-slim as base
 
 # Set environment variables
 ENV PYTHONUNBUFFERED=1 \

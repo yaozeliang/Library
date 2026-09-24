@@ -12,9 +12,9 @@ from book.models import Book, BorrowRecord
 from comment.models import Comment
 from comment.sanitize import sanitize_comment_html
 from core.production_config import (
-    DJANGO_22_REDIS_BACKEND,
     INSECURE_SECRET_KEYS,
     LOCAL_DEV_SECRET_KEY,
+    REDIS_CACHE_BACKEND,
     caches_from_redis_url,
     production_debug,
     require_production_secret_key,
@@ -51,18 +51,12 @@ class ProductionSettingsGuardTests(TestCase):
         self.assertIs(production_debug(False), False)
         self.assertIs(production_debug(True), True)
 
-    def test_cache_backend_is_django_redis_not_django_4_redis(self):
+    def test_cache_backend_is_django_builtin_redis(self):
         caches = caches_from_redis_url("")
         backend = caches["default"]["BACKEND"]
-        self.assertEqual(backend, DJANGO_22_REDIS_BACKEND)
-        self.assertEqual(backend, "django_redis.cache.RedisCache")
-        self.assertNotEqual(
-            backend, "django.core.cache.backends.redis.RedisCache"
-        )
-        self.assertEqual(
-            caches["default"]["OPTIONS"]["CLIENT_CLASS"],
-            "django_redis.client.DefaultClient",
-        )
+        self.assertEqual(backend, REDIS_CACHE_BACKEND)
+        self.assertEqual(backend, "django.core.cache.backends.redis.RedisCache")
+        self.assertNotIn("OPTIONS", caches["default"])
         self.assertEqual(
             caches_from_redis_url("redis://cache.internal:6379/2")["default"][
                 "LOCATION"
