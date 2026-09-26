@@ -302,7 +302,7 @@
                                             <tbody>
                                                 {% for log in recent_user_activities %}
                                                     <tr>   
-                                                        <td>{% with avatar=user_avatar|get_item:log.created_by %}<img class="rounded-circle m-r-10" style="width:30px;height:30px;object-fit:cover;" alt="" src="{% if avatar %}{{ avatar }}{% else %}{% static 'assets/images/user/avatar-2.jpg' %}{% endif %}">{% endwith %}{{log.created_by}}</td>
+                                                        <td>{% with avatar=user_avatar|get_item:log.created_by %}<img class="rounded-circle m-r-10" style="width:30px;height:30px;object-fit:cover;" alt="" src="{% if avatar %}{{ avatar }}{% else %}{% static 'assets/images/user/avatar-2.jpg' %}{% endif %}" onerror="this.onerror=null;this.src='{% static 'assets/images/user/avatar-2.jpg' %}'">{% endwith %}{{log.created_by}}</td>
                                                         <td> {{log.detail}} </td>
                                                         <!-- <td>{{log.created_at |date:"Y-m-d"}}</td> -->
                                                         <td>{{ log.created_at | timesince }}</td>

@@ -56,9 +56,9 @@
                             <div class="card-body">
                                         <div class='text-center'>
                                             {% if profile.profile_pic%}
-                                            <img src="{{profile.profile_pic.url}}" style=" max-width:40%;border-radius: 50%;text-align: center;" alt="">
+                                            <img src="{{profile.profile_pic.url}}" style=" max-width:40%;border-radius: 50%;text-align: center;" alt="" onerror="this.onerror=null;this.src='{% static 'assets/images/user/avatar-2.jpg' %}'">
                                             {% else %}
-                                            <img src="{% static 'assets/images/user/avatar-2.jpg' %}" alt="">
+                                            <img src="{% static 'assets/images/user/avatar-2.jpg' %}" alt="" onerror="this.onerror=null;this.src='{% static 'assets/images/user/avatar-2.jpg' %}'">
                                             <br>
                                             <p class='text-center'>No avatar</p>
                                             {% endif %}
