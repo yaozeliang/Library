@@ -86,7 +86,7 @@
                                                 <td>{{record.borrower}}</td>  
                                                 <td>{{record.borrower_card}}</td>  
                                                 <td>{{record.borrower_phone_number}}</a></td>   
-                                                <td>{{record.book|truncatewords:2}}</td>
+                                                <td><span class="cell-ellipsis" title="{{ record.book }}">{{ record.book }}</span></td>
                                                 <td>{{record.quantity}}</td>
                                                 <td>{{record.start_day|date:"Y-m-d"}}</td>
                                                 <td>{{record.end_day|date:"Y-m-d"}}</td>

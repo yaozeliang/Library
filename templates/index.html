@@ -107,7 +107,7 @@
                                                         <p class="mb-1"><a href="{% url 'record_detail' r.pk %}">{{ r.borrower}}</a></p>
                                                         <p class="m-0"><i class="fas fa-credit-card" style="color: Tomato;"></i>&nbsp;{{r.borrower_card}}&nbsp;&nbsp;<i class="fas fa-mobile" style="color: cornflowerblue;"></i>&nbsp;{{r.borrower_phone_number}}</p>
                                                  </td>
-                                                    <td>{{r.book |truncatewords:2}}</td>
+                                                    <td><span class="cell-ellipsis" title="{{ r.book }}">{{ r.book }}</span></td>
                                                     <td>{{r.start_day|date:"Y/m/d" }} - {{r.end_day|date:"Y/m/d" }} </td>
                                                     <td>{{r.closed_at | timesince}}</td>
                                                     <!-- <td>{{r.return_status}}</td> -->
@@ -373,7 +373,7 @@
                                                     <td><a href="{% url 'record_detail' r.pk %}">{{ r.borrower}}</a></td>
                                                     <td>{{r.borrower_card}}</td>
                                                     <td>{{r.borrower_phone_number}} </td>
-                                                    <td>{{r.book |truncatewords:2}}</td>
+                                                    <td><span class="cell-ellipsis" title="{{ r.book }}">{{ r.book }}</span></td>
                                                     <td>{{r.start_day|date:"Y-m-d" }} </td>
                                                     <td>{{r.end_day|date:"Y-m-d" }} </td>
                                                     {% if r.return_status == "Delayed" %}
