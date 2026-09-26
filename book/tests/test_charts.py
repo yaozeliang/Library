@@ -27,7 +27,7 @@ class ChartPageTests(TestCase):
 
         self.assertEqual(response.status_code, 200)
         html = response.content.decode()
-        self.assertIn("Django Datta Able - Charts |", html)
+        self.assertIn("Charts | Open Library", html)
         self.assertNotIn("Charts Morris", html)
         self.assertNotIn("code.highcharts.com", html)
         self.assertIn("cdn.jsdelivr.net/npm/highcharts@11.4.8/highcharts.js", html)

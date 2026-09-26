@@ -1,6 +1,6 @@
 {% extends "layouts/base.html" %}
 {% load book_extras %}
-{% block title %} Management {% endblock %} 
+{% block title %}Books{% endblock %} 
 
 <!-- Specific CSS goes HERE -->
 {% block stylesheets %}{% endblock stylesheets %}
@@ -80,7 +80,7 @@
                                             {% for book in books %}
                                             <tr>
                                                 <th scope="row">{{book.id}}</th>
-                                                <td>{{book.title|slice:'10'}}</td>
+                                                <td><span class="cell-ellipsis" title="{{ book.title }}">{{ book.title }}</span></td>
                                                 <td>{{book.author}}</td>
                                                 <td>{{book.category}}</td>
                                                 <!-- <td>{{book.updated|date:"Y/m/d H:i" }}</td> -->

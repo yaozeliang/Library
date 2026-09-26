@@ -215,7 +215,7 @@
                                                 <td><a href="{% url 'record_detail' record.pk %}" class="badge badge-secondary">{{record.borrower}}</a> </td>  
                                                 <td>{{record.borrower_card}}</td>  
                                                 <td>{{record.borrower_phone_number}}</td>   
-                                                <td>{{record.book|truncatewords:2}}</td>
+                                                <td><span class="cell-ellipsis" title="{{ record.book }}">{{ record.book }}</span></td>
                                                 <td>{{record.quantity}}</td>
                                                 <td>{{record.start_day|date:"Y-m-d"}}</td>
                                                 <td>{{record.end_day|date:"Y-m-d"}}</td>
