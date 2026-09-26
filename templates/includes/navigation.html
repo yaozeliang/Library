@@ -44,9 +44,9 @@
             </svg>
         {% endif %}
         {% if user.profile.profile_pic %}
-        <img src="{{ user.profile.profile_pic.url }}" alt="">
+        <img src="{{ user.profile.profile_pic.url }}" alt="" onerror="this.onerror=null;this.src='{% static 'assets/images/user/avatar-2.jpg' %}'">
         {% else %}
-        <img src="{% static 'assets/images/user/avatar-2.jpg' %}" alt="">
+        <img src="{% static 'assets/images/user/avatar-2.jpg' %}" alt="" onerror="this.onerror=null;this.src='{% static 'assets/images/user/avatar-2.jpg' %}'">
         {% endif %}
         <span class="library-account-name">{{ user.username }}</span>
       </a>
