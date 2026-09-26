@@ -10,6 +10,9 @@ def check_superuser(user):
 
 
 def check_user_group(user, group_name):
+    """Allow superusers through every group gate. Staff still need the group."""
+    if getattr(user, "is_superuser", False):
+        return
     user_group = user.groups.all().values_list("name", flat=True)
     if group_name not in user_group:
         raise PermissionDenied("You do not have permission to access this Page")
@@ -18,9 +21,14 @@ def check_user_group(user, group_name):
 def allowed_groups(group_name=[]):
     def decorator(view_func):
         def wrapper_func(request, *args, **kwargs):
-            if request.user.is_superuser:
+            user = request.user
+            if getattr(user, "is_superuser", False):
                 return view_func(request, *args, **kwargs)
-            user_groups = request.user.groups.values_list("name", flat=True)
+            # Leave anonymous users to login_required / LoginRequiredMixin.
+            # AnonymousUser has no groups relation, so looking it up 500s.
+            if not getattr(user, "is_authenticated", False):
+                return view_func(request, *args, **kwargs)
+            user_groups = user.groups.values_list("name", flat=True)
             if any(g in group_name for g in user_groups):
                 return view_func(request, *args, **kwargs)
             raise PermissionDenied("You do not have permission to access this Page")

@@ -1,0 +1,43 @@
+{% extends "layouts/base.html" %}
+{% load comment_extras %}
+{% block title %} Comments {% endblock %}
+
+{% block content %}
+<div class="pcoded-content">
+    <div class="pcoded-inner-content">
+        <div class="main-body">
+            <div class="page-wrapper">
+                <div class="row">
+                    <div class="col-xl-12">
+                        <div class="card">
+                            <div class="card-header">
+                                <h5>Comments</h5>
+                            </div>
+                            <div class="card-block">
+                                {% if comments %}
+                                <ul class="list-unstyled">
+                                    {% for comment in comments %}
+                                    <li class="mb-3">
+                                        <a href="{% url 'comment:comment_detail' comment.pk %}">
+                                            {{ comment.user }}
+                                        </a>
+                                        {% if comment.book %}
+                                        on {{ comment.book }}
+                                        {% endif %}
+                                        <span class="text-muted">{{ comment.created_at|date:"Y/m/d H:i" }}</span>
+                                        <p>{{ comment.body|sanitize_rich_text }}</p>
+                                    </li>
+                                    {% endfor %}
+                                </ul>
+                                {% else %}
+                                <p>No comments yet.</p>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock content %}

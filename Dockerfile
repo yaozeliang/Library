@@ -53,11 +53,12 @@ ENV SECRET_KEY=build-secret-key \
 # Collect static files using local storage during build
 RUN python manage.py collectstatic --noinput --settings=core.settings || true
 
-# Health check (remove specific endpoint check for Cloud Run)
+# gunicorn-cfg.py binds 0.0.0.0:$PORT. The demo container listens on 8082
+# (Caddy in front). Probing 8000 made Docker mark the container unhealthy.
 HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 \
-    CMD curl -f http://localhost:8000/ || exit 1
+    CMD curl -f http://127.0.0.1:8082/ || exit 1
 
-# Expose port (Cloud Run will override with PORT env var)
-EXPOSE 8000
-ENV PORT=8000
+# Cloud Run injects its own PORT at runtime. The demo image defaults to 8082.
+EXPOSE 8082
+ENV PORT=8082
 CMD ["gunicorn", "--config", "gunicorn-cfg.py", "core.wsgi"]

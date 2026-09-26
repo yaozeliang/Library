@@ -30,7 +30,9 @@ class SignUpView(CreateView):
 
     form_class = CustomUserCreationForm
     success_url = reverse_lazy("login")
-    template_name = "registration/signup.html"
+    # Public signup stays: the login page already links to /auth/register/,
+    # and this URL is the same form. registration/signup.html was never added.
+    template_name = "registration/register.html"
 
 
 @login_required

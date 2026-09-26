@@ -1,21 +1,18 @@
-import json
 import logging
 from datetime import date
 
 import pandas as pd
 from django.apps import apps
 from django.conf import settings
-from django.contrib.auth.decorators import (
-    login_required,
-    user_passes_test,
-)
+from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.models import Group, User
 from django.contrib.messages.views import messages
+from django.core.exceptions import PermissionDenied
 from django.core.paginator import EmptyPage, PageNotAnInteger, Paginator
 from django.db.models import Count, Q, Sum
 from django.db.models.functions import TruncMonth
-from django.http import HttpResponse, HttpResponseRedirect
+from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse, reverse_lazy
 from django.utils.decorators import method_decorator
@@ -847,28 +844,30 @@ class BorrowRecordCreateView(LoginRequiredMixin, CreateView):
     #     return redirect('record_list')
 
 
+def _autocomplete_json(queryset, field, term):
+    """JSON array of matching names for jQuery UI autocomplete.
+
+    ``HttpRequest.is_ajax()`` was removed in Django 4, so these views crashed
+    with AttributeError on every request (and left ``data`` unset otherwise).
+    """
+    results = list(
+        queryset.filter(**{f"{field}__icontains": term}).values_list(field, flat=True)
+    )
+    return JsonResponse(results, safe=False)
+
+
 @login_required(login_url="login")
 def auto_member(request):
-    if request.is_ajax():
-        query = request.GET.get("term", "")
-        member_names = Member.objects.filter(name__icontains=query)
-        results = []
-        for m in member_names:
-            results.append(m.name)
-        data = json.dumps(results)
-    mimetype = "application/json"
-    return HttpResponse(data, mimetype)
+    return _autocomplete_json(
+        Member.objects.all(), "name", request.GET.get("term", "")
+    )
 
 
 @login_required(login_url="login")
 def auto_book(request):
-    if request.is_ajax():
-        query = request.GET.get("term", "")
-        book_names = Book.objects.filter(title__icontains=query)
-        results = [b.title for b in book_names]
-        data = json.dumps(results)
-    mimetype = "application/json"
-    return HttpResponse(data, mimetype)
+    return _autocomplete_json(
+        Book.objects.all(), "title", request.GET.get("term", "")
+    )
 
 
 class BorrowRecordDetailView(LoginRequiredMixin, DetailView):
@@ -1088,21 +1087,28 @@ class EmployeeDetailView(SuperUserRequiredMixin, DetailView):
         return context
 
 
-@user_passes_test(lambda u: u.is_superuser)
 @login_required(login_url="login")
 def EmployeeUpdate(request, pk):
-    # check_superuser(request.user)
-    current_user = User.objects.get(pk=pk)
+    # The group checkboxes live on the employee detail page and POST here.
+    # A GET used to fall off the end and return None, which Django turns into 500.
+    if not request.user.is_superuser:
+        raise PermissionDenied("You do not have permission to access this Page")
+    current_user = get_object_or_404(User, pk=pk)
     if request.method == "POST":
         chosen_groups = [g for g in user_groups if "on" in request.POST.getlist(g)]
         current_user.groups.clear()
         for each in chosen_groups:
-            group = Group.objects.get(name=each)
+            group, _created = Group.objects.get_or_create(name=each)
             current_user.groups.add(group)
         messages.success(
             request, f"Group for  << {current_user.username} >> has been updated"
         )
         return redirect("employees_detail", pk=pk)
+    return render(
+        request,
+        "book/employee_detail.html",
+        {"employee": current_user, "groups": user_groups},
+    )
 
 
 # Notice

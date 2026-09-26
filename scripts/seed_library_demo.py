@@ -163,9 +163,9 @@ def run():
         print("publishers: %s" % len(publishers))
 
         books = []
+        title_limit = Book._meta.get_field("title").max_length
         for i, (author, title, description) in enumerate(book_specs):
-            # BorrowRecord.book is varchar(20); keep titles <= 20 chars
-            assert len(title) <= 20, title
+            assert len(title) <= title_limit, title
             obj, _ = Book.objects.update_or_create(
                 title=title,
                 defaults={
@@ -234,7 +234,7 @@ def run():
                 borrower_card=member.card_number,
                 borrower_email=member.email,
                 borrower_phone_number=member.phone_number,
-                book=book.title[:20],
+                book=book.title,
                 quantity=1,
                 start_day=start,
                 end_day=end,

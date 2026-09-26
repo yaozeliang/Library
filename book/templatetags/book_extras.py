@@ -128,13 +128,17 @@ def timesince(date: datetime.datetime) -> str:
 def has_group(user: Any, group_name: str) -> bool:
     """Check if user has a specific group.
 
+    Superusers pass every group check. Other users must belong to the group.
+
     Args:
         user: User object.
         group_name: Name of the group to check.
 
     Returns:
-        True if user has the group, False otherwise.
+        True if the user is a superuser or belongs to the group.
     """
+    if getattr(user, "is_superuser", False):
+        return True
     groups = user.groups.all().values_list("name", flat=True)
     return group_name in groups
 

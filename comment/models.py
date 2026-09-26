@@ -42,4 +42,4 @@ class Comment(models.Model):
 
     def get_absolute_url(self) -> str:
         """Return the URL for the comment detail view."""
-        return reverse("comment_detail", kwargs={"pk": self.pk})
+        return reverse("comment:comment_detail", kwargs={"pk": self.pk})

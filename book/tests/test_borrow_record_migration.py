@@ -5,6 +5,9 @@ import importlib
 from django.db import connection, models
 from django.test import SimpleTestCase, TestCase
 
+from book.forms import BorrowRecordCreateForm
+from book.models import Book, BorrowRecord
+
 
 class BorrowRecordMigrationDefinitionTests(SimpleTestCase):
     def test_create_stores_names_not_foreign_keys(self):
@@ -120,3 +123,70 @@ class BorrowRecordNameColumnRepairTests(TestCase):
             columns = dict(cursor.fetchall())
         self.assertEqual(columns["book"], "character varying")
         self.assertEqual(columns["borrower"], "character varying")
+
+
+class BorrowRecordBookLengthTests(TestCase):
+    def test_book_matches_book_title_max_length(self):
+        book_field = BorrowRecord._meta.get_field("book")
+        title_field = Book._meta.get_field("title")
+        self.assertEqual(book_field.max_length, title_field.max_length)
+        self.assertEqual(book_field.max_length, 100)
+        self.assertEqual(
+            BorrowRecordCreateForm.base_fields["book"].max_length,
+            book_field.max_length,
+        )
+
+    def test_form_accepts_a_full_title_and_rejects_a_longer_one(self):
+        full_title = BorrowRecordCreateForm(
+            data={"borrower": "Sam", "book": "T" * 100, "quantity": 1}
+        )
+        self.assertNotIn("book", full_title.errors)
+
+        too_long = BorrowRecordCreateForm(
+            data={"borrower": "Sam", "book": "T" * 101, "quantity": 1}
+        )
+        self.assertIn("book", too_long.errors)
+
+        record = BorrowRecord.objects.create(borrower="Sam", book="T" * 100)
+        record.refresh_from_db()
+        self.assertEqual(record.book, "T" * 100)
+
+    def test_postgres_widen_preserves_existing_titles(self):
+        if connection.vendor != "postgresql":
+            self.skipTest("varchar widen is exercised on Postgres")
+
+        existing = "A" * 20
+        record = BorrowRecord.objects.create(borrower="Sam", book=existing)
+        with connection.cursor() as cursor:
+            cursor.execute(
+                "ALTER TABLE book_borrowrecord "
+                "ALTER COLUMN book TYPE varchar(20)"
+            )
+
+        narrow = models.CharField(max_length=20)
+        narrow.set_attributes_from_name("book")
+        wide = models.CharField(max_length=100)
+        wide.set_attributes_from_name("book")
+        with connection.schema_editor() as editor:
+            editor.alter_field(BorrowRecord, narrow, wide)
+
+        record.refresh_from_db()
+        self.assertEqual(record.book, existing)
+
+        full_title = "B" * 100
+        record.book = full_title
+        record.save(update_fields=["book"])
+        record.refresh_from_db()
+        self.assertEqual(record.book, full_title)
+
+        with connection.cursor() as cursor:
+            cursor.execute(
+                """
+                SELECT character_maximum_length
+                FROM information_schema.columns
+                WHERE table_schema = current_schema()
+                  AND table_name = 'book_borrowrecord'
+                  AND column_name = 'book'
+                """
+            )
+            self.assertEqual(cursor.fetchone()[0], 100)

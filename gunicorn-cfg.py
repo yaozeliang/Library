@@ -4,8 +4,8 @@ Gunicorn configuration for Cloud Run deployment
 
 import os
 
-# Cloud Run uses PORT environment variable
-port = os.environ.get("PORT", "8000")
+# Cloud Run injects PORT. The demo container (Docker behind Caddy) uses 8082.
+port = os.environ.get("PORT", "8082")
 bind = f"0.0.0.0:{port}"
 
 # Worker configuration
