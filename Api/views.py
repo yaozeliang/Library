@@ -2,7 +2,10 @@
 # Create your views here.
 # Access control is REST_FRAMEWORK["DEFAULT_PERMISSION_CLASSES"]
 # (IsSuperuserOrApiGroup). Do not set permission_classes on these views.
+import re
+
 from django.http import Http404
+from django.urls import NoReverseMatch, URLPattern, URLResolver, get_resolver, reverse
 from rest_framework import status
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
@@ -17,30 +20,98 @@ from .serializers import (
     PublisherSerializer,
 )
 
+# Placeholder substituted back out of reverse() so the catalog shows <pk>
+# rather than a concrete id. Only the int converter is used on these routes.
+_REVERSE_SAMPLE = 987654321
+_CRUD_METHODS = ("get", "post", "put", "patch", "delete")
+_CONVERTER = re.compile(r"<(?:[^:>]+:)?([^>]+)>")
+_CAMEL = re.compile(r"(?<=[a-z0-9])(?=[A-Z])")
+
+
+def _mount_prefix():
+    """Prefix where Api.urls is included, taken from the root resolver."""
+    import Api.urls as api_urls
+
+    for entry in get_resolver().url_patterns:
+        if isinstance(entry, URLResolver) and entry.urlconf_module is api_urls:
+            route = str(entry.pattern).strip("/")
+            return f"/{route}/" if route else "/"
+    mounted = reverse("api-overview")
+    return mounted if mounted.endswith("/") else mounted + "/"
+
+
+def _canonical_api_patterns(patterns):
+    """Library routes only: no format-suffix copies and no browsable login."""
+    for entry in patterns:
+        if isinstance(entry, URLResolver):
+            route = str(entry.pattern)
+            if entry.namespace == "rest_framework" or route.startswith("api-auth"):
+                continue
+            yield from _canonical_api_patterns(entry.url_patterns)
+        elif isinstance(entry, URLPattern):
+            if "drf_format_suffix" in str(entry.pattern):
+                continue
+            yield entry
+
+
+def _supported_methods(view_cls):
+    """HTTP methods the view implements. OPTIONS/HEAD stay off the catalog."""
+    if view_cls is None:
+        return []
+    methods = []
+    for name in _CRUD_METHODS:
+        if name in view_cls.http_method_names and name in view_cls.__dict__:
+            methods.append(name.upper())
+    return methods
+
+
+def _endpoint_label(callback):
+    view_cls = getattr(callback, "cls", None)
+    raw = view_cls.__name__ if view_cls is not None else callback.__name__
+    title = _CAMEL.sub(" ", raw)
+    title = title[:1].upper() + title[1:]
+    methods = _supported_methods(view_cls)
+    if methods:
+        return f"{title} ({', '.join(methods)})"
+    return title
+
+
+def _public_path(pattern, prefix):
+    """Full path for one route. Named routes come from reverse()."""
+    route = str(pattern.pattern)
+    param_names = _CONVERTER.findall(route)
+    if pattern.name:
+        kwargs = {name: _REVERSE_SAMPLE for name in param_names}
+        try:
+            resolved = reverse(pattern.name, kwargs=kwargs)
+        except NoReverseMatch:
+            resolved = None
+        if resolved is not None:
+            for name in param_names:
+                resolved = resolved.replace(str(_REVERSE_SAMPLE), f"<{name}>", 1)
+            return resolved
+    simplified = _CONVERTER.sub(r"<\1>", route)
+    return prefix + simplified
+
+
+def _api_overview():
+    """Name-to-path map of every real /api/ route, built from the URLconf."""
+    import Api.urls as api_urls
+
+    prefix = _mount_prefix()
+    catalog = {}
+    for pattern in _canonical_api_patterns(api_urls.urlpatterns):
+        path = _public_path(pattern, prefix)
+        label = _endpoint_label(pattern.callback)
+        if label in catalog:
+            label = f"{label} {path}"
+        catalog[label] = path
+    return catalog
+
 
 @api_view(["GET"])
 def apiOverview(request, format=None):
-    api_urls = {
-        "Category List": "/category-list/",
-        "Category Create": "/category-create/",
-        "Category Delete": "/category-delete/<int:pk>/",
-        "Publisher List": "/publisher-list/",
-        "Publisher Create": "/publisher-create/",
-        "Publisher Update": "/publisher-update/<int:pk>/",
-        "Publisher Delete": "/publisher-delete/<int:pk>/",
-        "Book List": "/book-list/",
-        "Book Detail": "/book-detail/<int:pk>/",
-        "Book Create": "/book-create/",
-        "Book Update": "/book-update/<int:pk>/",
-        "Book Delete": "/book-delete/<int:pk>/",
-        "Member List": "/member-list/",
-        "Member Detail": "/member-detail/<int:pk>/",
-        "Member Create": "/member-create/",
-        "Member Update": "/member-update/<int:pk>/",
-        "Member Delete": "/member-delete/<int:pk>/",
-    }
-
-    return Response(api_urls)
+    return Response(_api_overview())
 
 
 # Category API View
