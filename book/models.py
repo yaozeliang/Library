@@ -235,7 +235,8 @@ class BorrowRecord(models.Model):
     borrower_card = models.CharField(max_length=8, blank=True)
     borrower_email = models.EmailField(max_length=50, blank=True)
     borrower_phone_number = models.CharField(max_length=30, blank=True)
-    book = models.CharField(blank=False, max_length=20)
+    # Same limit as Book.title so a stored borrow keeps the full title.
+    book = models.CharField(blank=False, max_length=100)
     quantity = models.PositiveIntegerField(default=1)
 
     start_day = models.DateTimeField(default=timezone.now)

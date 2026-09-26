@@ -80,7 +80,10 @@ class BorrowRecordCreateForm(forms.ModelForm):
         widget=forms.TextInput(attrs={"placeholder": "Search Member..."}),
     )
 
-    book = forms.CharField(help_text="type book name")
+    book = forms.CharField(
+        max_length=BorrowRecord._meta.get_field("book").max_length,
+        help_text="type book name",
+    )
 
     class Meta:
         """Meta class for BorrowRecordCreateForm."""
