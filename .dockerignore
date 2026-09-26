@@ -1,0 +1,15 @@
+# Local secrets and the dev database must not be copied into the image.
+# python-decouple reads a .env file from the project directory if one is present.
+.env
+**/.env
+!.env.example
+db.sqlite3
+db.sqlite3-journal
+*.sqlite3
+
+.git
+.venv
+venv
+env
+__pycache__
+*.pyc
