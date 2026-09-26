@@ -1,0 +1,31 @@
+{% extends "layouts/base.html" %}
+{% block title %} Comment {% endblock %}
+
+{% block content %}
+<div class="pcoded-content">
+    <div class="pcoded-inner-content">
+        <div class="main-body">
+            <div class="page-wrapper">
+                <div class="row">
+                    <div class="col-xl-12">
+                        <div class="card">
+                            <div class="card-header">
+                                <h5>Comment</h5>
+                            </div>
+                            <div class="card-block">
+                                <form method="post">
+                                    {% csrf_token %}
+                                    {{ form.body }}
+                                    {{ form.body.errors }}
+                                    <button type="submit" class="btn btn-success mt-3">Save</button>
+                                    <a href="{% url 'comment:comment_list' %}" class="btn btn-secondary mt-3">Cancel</a>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock content %}

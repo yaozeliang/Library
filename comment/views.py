@@ -28,7 +28,7 @@ class CommentCreateView(LoginRequiredMixin, CreateView):
     model = Comment
     form_class = CommentForm
     template_name = "comment/comment_form.html"
-    success_url = reverse_lazy("comment_list")
+    success_url = reverse_lazy("comment:comment_list")
 
     def form_valid(self, form):
         """Set the user before saving the form."""
@@ -42,7 +42,7 @@ class CommentUpdateView(LoginRequiredMixin, UpdateView):
     model = Comment
     form_class = CommentForm
     template_name = "comment/comment_form.html"
-    success_url = reverse_lazy("comment_list")
+    success_url = reverse_lazy("comment:comment_list")
 
     def get_queryset(self):
         """Only allow users to edit their own comments."""
@@ -54,7 +54,7 @@ class CommentDeleteView(LoginRequiredMixin, DeleteView):
 
     model = Comment
     template_name = "comment/comment_confirm_delete.html"
-    success_url = reverse_lazy("comment_list")
+    success_url = reverse_lazy("comment:comment_list")
 
     def get_queryset(self):
         """Only allow users to delete their own comments."""
