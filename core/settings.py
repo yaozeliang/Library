@@ -93,10 +93,12 @@ CKEDITOR_CONFIGS = {
 }
 
 REST_FRAMEWORK = {
-    # Every API view requires a logged-in user, including reads.
-    # Views may still set a stricter permission_classes list.
+    # Every DRF view (the routes under /api/) requires an authenticated
+    # superuser or a member of the api group. Superusers pass without the
+    # group. A view-level permission_classes list replaces this default;
+    # leaving IsAuthenticated on a view drops the group check.
     "DEFAULT_PERMISSION_CLASSES": [
-        "rest_framework.permissions.IsAuthenticated",
+        "Api.permissions.IsSuperuserOrApiGroup",
     ],
     "DEFAULT_PAGINATION_CLASS": "rest_framework.pagination.PageNumberPagination",
     "PAGE_SIZE": 10,

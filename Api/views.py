@@ -1,12 +1,13 @@
 
 # Create your views here.
+# Access control is REST_FRAMEWORK["DEFAULT_PERMISSION_CLASSES"]
+# (IsSuperuserOrApiGroup). Do not set permission_classes on these views.
 from django.http import Http404
-from rest_framework import permissions, status
-from rest_framework.decorators import api_view, permission_classes
+from rest_framework import status
+from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from book.groups_permissions import check_user_group
 from book.models import Book, Category, Member, Publisher
 
 from .serializers import (
@@ -18,9 +19,7 @@ from .serializers import (
 
 
 @api_view(["GET"])
-@permission_classes((permissions.IsAuthenticated,))
-def apiOverview(request):
-    check_user_group(request.user, "api")
+def apiOverview(request, format=None):
     api_urls = {
         "Category List": "/category-list/",
         "Category Create": "/category-create/",
@@ -48,8 +47,7 @@ def apiOverview(request):
 
 
 @api_view(["GET"])
-@permission_classes((permissions.IsAuthenticated,))
-def CategoryList(request):
+def CategoryList(request, format=None):
     cats = Category.objects.all().order_by("-created_at")
     serializer = CategorySerializer(cats, many=True)
     return Response(serializer.data)
@@ -62,8 +60,7 @@ def CategoryList(request):
 
 
 @api_view(["POST"])
-@permission_classes((permissions.IsAuthenticated,))
-def CategoryCreate(request):
+def CategoryCreate(request, format=None):
     serializer = CategorySerializer(data=request.data)
 
     if serializer.is_valid():
@@ -72,16 +69,14 @@ def CategoryCreate(request):
 
 
 @api_view(["GET"])
-@permission_classes((permissions.IsAuthenticated,))
-def CategoryDetail(request, pk):
+def CategoryDetail(request, pk, format=None):
     cat = Category.objects.get(id=pk)
     serializer = CategorySerializer(cat, many=False)
     return Response(serializer.data)
 
 
 @api_view(["DELETE"])
-@permission_classes((permissions.IsAuthenticated,))
-def CategoryDelete(request, pk):
+def CategoryDelete(request, pk, format=None):
     cat = Category.objects.get(id=pk)
     cat.delete()
     return Response(f"{cat.name} succsesfully delete!")
@@ -89,16 +84,14 @@ def CategoryDelete(request, pk):
 
 # Book Api View
 @api_view(["GET"])
-@permission_classes((permissions.IsAuthenticated,))
-def BookList(request):
+def BookList(request, format=None):
     books = Book.objects.all().order_by("-updated_by")
     serializer = BookSerializer(books, many=True)
     return Response(serializer.data)
 
 
 @api_view(["POST"])
-@permission_classes((permissions.IsAuthenticated,))
-def BookCreate(request):
+def BookCreate(request, format=None):
     serializer = BookSerializer(data=request.data)
     if serializer.is_valid():
         serializer.save()
@@ -106,16 +99,14 @@ def BookCreate(request):
 
 
 @api_view(["GET"])
-@permission_classes((permissions.IsAuthenticated,))
-def BookDetail(request, pk):
+def BookDetail(request, pk, format=None):
     book = Book.objects.get(id=pk)
     serializer = BookSerializer(book, many=False)
     return Response(serializer.data)
 
 
 @api_view(["POST"])
-@permission_classes((permissions.IsAuthenticated,))
-def BookUpdate(request, pk):
+def BookUpdate(request, pk, format=None):
     book = Book.objects.get(id=pk)
     serializer = BookSerializer(instance=book, data=request.data)
     if serializer.is_valid():
@@ -124,8 +115,7 @@ def BookUpdate(request, pk):
 
 
 @api_view(["DELETE"])
-@permission_classes((permissions.IsAuthenticated,))
-def BookDelete(request, pk):
+def BookDelete(request, pk, format=None):
     book = Book.objects.get(id=pk)
     book.delete()
     return Response(f"{book.title} succsesfully delete!")
@@ -133,16 +123,14 @@ def BookDelete(request, pk):
 
 # Publisher Api View
 @api_view(["GET"])
-@permission_classes((permissions.IsAuthenticated,))
-def PublisherList(request):
+def PublisherList(request, format=None):
     pubs = Publisher.objects.all().order_by("-created_at")
     serializer = PublisherSerializer(pubs, many=True)
     return Response(serializer.data)
 
 
 @api_view(["POST"])
-@permission_classes((permissions.IsAuthenticated,))
-def PublisherCreate(request):
+def PublisherCreate(request, format=None):
     serializer = PublisherSerializer(data=request.data)
     if serializer.is_valid():
         serializer.save()
@@ -150,8 +138,7 @@ def PublisherCreate(request):
 
 
 @api_view(["POST"])
-@permission_classes((permissions.IsAuthenticated,))
-def PublisherUpdate(request, pk):
+def PublisherUpdate(request, pk, format=None):
     pub = Publisher.objects.get(id=pk)
     serializer = PublisherSerializer(instance=pub, data=request.data)
     if serializer.is_valid():
@@ -160,8 +147,7 @@ def PublisherUpdate(request, pk):
 
 
 @api_view(["DELETE"])
-@permission_classes((permissions.IsAuthenticated,))
-def PublisherDelete(request, pk):
+def PublisherDelete(request, pk, format=None):
     pub = Publisher.objects.get(id=pk)
     pub.delete()
     return Response(f"{pub.name} succsesfully delete!")
@@ -171,8 +157,6 @@ def PublisherDelete(request, pk):
 
 
 class MemberList(APIView):
-    permission_classes = [permissions.IsAuthenticated]
-
     def get(self, request, format=None):
         members = Member.objects.all()
         serializer = MemberSerializer(members, many=True)
@@ -187,8 +171,6 @@ class MemberList(APIView):
 
 
 class MemberDetail(APIView):
-    permission_classes = [permissions.IsAuthenticated]
-
     def get_object(self, pk):
         try:
             return Member.objects.get(pk=pk)

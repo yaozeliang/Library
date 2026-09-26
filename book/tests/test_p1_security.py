@@ -79,10 +79,10 @@ class ApiAuthenticationTests(TestCase):
         self.assertIn(created.status_code, (401, 403))
         self.assertFalse(listed.content and b"Pat" in listed.content)
 
-    def test_authenticated_user_can_read_members(self):
+    def test_authenticated_user_outside_api_group_cannot_read_members(self):
         self.client.force_login(self.user)
         response = self.client.get("/api/members/")
-        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.status_code, 403)
 
     def test_anonymous_book_list_is_rejected(self):
         response = self.client.get("/api/book-list/")
