@@ -22,6 +22,11 @@ cd /path/to/Library
 python scripts/seed_library_demo.py
 ```
 
-Creates/updates: `admin`/`admin` (superuser), `staff`/`staff` (staff only),
+Creates/updates: `admin` (superuser) and `staff` (staff only), plus
 6 categories, 4 publishers, 20 books, 12 members, 15 borrow records, 6 comments.
+A new local `admin` gets password `admin` unless `DEMO_ADMIN_PASSWORD` is set
+(placeholder only; see `env.example`). A new `staff` gets password `staff`.
+Re-running does not change existing passwords. Pass `--reset-passwords` or set
+`DEMO_RESET_PASSWORDS=1` to write those default passwords again.
+On a shared host, change the admin password right after the first seed.
 Idempotent-ish (`update_or_create`; seed borrows tagged `created_by=seed_demo` are replaced).
