@@ -4,6 +4,12 @@ Seed demo data for the Library app (schema `library` on shared Postgres).
 Idempotent-ish: users via update_or_create; categories/publishers/books by name/title;
 members by email; prior BorrowRecord rows with created_by=seed_demo are replaced.
 
+Passwords are set only when a user is created. Re-running leaves existing
+passwords unchanged. New users get the local defaults (`admin` / `staff`).
+If DEMO_ADMIN_PASSWORD is set, a newly created `admin` uses that value instead.
+Pass `--reset-passwords` or set DEMO_RESET_PASSWORDS=1 to write the default
+passwords again (`admin` / `staff`).
+
 Preferred command (run from a host that can reach managed Postgres):
 
   cd /path/to/Library
@@ -15,7 +21,7 @@ All logic lives inside run() so `manage.py shell < thisfile` also works
 """
 from __future__ import print_function
 
-def run():
+def run(reset_passwords=None):
     import os
     import sys
     from datetime import timedelta
@@ -52,6 +58,14 @@ def run():
         UserActivity,
     )
     from comment.models import Comment
+
+    if reset_passwords is None:
+        reset_token = os.environ.get("DEMO_RESET_PASSWORDS", "").strip().lower()
+        reset_passwords = reset_token in {"1", "true", "yes", "on"} or (
+            "--reset-passwords" in sys.argv
+        )
+    else:
+        reset_passwords = bool(reset_passwords)
 
     seed_tag = "seed_demo"
     now = timezone.now()
@@ -106,9 +120,24 @@ def run():
                 "is_active": True,
             },
         )
-        admin.set_password("admin")
-        admin.save()
-        print("admin: created=%s superuser=%s" % (created_admin, admin.is_superuser))
+        # Existing passwords stay put. DEMO_ADMIN_PASSWORD applies only when
+        # admin is created. --reset-passwords / DEMO_RESET_PASSWORDS restores
+        # the local default "admin" (the previous always-reset behaviour).
+        if reset_passwords:
+            admin.set_password("admin")
+            admin.save()
+            admin_password_note = "reset"
+        elif created_admin:
+            configured = os.environ.get("DEMO_ADMIN_PASSWORD", "").strip()
+            admin.set_password(configured or "admin")
+            admin.save()
+            admin_password_note = "set"
+        else:
+            admin_password_note = "kept"
+        print(
+            "admin: created=%s superuser=%s password=%s"
+            % (created_admin, admin.is_superuser, admin_password_note)
+        )
 
         staff, created_staff = User.objects.update_or_create(
             username="staff",
@@ -119,11 +148,20 @@ def run():
                 "is_active": True,
             },
         )
-        staff.set_password("staff")
-        staff.save()
+        if created_staff or reset_passwords:
+            staff.set_password("staff")
+            staff.save()
+            staff_password_note = "reset" if reset_passwords else "set"
+        else:
+            staff_password_note = "kept"
         print(
-            "staff: created=%s is_staff=%s superuser=%s"
-            % (created_staff, staff.is_staff, staff.is_superuser)
+            "staff: created=%s is_staff=%s superuser=%s password=%s"
+            % (
+                created_staff,
+                staff.is_staff,
+                staff.is_superuser,
+                staff_password_note,
+            )
         )
 
         cat_names = [
@@ -307,4 +345,21 @@ def run():
         print("DONE")
 
 
-run()
+# Direct execution, or `manage.py shell < thisfile` (Django execs that stdin
+# with __name__ left as the shell command module). Importing this file does
+# not seed, so tests can call run().
+if __name__ == "__main__":
+    run()
+else:
+    import sys as _seed_sys
+
+    _seed_argv = _seed_sys.argv
+    _seed_cmd = (
+        _seed_argv[0].replace("\\", "/").rsplit("/", 1)[-1] if _seed_argv else ""
+    )
+    if "shell" in _seed_argv and _seed_cmd in {
+        "manage.py",
+        "django-admin",
+        "django-admin.py",
+    }:
+        run()

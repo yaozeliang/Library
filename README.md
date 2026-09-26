@@ -54,18 +54,18 @@ After `migrate`, seed demo users and a fake catalog (local or demo/staging only)
 python scripts/seed_library_demo.py
 ```
 
-Do not run that script against a production database. For a private local superuser instead of the demo accounts, use `python manage.py createsuperuser`.
+Do not run that script against a production database. Re-running it leaves existing users' passwords unchanged (see below). For a private local superuser instead of the demo accounts, use `python manage.py createsuperuser`.
 
 ## Demo accounts
 
-These accounts are for local demo data and the staging/demo site only. Do not use them in production.
+`admin` / `admin` is the superuser `scripts/seed_library_demo.py` creates for local development only. On any shared or public host, change the admin password right after seeding, or set `DEMO_ADMIN_PASSWORD` before the first seed so the new superuser is created with that value. The variable is documented in `env.example` and `.env.example` with a placeholder only. Re-running the seed leaves existing users' passwords unchanged. To write the default passwords again on purpose, pass `--reset-passwords` or set `DEMO_RESET_PASSWORDS=1`.
 
 | Username | Password | Role |
 | --- | --- | --- |
-| `admin` | `admin` | superuser |
+| `admin` | `admin` | superuser (local development seed only) |
 | `staff` | `staff` | staff |
 
-`scripts/seed_library_demo.py` creates them, along with the fake catalog. Sign in at `/auth/login/`.
+The script also loads the fake catalog. Sign in at `/auth/login/`.
 
 Changing an avatar (including clearing it) should not 500 the home or profile page. `HomeView` treats an empty `profile_pic` as “no avatar” instead of reading `.url` on a missing file. The book tests cover that regression.
 
@@ -101,7 +101,7 @@ The current public demo is an independent sslip.io host, not fillerwiki.
 
 - Site: https://library.167-172-169-210.sslip.io/
 - Login: https://library.167-172-169-210.sslip.io/auth/login/
-- Accounts: `admin` / `admin` and `staff` / `staff` (demo only; see above)
+- Public demo account: `staff` / `staff`. The demo superuser uses a private password held by the maintainer.
 
 ## Configuration
 
