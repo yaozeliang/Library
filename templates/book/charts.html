@@ -172,6 +172,138 @@
     });
   }
 
+  var labelMeasureCtx;
+
+  function labelTextWidth(text) {
+    if (!labelMeasureCtx) {
+      labelMeasureCtx = document.createElement("canvas").getContext("2d");
+      labelMeasureCtx.font = "0.8rem Helvetica, Arial, sans-serif";
+    }
+    return labelMeasureCtx.measureText(text).width;
+  }
+
+  function escapeLabel(text) {
+    return String(text)
+      .replace(/&/g, "&amp;")
+      .replace(/</g, "&lt;")
+      .replace(/>/g, "&gt;")
+      .replace(/"/g, "&quot;");
+  }
+
+  function cutToWidth(text, maxWidth) {
+    var ellipsis = "…";
+    if (labelTextWidth(ellipsis) > maxWidth) {
+      return ellipsis;
+    }
+    var lo = 0;
+    var hi = text.length;
+    var best = ellipsis;
+    while (lo <= hi) {
+      var mid = (lo + hi) >> 1;
+      var candidate = text.slice(0, mid).replace(/\s+$/g, "") + ellipsis;
+      if (labelTextWidth(candidate) <= maxWidth) {
+        best = candidate;
+        lo = mid + 1;
+      } else {
+        hi = mid - 1;
+      }
+    }
+    return best;
+  }
+
+  function takeLabelLine(words, start, maxWidth) {
+    var line = "";
+    var index = start;
+    var truncatedWord = false;
+    while (index < words.length) {
+      var word = words[index];
+      var candidate = line ? line + " " + word : word;
+      if (labelTextWidth(candidate) <= maxWidth) {
+        line = candidate;
+        index += 1;
+        continue;
+      }
+      if (!line) {
+        line = cutToWidth(word, maxWidth);
+        truncatedWord = true;
+        index += 1;
+      }
+      break;
+    }
+    return { line: line, index: index, truncatedWord: truncatedWord };
+  }
+
+  function wrapCategoryLabel(value, maxWidth) {
+    var text = String(value == null ? "" : value).replace(/\s+/g, " ").trim();
+    if (!text) {
+      return "";
+    }
+    if (!(maxWidth > 0)) {
+      maxWidth = 48;
+    }
+    if (labelTextWidth(text) <= maxWidth) {
+      return escapeLabel(text);
+    }
+    var words = text.split(" ");
+    var first = takeLabelLine(words, 0, maxWidth);
+    if (first.index >= words.length && !first.truncatedWord) {
+      return escapeLabel(first.line);
+    }
+    var second = takeLabelLine(words, first.index, maxWidth);
+    var secondLine = second.line;
+    var more = second.truncatedWord || second.index < words.length;
+    if (!secondLine) {
+      return escapeLabel(first.truncatedWord ? first.line : cutToWidth(first.line, maxWidth));
+    }
+    if (more && !second.truncatedWord) {
+      var withEllipsis = secondLine + "…";
+      secondLine = labelTextWidth(withEllipsis) <= maxWidth ? withEllipsis : cutToWidth(secondLine, maxWidth);
+    }
+    return escapeLabel(first.line) + "<br>" + escapeLabel(secondLine);
+  }
+
+  function categoryLabelWidth(ctx) {
+    var axis = (ctx && ctx.axis) || {};
+    var chart = (ctx && ctx.chart) || axis.chart || {};
+    var count = (axis.categories && axis.categories.length) || 1;
+    var len = axis.len || chart.plotWidth || 0;
+    if (!len) {
+      var viewport = Math.max(window.innerWidth || 360, 320);
+      var sidebar = viewport >= 992 ? 264 : 0;
+      var columns = viewport >= 1200 ? 2 : 1;
+      len = Math.max(160, (viewport - sidebar - 120) / columns);
+    }
+    var limit = Math.round(len / count - 8) - 2;
+    var chartOptions = chart.options && chart.options.chart;
+    if (chartOptions && chartOptions.options3d && chartOptions.options3d.enabled) {
+      limit = Math.floor(limit * 0.88);
+    }
+    return Math.max(12, limit);
+  }
+
+  function categoryAxis(categories) {
+    return {
+      categories: categories,
+      labels: {
+        autoRotation: false,
+        reserveSpace: true,
+        style: {
+          textOverflow: "none",
+          whiteSpace: "normal"
+        },
+        formatter: function () {
+          return wrapCategoryLabel(this.value, categoryLabelWidth(this));
+        }
+      }
+    };
+  }
+
+  function categoryTooltip() {
+    return {
+      headerFormat: '<span style="font-size: 0.8em">{point.key}</span><br/>'
+    };
+  }
+
   if (typeof Highcharts === "undefined") {
     chartIds.forEach(function (id) {
       var node = document.getElementById(id);
@@ -200,8 +332,9 @@
           }
         },
         title: { text: "Top 5 in Stock" },
-        xAxis: { categories: stockTitles },
+        xAxis: categoryAxis(stockTitles),
         yAxis: { title: { text: "Stock" } },
+        tooltip: categoryTooltip(),
         series: [{
           type: "column",
           name: "Quantity",
@@ -225,8 +358,9 @@
           type: "column"
         },
         title: { text: "Most borrowed books" },
-        xAxis: { categories: borrowTitles },
+        xAxis: categoryAxis(borrowTitles),
         yAxis: { title: { text: "Counts" } },
+        tooltip: categoryTooltip(),
         series: [{
           type: "column",
           name: "Count",
