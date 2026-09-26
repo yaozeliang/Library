@@ -1,8 +1,10 @@
 """Every /api/ route requires a superuser or a member of the api group."""
 
+import re
+
 from django.contrib.auth.models import Group, User
 from django.test import TestCase
-from django.urls import URLPattern, URLResolver
+from django.urls import URLPattern, URLResolver, resolve, reverse
 from rest_framework.settings import api_settings
 from rest_framework.test import APIClient
 
@@ -208,3 +210,69 @@ class ApiGroupPermissionTests(TestCase):
                     self.assertEqual(response.status_code, 403)
                 else:
                     self.assertEqual(response.status_code, allowed)
+
+
+def _canonical_patterns():
+    """Routes a client can call. Drops format-suffix copies and api-auth."""
+    found = []
+    for pattern in _api_view_patterns():
+        route = str(pattern.pattern)
+        if "drf_format_suffix" in route:
+            continue
+        found.append(pattern)
+    return found
+
+
+def _public_route(route):
+    """Turn a URLconf route into the path the overview should publish."""
+    simplified = re.sub(r"<(?:[^:>]+:)?([^>]+)>", r"<\1>", route)
+    return "/api/" + simplified
+
+
+class ApiOverviewTests(TestCase):
+    def setUp(self):
+        self.superuser = User.objects.create_superuser(
+            username="overview-root",
+            email="overview-root@example.com",
+            password="root-pass-1",
+        )
+        self.client = APIClient()
+        self.client.force_login(self.superuser)
+
+    def test_overview_paths_match_registered_api_routes(self):
+        response = self.client.get(reverse("api-overview"))
+        self.assertEqual(response.status_code, 200)
+        overview = response.json()
+        self.assertIsInstance(overview, dict)
+
+        patterns = _canonical_patterns()
+        self.assertTrue(patterns)
+        expected = {_public_route(str(pattern.pattern)) for pattern in patterns}
+        published = set(overview.values())
+
+        self.assertEqual(published, expected)
+        self.assertEqual(len(overview), len(patterns))
+        for path in published:
+            self.assertIsInstance(path, str)
+            self.assertTrue(path.startswith("/api/"), path)
+            self.assertNotIn("drf_format_suffix", path)
+            self.assertNotIn("api-auth", path)
+            concrete = re.sub(r"<[^>]+>", "1", path)
+            match = resolve(concrete)
+            route = match.route.removeprefix("api/")
+            self.assertIn(route, {str(pattern.pattern) for pattern in patterns})
+            self.assertNotIn("drf_format_suffix", match.route)
+
+        by_path = {path: label for label, path in overview.items()}
+        for pattern in patterns:
+            path = _public_route(str(pattern.pattern))
+            label = by_path[path]
+            for method in _http_methods(pattern.callback):
+                self.assertIn(method.upper(), label)
+
+        self.assertNotIn("/member-create/", published)
+        self.assertNotIn("/member-update/<pk>/", published)
+        self.assertNotIn("/member-delete/<pk>/", published)
+        self.assertIn("/api/book-list/", published)
+        self.assertIn("/api/members/", published)
+        self.assertIn("/api/members/<pk>", published)
