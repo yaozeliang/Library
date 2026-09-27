@@ -18,9 +18,11 @@ class AuthPageTests(PageFixture):
 
     def test_logged_in_user_can_still_open_login_and_register(self):
         self.login(self.reader)
-        for name in ("login", "signup", "register"):
+        self.assertEqual(self.client.get(reverse("login")).status_code, 200)
+        for name in ("signup", "register"):
             with self.subTest(name=name):
-                self.assertEqual(self.client.get(reverse(name)).status_code, 200)
+                response = self.client.get(reverse(name))
+                self.assertRedirects(response, reverse("home"))
 
     def test_profile_requires_login_and_renders_for_the_user(self):
         self.assert_redirects_to_login(reverse("profile"))
@@ -30,6 +32,10 @@ class AuthPageTests(PageFixture):
         self.assertTemplateUsed(page, "profile/profile_detail.html")
         self.assertContains(page, "My profile")
         self.assertContains(page, self.reader.username)
+        self.assertContains(page, "Not set")
+        editor = self.client.get(reverse("profile_update", args=[self.reader.profile.pk]))
+        self.assertContains(editor, "Update Profile")
+        self.assertNotContains(editor, "Udpate")
 
     def test_get_logout_does_not_end_the_session(self):
         self.login(self.reader)

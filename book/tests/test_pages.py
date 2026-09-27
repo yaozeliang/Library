@@ -295,6 +295,33 @@ class LibraryPageTests(PageFixture):
         self.assertContains(charts, "maxWidth: 480")
         self.assertContains(charts, "dataLabels: { enabled: false }")
         self.assertContains(charts, "minSize: 160")
+        self.assertContains(charts, 'type: "bar"')
+
+        self.assertContains(home, 'id="myTab"')
+        self.assertContains(home, "recent-events")
+        self.assertContains(home, "table-fit")
+        self.assertNotContains(home, "Udpate Profile")
+
+        records = self.client.get(reverse("record_list"))
+        self.assertContains(records, "table-fit")
+        self.assertContains(records, "d-none d-lg-table-cell")
+        self.assertContains(records, "col-actions")
+        self.assertNotContains(records, 'href="/record-list/ "')
+
+        members = self.client.get(reverse("member_list"))
+        self.assertContains(members, "table-fit")
+        books = self.client.get(reverse("book_list"))
+        self.assertContains(books, "table-fit")
+
+        created = self.client.get(reverse("book_create"))
+        self.assertNotContains(created, "tailwind")
+        self.assertContains(created, "btn btn-primary")
+        publisher = self.client.get(reverse("publisher_create"))
+        self.assertNotContains(publisher, "tailwind")
+        self.assertContains(publisher, "btn btn-primary")
+
+        detail = self.client.get(reverse("book_detail", args=[self.book.pk]))
+        self.assertContains(detail, "exportpdf")
 
 
 class NotificationPageTests(PageFixture):
@@ -306,10 +333,26 @@ class NotificationPageTests(PageFixture):
         self.assert_redirects_to_login(reverse("notifications:mark_all_as_read"))
 
         self.login(self.staff)
+        empty = self.client.get(all_url)
+        self.assertEqual(empty.status_code, 200)
+        self.assertContains(empty, "Notifications")
+        self.assertContains(empty, "No notifications yet.")
+        self.assertContains(empty, 'class="notifications"')
+        self.assertTemplateUsed(empty, "notifications/list.html")
+
+        from notifications.signals import notify
+
+        notify.send(self.superuser, recipient=self.staff, verb="lent a book")
         page = self.client.get(all_url)
-        self.assertEqual(page.status_code, 200)
-        self.assertContains(page, 'class="notifications"')
-        self.assertEqual(self.client.get(unread).status_code, 200)
+        self.assertContains(page, "lent a book")
+        self.assertContains(page, "page-root")
+        self.assertContains(page, "notification-unread")
+        self.assertContains(page, "Mark as read")
+        self.assertContains(page, "Mark all as read")
+        unread_page = self.client.get(unread)
+        self.assertEqual(unread_page.status_code, 200)
+        self.assertContains(unread_page, "Unread notifications")
+        self.assertContains(unread_page, "lent a book")
 
         marked = self.client.get(reverse("notifications:mark_all_as_read"))
         self.assertEqual(marked.status_code, 302)

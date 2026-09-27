@@ -37,8 +37,8 @@
                                 
 
                                 <h5><span class="badge badge-pill badge-info">Username</span>&nbsp;{{ profile.user.username}}</h5>
-                                <h5><span class="badge badge-pill badge-info">Telephone</span>&nbsp;{{ profile.phone_number}}</h5>
-                                <h5 class="m-b-20"><span class="badge badge-pill badge-info">Email&nbsp;&nbsp;</span>&nbsp;{{ profile.email}}</h5>
+                                <h5><span class="badge badge-pill badge-info">Telephone</span>&nbsp;{% if profile.phone_number %}{{ profile.phone_number }}{% else %}<span class="text-muted">Not set</span>{% endif %}</h5>
+                                <h5 class="m-b-20"><span class="badge badge-pill badge-info">Email&nbsp;&nbsp;</span>&nbsp;{% if profile.email %}{{ profile.email }}{% else %}<span class="text-muted">Not set</span>{% endif %}</h5>
                                 <blockquote class="blockquote">
                                     <p class="mb-0">{{profile.bio}}</p>
                                   </blockquote>    

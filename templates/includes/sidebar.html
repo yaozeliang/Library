@@ -12,6 +12,7 @@
             </div>
             <div class="navbar-content scroll-div">
                 <ul class="nav pcoded-inner-navbar">
+                    {% if request.user.is_authenticated %}
                     <li class="nav-item pcoded-menu-caption">
                         <label>Menu</label>
                     </li>
@@ -121,6 +122,14 @@
                     {% if request.user.is_superuser %}
                     <li  class="nav-item {% if request.resolver_match.url_name == 'employees_list' %} active {% endif %}">
                         <a href="{% url 'employees_list' %}" class="nav-link "><span class="pcoded-micon"><i class="feather icon-file-text"></i></span><span class="pcoded-mtext">Employees</span></a>
+                    </li>
+                    {% endif %}
+                    {% else %}
+                    <li class="nav-item pcoded-menu-caption">
+                        <label>Menu</label>
+                    </li>
+                    <li class="nav-item">
+                        <a href="{% url 'login' %}" class="nav-link "><span class="pcoded-micon"><i class="feather icon-log-in"></i></span><span class="pcoded-mtext">Login</span></a>
                     </li>
                     {% endif %}
 

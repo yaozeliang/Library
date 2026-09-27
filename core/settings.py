@@ -90,6 +90,9 @@ CKEDITOR_CONFIGS = {
         ],
         # 加入代码块插件
         "extraPlugins": ",".join(["codesnippet"]),
+        # The bundled CKEditor build loads exportpdf and logs
+        # exportpdf-no-token-url when no export token URL is set.
+        "removePlugins": "exportpdf",
     },
 }
 

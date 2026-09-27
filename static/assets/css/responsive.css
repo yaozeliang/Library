@@ -312,13 +312,21 @@ video {
   }
 
   .nav-tabs {
-    flex-wrap: nowrap;
-    overflow-x: auto;
-    -webkit-overflow-scrolling: touch;
+    flex-wrap: wrap;
+    overflow: visible;
+  }
+
+  .nav-tabs .nav-item {
+    flex: 1 1 auto;
+    margin: 0 0 0.35rem;
   }
 
   .nav-tabs .nav-link {
-    white-space: nowrap;
+    white-space: normal;
+  }
+
+  #myTab.nav-tabs .nav-item {
+    flex: 1 1 100%;
   }
 
   .pagination {
@@ -334,6 +342,44 @@ video {
 
 .table-responsive {
   -webkit-overflow-scrolling: touch;
+}
+
+/* Keep list tables inside the card. Long cells ellipsize; short columns stay nowrap. */
+.table-fit {
+  width: 100%;
+  table-layout: fixed;
+  margin-bottom: 0;
+}
+
+.table-fit th,
+.table-fit td {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  vertical-align: middle;
+}
+
+.table-fit .col-short {
+  white-space: nowrap;
+  width: 12%;
+}
+
+.table-fit .col-actions {
+  white-space: normal;
+  width: 18%;
+  overflow: hidden;
+}
+
+@media (max-width: 991.98px) {
+  .table-fit .col-short,
+  .table-fit .col-actions {
+    width: auto;
+  }
+}
+
+.recent-events .tab-content {
+  padding: 0;
+  background: transparent;
+  box-shadow: none;
 }
 
 /* Crispy / Bootstrap form controls should not force a horizontal scroll. */

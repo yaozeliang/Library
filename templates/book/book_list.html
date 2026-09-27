@@ -61,33 +61,33 @@
                                 </div>
 
                                 <div class="table-responsive ">
-                                    <table class="table table-striped">
+                                    <table class="table table-striped table-fit">
                                         <thead>
                                             <tr>
-                                                <th>#</th>
+                                                <th class="col-short">#</th>
                                                 <th>Title</th>
                                                 <th>Author</th>
-                                                <th>Category</th>
-                                                <th>Status</th>
-                                                <th>Quantity</th>
-                                                <th>Location</th>
-                                                <th>Updated By</th>
-                                                <th>Operation</th>
+                                                <th class="d-none d-lg-table-cell">Category</th>
+                                                <th class="col-short">Status</th>
+                                                <th class="col-short">Quantity</th>
+                                                <th class="d-none d-lg-table-cell">Location</th>
+                                                <th class="d-none d-lg-table-cell">Updated By</th>
+                                                <th class="col-actions">Operation</th>
                                             </tr>
                                         </thead>
                                         <tbody>
                                             
                                             {% for book in books %}
                                             <tr>
-                                                <th scope="row">{{book.id}}</th>
+                                                <th class="col-short" scope="row">{{book.id}}</th>
                                                 <td><span class="cell-ellipsis" title="{{ book.title }}">{{ book.title }}</span></td>
-                                                <td>{{book.author}}</td>
-                                                <td>{{book.category}}</td>
-                                                <td>{{book.get_status_display}}</td>
-                                                <td>{{book.quantity}}</td>
-                                                <td>{{book.floor_number}}{{book.bookshelf_number}}</td>
-                                                <td>{{book.updated_by}}  </td>
-                                                <td>                                
+                                                <td><span class="cell-ellipsis" title="{{ book.author }}">{{book.author}}</span></td>
+                                                <td class="d-none d-lg-table-cell"><span class="cell-ellipsis" title="{{ book.category }}">{{book.category}}</span></td>
+                                                <td class="col-short">{{book.get_status_display}}</td>
+                                                <td class="col-short">{{book.quantity}}</td>
+                                                <td class="d-none d-lg-table-cell">{{book.floor_number}}{{book.bookshelf_number}}</td>
+                                                <td class="d-none d-lg-table-cell"><span class="cell-ellipsis" title="{{ book.updated_by }}">{{book.updated_by}}</span></td>
+                                                <td class="col-actions">                                
                                                     <a href="{% url 'book_detail' book.id%}" class="badge badge-warning"><i class="feather icon-eye"></i></a>
                                                     <a href="{% url 'book_update' book.id%}" class="badge badge-info"><i class="feather icon-edit"></i>&nbsp;Update</a>&nbsp;
                                                     <form method="post" action="{% url 'book_delete' book.id %}" style="display:inline">{% csrf_token %}<button type="submit" class="badge badge-danger border-0"><i class="feather icon-trash-2"></i>&nbsp;Delete</button></form>&nbsp;

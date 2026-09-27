@@ -315,7 +315,39 @@
 
   function categoryTooltip() {
     return {
-      headerFormat: '<span style="font-size: 0.8em">{point.key}</span><br/>'
+      headerFormat: '<span style="font-size: 0.8em">{point.key}</span><br/>',
+      pointFormat: "<b>{series.name}</b>: {point.y}"
+    };
+  }
+
+  function narrowBarRule() {
+    return {
+      condition: { maxWidth: 480 },
+      chartOptions: {
+        chart: {
+          type: "bar",
+          options3d: { enabled: false },
+          height: 420
+        },
+        xAxis: {
+          labels: {
+            align: "right",
+            reserveSpace: true,
+            style: {
+              width: "140px",
+              textOverflow: "clip",
+              whiteSpace: "normal",
+              fontSize: "11px"
+            },
+            formatter: function () {
+              return escapeLabel(String(this.value == null ? "" : this.value));
+            }
+          }
+        },
+        yAxis: { title: { text: null } },
+        legend: { enabled: false },
+        tooltip: categoryTooltip()
+      }
     };
   }
 
@@ -359,7 +391,8 @@
           type: "column",
           name: "Quantity",
           data: stockQuantities
-        }]
+        }],
+        responsive: { rules: [narrowBarRule()] }
       });
     } catch (err) {
       showEmpty("book-count", "This chart could not be drawn.");
@@ -391,7 +424,8 @@
           name: "Count",
           data: borrowTimes,
           color: "#47CC8A"
-        }]
+        }],
+        responsive: { rules: [narrowBarRule()] }
       });
     } catch (err) {
       showEmpty("top-borrow", "This chart could not be drawn.");

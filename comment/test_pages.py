@@ -30,12 +30,18 @@ class CommentPageTests(PageFixture):
         self.assertTemplateUsed(page, "comment/comment_list.html")
         self.assertContains(page, "Comments")
         self.assertContains(page, "A public note")
+        self.assertContains(page, ">Login<")
+        self.assertNotContains(page, "Lend Book")
+        self.assertNotContains(page, "Create Profile")
+        self.assertNotContains(page, 'name="global_search"')
         self.assert_local_static_exists(page)
 
         self.login(self.superuser)
         again = self.client.get(reverse("comment:comment_list"))
         self.assertEqual(again.status_code, 200)
         self.assertContains(again, "Comments")
+        self.assertContains(again, "Lend Book")
+        self.assertContains(again, 'name="global_search"')
 
     def test_create_detail_edit_and_delete_pages(self):
         create = reverse("comment:comment_create")
