@@ -103,13 +103,47 @@ video {
 }
 
 .auth-wrapper .text-error,
-.auth-wrapper .text-error ul {
+.auth-wrapper .text-error ul,
+.auth-wrapper .errorlist,
+.auth-wrapper .errorlist li {
   display: block;
+  list-style: none;
   max-width: 100%;
-  margin: 0 0 0.75rem;
-  padding: 0;
+  margin: 4px 0 0;
+  padding-left: 0;
   text-align: left;
   overflow-wrap: anywhere;
+  color: #dc3545;
+}
+
+.auth-wrapper .auth-help {
+  display: block;
+  margin: 4px 0 0.75rem;
+  text-align: left;
+  color: #6c757d;
+}
+
+.auth-wrapper .auth-help ul {
+  margin: 0;
+  padding-left: 1.1rem;
+  text-align: left;
+}
+
+.auth-wrapper .form-control.is-invalid {
+  border-color: #dc3545;
+}
+
+.auth-home-brand {
+  position: absolute;
+  top: 16px;
+  left: 16px;
+  z-index: 2;
+  text-decoration: none;
+}
+
+.auth-home-brand .b-title {
+  color: #373a3c;
+  font-weight: 600;
 }
 
 @media only screen and (max-width: 768px) {
@@ -312,13 +346,21 @@ video {
   }
 
   .nav-tabs {
-    flex-wrap: nowrap;
-    overflow-x: auto;
-    -webkit-overflow-scrolling: touch;
+    flex-wrap: wrap;
+    overflow: visible;
+  }
+
+  .nav-tabs .nav-item {
+    flex: 1 1 auto;
+    margin: 0 0 0.35rem;
   }
 
   .nav-tabs .nav-link {
-    white-space: nowrap;
+    white-space: normal;
+  }
+
+  #myTab.nav-tabs .nav-item {
+    flex: 1 1 100%;
   }
 
   .pagination {
@@ -334,6 +376,44 @@ video {
 
 .table-responsive {
   -webkit-overflow-scrolling: touch;
+}
+
+/* Keep list tables inside the card. Long cells ellipsize; short columns stay nowrap. */
+.table-fit {
+  width: 100%;
+  table-layout: fixed;
+  margin-bottom: 0;
+}
+
+.table-fit th,
+.table-fit td {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  vertical-align: middle;
+}
+
+.table-fit .col-short {
+  white-space: nowrap;
+  width: 12%;
+}
+
+.table-fit .col-actions {
+  white-space: normal;
+  width: 18%;
+  overflow: hidden;
+}
+
+@media (max-width: 991.98px) {
+  .table-fit .col-short,
+  .table-fit .col-actions {
+    width: auto;
+  }
+}
+
+.recent-events .tab-content {
+  padding: 0;
+  background: transparent;
+  box-shadow: none;
 }
 
 /* Crispy / Bootstrap form controls should not force a horizontal scroll. */

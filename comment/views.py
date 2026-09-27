@@ -36,6 +36,7 @@ class CommentListView(ListView):
 class CommentCreateView(LoginRequiredMixin, CreateView):
     """View for creating new comments."""
 
+    login_url = "login"
     model = Comment
     form_class = CommentForm
     template_name = "comment/comment_form.html"
@@ -50,6 +51,7 @@ class CommentCreateView(LoginRequiredMixin, CreateView):
 class CommentUpdateView(LoginRequiredMixin, UpdateView):
     """View for updating existing comments."""
 
+    login_url = "login"
     model = Comment
     form_class = CommentForm
     template_name = "comment/comment_form.html"
@@ -63,6 +65,7 @@ class CommentUpdateView(LoginRequiredMixin, UpdateView):
 class CommentDeleteView(LoginRequiredMixin, DeleteView):
     """View for deleting comments."""
 
+    login_url = "login"
     model = Comment
     template_name = "comment/comment_confirm_delete.html"
     success_url = reverse_lazy("comment:comment_list")
@@ -72,7 +75,7 @@ class CommentDeleteView(LoginRequiredMixin, DeleteView):
         return Comment.objects.filter(user=self.request.user)
 
 
-@login_required
+@login_required(login_url="login")
 def comment_detail(request, pk):
     """View for displaying comment details."""
     comment = get_object_or_404(Comment, pk=pk)
@@ -80,7 +83,7 @@ def comment_detail(request, pk):
 
 
 @require_POST
-@login_required
+@login_required(login_url="login")
 def post_comment(request, book_id):
     """Handle posting comments on books. GET is not allowed."""
     book = get_object_or_404(Book, id=book_id)

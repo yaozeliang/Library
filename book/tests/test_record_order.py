@@ -16,9 +16,10 @@ def _borrowers(response):
     rows = re.findall(r"<tr>(.*?)</tr>", html, re.S)
     names = []
     for row in rows:
-        cells = re.findall(r"<td>([^<]*)</td>", row)
+        cells = re.findall(r"<td\b[^>]*>(.*?)</td>", row, re.S)
         if cells:
-            names.append(cells[0].strip())
+            text = re.sub(r"<[^>]+>", "", cells[0])
+            names.append(text.strip())
     return names
 
 

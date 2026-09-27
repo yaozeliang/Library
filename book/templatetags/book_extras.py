@@ -6,6 +6,7 @@ from typing import Any, Dict
 
 import requests
 from django import template
+from django.utils.html import mark_safe
 from django.utils import timezone
 
 register = template.Library()
@@ -60,7 +61,9 @@ def param_replace(context: Dict[str, Any], **kwargs: Any) -> str:
         d[k] = v
     for k in [k for k, v in d.items() if not v]:
         del d[k]
-    return d.urlencode()
+    # urlencode percent-encodes values. Mark the query safe so the template
+    # does not turn the separators into ``&amp;`` a second time.
+    return mark_safe(d.urlencode())
 
 
 @register.inclusion_tag("book/inclusions/_weather.html", takes_context=True)
@@ -155,3 +158,15 @@ def get_item(dictionary: Dict[str, Any], key: str) -> Any:
         Value from dictionary or None.
     """
     return dictionary.get(key)
+
+
+@register.filter(name="with_invalid")
+def with_invalid(field):
+    """Render a field, adding is-invalid when Django attached errors."""
+    if not getattr(field, "errors", None):
+        return field
+    css = field.field.widget.attrs.get("class", "form-control")
+    parts = css.split()
+    if "is-invalid" not in parts:
+        parts.append("is-invalid")
+    return field.as_widget(attrs={"class": " ".join(parts)})

@@ -1,0 +1,69 @@
+{% extends "layouts/base.html" %}
+
+{% block title %}{% if request.resolver_match.url_name == "unread" %}Unread notifications{% else %}Notifications{% endif %}{% endblock %}
+
+{% block content %}
+<div class="pcoded-content">
+    <div class="pcoded-inner-content">
+        <div class="page-header">
+            <div class="page-block">
+                <div class="row align-items-center">
+                    <div class="col-md-12">
+                        <div class="page-header-title">
+                            <h5 class="m-b-10">Inbox</h5>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <br>
+        <div class="main-body">
+            <div class="page-wrapper">
+                <div class="row">
+                    <div class="col-xl-12">
+                        <div class="card">
+                            <div class="card-header">
+                                {% if request.resolver_match.url_name == "unread" %}
+                                <h5>Unread notifications</h5>
+                                {% else %}
+                                <h5>Notifications</h5>
+                                {% endif %}
+                            </div>
+                            <div class="card-block">
+                                <p class="mb-3">
+                                    <a href="{% url 'notifications:all' %}">All</a>
+                                    |
+                                    <a href="{% url 'notifications:unread' %}">Unread</a>
+                                    |
+                                    <a href="{% url 'notifications:mark_all_as_read' %}">Mark all as read</a>
+                                </p>
+                                {% if notifications %}
+                                <ul class="notifications list-unstyled">
+                                    {% for notice in notifications %}
+                                    <li class="list-group-item{% if notice.unread %} notification-unread{% endif %}">
+                                        <p class="mb-1">
+                                            <strong>{{ notice.actor }}</strong>
+                                            {{ notice.verb }}
+                                            <span class="text-muted">{{ notice.timesince }} ago</span>
+                                        </p>
+                                        {% if notice.unread %}
+                                        <a href="{% url 'notifications:mark_as_read' notice.slug %}">Mark as read</a>
+                                        {% else %}
+                                        <span class="text-muted">Read</span>
+                                        {% endif %}
+                                    </li>
+                                    {% endfor %}
+                                </ul>
+                                {% else %}
+                                <p class="text-muted">No notifications yet.</p>
+                                <ul class="notifications"></ul>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock content %}

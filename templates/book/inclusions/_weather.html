@@ -1,4 +1,5 @@
 <article class="media float-right mt-2">
+    {% if paris_weather.city %}
     <div class="media-left">
         <figure class="image is-30x30">
             {% if paris_weather.icon %}
@@ -15,5 +16,7 @@
             </p>
         </div>
     </div>
-  
-  </article>
+    {% else %}
+    <p class="mb-0 text-muted">Weather unavailable</p>
+    {% endif %}
+</article>

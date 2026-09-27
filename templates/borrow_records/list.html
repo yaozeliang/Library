@@ -1,7 +1,7 @@
 {% extends "layouts/base.html" %}
 {% load book_extras %}
 
-{% block title %} Borrow Records {% endblock %} }
+{% block title %} Borrow Records {% endblock %}
 {% block stylesheets %}{% endblock stylesheets %}
 
 {% block content %}
@@ -64,39 +64,39 @@
                                 </div>
 
                                 <div class="table-responsive table-hover">
-                                    <table class="table">
+                                    <table class="table table-fit">
                                         <thead>
                                             <tr>
                                                 <th>Name</th>
-                                                <th>Card</th>
-                                                <th>Phone</th>
+                                                <th class="d-none d-lg-table-cell">Card</th>
+                                                <th class="d-none d-lg-table-cell">Phone</th>
                                                 <th>Book</th>
-                                                <th>Num</th>
-                                                <th>Borrow date</th>
-                                                <th>Return date</th>
-                                                <th>Status</th>
-                                                <th>Delayed </th>
-                                                <th>#</th>
+                                                <th class="col-short">Num</th>
+                                                <th class="col-short">Borrow date</th>
+                                                <th class="col-short">Return date</th>
+                                                <th class="col-short">Status</th>
+                                                <th class="col-short">Delayed</th>
+                                                <th class="col-actions">#</th>
                                             </tr>
                                         </thead>
                                         <tbody>
                                             
                                             {% for record in records %}
                                             <tr>
-                                                <td>{{record.borrower}}</td>  
-                                                <td>{{record.borrower_card}}</td>  
-                                                <td>{{record.borrower_phone_number}}</a></td>   
+                                                <td><span class="cell-ellipsis" title="{{ record.borrower }}">{{ record.borrower }}</span></td>
+                                                <td class="d-none d-lg-table-cell"><span class="cell-ellipsis" title="{{ record.borrower_card }}">{{ record.borrower_card }}</span></td>
+                                                <td class="d-none d-lg-table-cell"><span class="cell-ellipsis" title="{{ record.borrower_phone_number }}">{{ record.borrower_phone_number }}</span></td>
                                                 <td><span class="cell-ellipsis" title="{{ record.book }}">{{ record.book }}</span></td>
-                                                <td>{{record.quantity}}</td>
-                                                <td>{{record.start_day|date:"Y-m-d"}}</td>
-                                                <td>{{record.end_day|date:"Y-m-d"}}</td>
-                                                <td>{{record.get_open_or_close_display}}</td>
-                                                {% if record.return_status == "Delayed" %}
-                                                <td class='table-danger'>{{record.return_status}} {{record.get_delay_number_days}} days</td>
+                                                <td class="col-short">{{record.quantity}}</td>
+                                                <td class="col-short">{{record.start_day|date:"Y-m-d"}}</td>
+                                                <td class="col-short">{{record.end_day|date:"Y-m-d"}}</td>
+                                                <td class="col-short">{{record.get_open_or_close_display}}</td>
+                                                {% if record.return_status == "Overdue" %}
+                                                <td class="col-short table-danger" title="{{ record.return_status }} {{ record.get_delay_number_days }} days">{{record.return_status}} {{record.get_delay_number_days}} days</td>
                                                 {% else %}
-                                                <td class='table-success'>{{record.return_status}}</td>
+                                                <td class="col-short table-success">{{record.return_status}}</td>
                                                 {% endif %}
-                                                <td>
+                                                <td class="col-actions">
                                                     <a href="{% url 'record_detail' record.pk %}" class="badge badge-warning badge-bg"><i class="feather icon-eye"></i>&nbsp;check</a>
 
                                                     <form method="post" action="{% url 'record_delete' record.pk %}" style="display:inline">{% csrf_token %}<button type="submit" class="badge badge-danger border-0"><i class="feather icon-trash-2"></i>&nbsp;Delete</button></form>

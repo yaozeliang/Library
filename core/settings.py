@@ -6,6 +6,7 @@ Copyright (c) 2019 - present AppSeed.us
 import os
 
 from decouple import config
+from django.urls import reverse_lazy
 
 from core.db_config import databases_from_url
 from core.production_config import LOCAL_DEV_SECRET_KEY
@@ -89,6 +90,9 @@ CKEDITOR_CONFIGS = {
         ],
         # 加入代码块插件
         "extraPlugins": ",".join(["codesnippet"]),
+        # The bundled CKEditor build loads exportpdf and logs
+        # exportpdf-no-token-url when no export token URL is set.
+        "removePlugins": "exportpdf",
     },
 }
 
@@ -105,6 +109,9 @@ REST_FRAMEWORK = {
 }
 
 ROOT_URLCONF = "core.urls"
+# Path of the named "login" route. A bare name is easy to miss, and Django's
+# default /accounts/login/ 404s. reverse_lazy resolves when a request needs it.
+LOGIN_URL = reverse_lazy("login")
 LOGIN_REDIRECT_URL = "home"
 LOGOUT_REDIRECT_URL = "home"
 TEMPLATE_DIR = os.path.join(BASE_DIR, "templates")  # ROOT dir for templates

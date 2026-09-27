@@ -1,12 +1,9 @@
 {% extends "layouts/base.html" %}
 {% load crispy_forms_tags %}
-{% load tailwind_filters %}
 {% block title %}Add Book{% endblock %} 
 
 <!-- Specific CSS goes HERE -->
-{% block stylesheets %}
-<link href="https://unpkg.com/tailwindcss@^2/dist/tailwind.min.css" rel="stylesheet">
-{% endblock stylesheets %}
+{% block stylesheets %}{% endblock stylesheets %}
 {% block content %}
 
 <div class="pcoded-content">
@@ -34,36 +31,6 @@
                                 <h5>Add New Book</h5>
                             </div>
                             <div class="card-block table-border-style">
-                                <!-- <form method="post" enctype="multipart/form-data">
-                                    {% csrf_token %}
-                                    {% for field in form %}
-                                    <div class="form-group">
-                                        <label>{{ field.label }}</label>
-                                        {% if field.field.widget.input_type != "select" %}
-                                        <input type="{{ field.field.widget.input_type }}" name={{ field.name }} id="{{ field.name }}" class="form-control">
-                                        {% endif %}
-
-
-                            
-                                        {% if field.field.widget.input_type == "select" %}
-                                        <select name={{ field.name }} id="{{ field.name }}" class="form-control">
-                                            {% for id,value in field.field.choices %}
-                                                <option value="{{ id }}">{{ value }}</option>
-                                            {% endfor %}
-                                        </select>
-                                        {% endif %}
-                                        
-                                        {% if field.errors %}
-                                        <div class="alert alert-danger" style="margin:10px">
-                                            {{ field.errors }}
-                                        </div>
-                                        {% endif %}
-                                    </div>
-                                    {% endfor %}
-
-                                    <button type="submit" class="btn btn-primary btn-block">Add New Book</button>
-                                </form> -->
-
                                 <form method="post" enctype="multipart/form-data">
                                     {% csrf_token %}
                                     

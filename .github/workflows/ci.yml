@@ -71,9 +71,15 @@ jobs:
       run: |
         uv run python manage.py collectstatic --noinput
 
-    - name: Run Django tests
+    - name: Run Django tests with coverage
       run: |
-        uv run python manage.py test
+        # Explicit app labels. `manage.py test` with no label discovers `.`,
+        # which walks the vendored authentication/env virtualenv. Auth form
+        # tests stay in authentication/tests.py and are not part of this run.
+        uv run coverage run manage.py test book comment Api
+        uv run coverage report
+        uv run coverage xml -o coverage.xml
+        uv run coverage html -d coverage_html
 
 
 

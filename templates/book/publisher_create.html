@@ -1,12 +1,9 @@
 {% extends "layouts/base.html" %}
-<!-- {% load crispy_forms_tags %} -->
-{% load tailwind_filters %}
+{% load crispy_forms_tags %}
 {% block title %}Add Publisher{% endblock %} 
 
 <!-- Specific CSS goes HERE -->
-{% block stylesheets %}
-<link href="https://unpkg.com/tailwindcss@^2/dist/tailwind.min.css" rel="stylesheet">
-{% endblock stylesheets %}
+{% block stylesheets %}{% endblock stylesheets %}
 
 {% block content %}
 
@@ -33,34 +30,14 @@
                                 <h5>Add New Publisher</h5>
                             </div>
                             <div class="card-block table-border-style">
-                                <!-- <form method="post" enctype="multipart/form-data">
-                                    {% csrf_token %}
-                                    {% for field in form %}
-                                    <div class="form-group">
-                                        <label>{{ field.label }}</label>
-                                        <input type="{{ field.field.widget.input_type }}" name={{ field.name}} id="{{ field.name }}" class="form-control">
-                                        {% if field.errors %}
-                                        <div class="alert alert-danger" style="margin:10px">
-                                            {{ field.errors }}
-                                        </div>
-                                        {% endif %}
-                                    </div>
-                                    {% endfor %}
-                                    <button type="submit" class="btn btn-dark ">Save</button>
-                                </form> -->
-
                                 <form method="post" enctype="multipart/form-data">
                                     {% csrf_token %}
-                                    
                                     {{ form|crispy }}
-                    
-                    
                                     <button type="submit" class="btn btn-primary">Add</button>
                                 </form>
                             </div>
                         </div>
                     </div>
-                    
                 </div>
             </div>
         </div>

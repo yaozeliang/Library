@@ -90,13 +90,13 @@
                                 </div>
                                 <div class="card-block px-0 py-3">
                                     <div class="table-responsive">
-                                        <table class="table table-hover ">
+                                        <table class="table table-hover table-fit">
                                             <thead class="">
                                                 <tr>
                                                     <th>Member</th>
                                                     <th>Book</th>
-                                                    <th>Start date / End date </th>
-                                                    <th>Closed at</th>
+                                                    <th class="col-short">Start / End</th>
+                                                    <th class="col-short">Closed at</th>
                                                     <!-- <th>On Time ?</th> -->
                                                 </tr>
                                             </thead>
@@ -104,12 +104,12 @@
                                                 {% for r in new_closed_records %}
                                                 <tr class="unread">
                                                  <td>
-                                                        <p class="mb-1"><a href="{% url 'record_detail' r.pk %}">{{ r.borrower}}</a></p>
-                                                        <p class="m-0"><i class="fas fa-credit-card" style="color: Tomato;"></i>&nbsp;{{r.borrower_card}}&nbsp;&nbsp;<i class="fas fa-mobile" style="color: cornflowerblue;"></i>&nbsp;{{r.borrower_phone_number}}</p>
+                                                        <p class="mb-1"><a class="cell-ellipsis" href="{% url 'record_detail' r.pk %}" title="{{ r.borrower }}">{{ r.borrower}}</a></p>
+                                                        <p class="m-0 d-none d-lg-block cell-ellipsis" title="{{ r.borrower_card }} {{ r.borrower_phone_number }}"><i class="fas fa-credit-card" style="color: Tomato;"></i>&nbsp;{{r.borrower_card}}&nbsp;&nbsp;<i class="fas fa-mobile" style="color: cornflowerblue;"></i>&nbsp;{{r.borrower_phone_number}}</p>
                                                  </td>
                                                     <td><span class="cell-ellipsis" title="{{ r.book }}">{{ r.book }}</span></td>
-                                                    <td>{{r.start_day|date:"Y/m/d" }} - {{r.end_day|date:"Y/m/d" }} </td>
-                                                    <td>{{r.closed_at | timesince}}</td>
+                                                    <td class="col-short" title="{{ r.start_day|date:'Y/m/d' }} - {{ r.end_day|date:'Y/m/d' }}">{{r.start_day|date:"Y/m/d" }} - {{r.end_day|date:"Y/m/d" }} </td>
+                                                    <td class="col-short">{% if r.open_or_close == 1 and r.closed_at %}{{ r.closed_at|timesince }}{% endif %}</td>
                                                     <!-- <td>{{r.return_status}}</td> -->
                                                 </tr>
                                                 {% endfor %}
@@ -192,7 +192,7 @@
                             </div>
                         </div> -->
                         <div class="col-xl-12 col-md-12 m-b-30">
-                        <div class="card">
+                        <div class="card recent-events">
                             <div class="card-header">
                                 <h5>Recent Events</h5>
                             </div>
@@ -338,40 +338,40 @@
                                     <!-- Retrun books this week -->
                                     <div class="tab-pane fade active show" id="return" role="tabpanel" aria-labelledby="contact-tab">
                                     <div class="table-responsive">
-                                    <table class="table table-hover">
+                                    <table class="table table-hover table-fit">
                                         <thead>
                                             <tr>
                                                 <th>Borrower</th>
-                                                <th>Card</th>
-                                                <th>Phone</th>
-                                                <th>Book </th>
-                                                <th>Start date </th>
-                                                <th>Return date</th>
-                                                <th>Delayed </th>
-                                                <th class="">#</th>
+                                                <th class="d-none d-lg-table-cell">Card</th>
+                                                <th class="d-none d-lg-table-cell">Phone</th>
+                                                <th>Book</th>
+                                                <th class="col-short">Start date</th>
+                                                <th class="col-short">Return date</th>
+                                                <th class="col-short">Delayed</th>
+                                                <th class="col-actions">#</th>
                                             </tr>
                                         </thead>
                                         <tbody>
                                             {% for r in books_return_thisweek %}
                                                 <tr>   
-                                                    <td><a href="{% url 'record_detail' r.pk %}">{{ r.borrower}}</a></td>
-                                                    <td>{{r.borrower_card}}</td>
-                                                    <td>{{r.borrower_phone_number}} </td>
+                                                    <td><a class="cell-ellipsis" href="{% url 'record_detail' r.pk %}" title="{{ r.borrower }}">{{ r.borrower}}</a></td>
+                                                    <td class="d-none d-lg-table-cell"><span class="cell-ellipsis" title="{{ r.borrower_card }}">{{r.borrower_card}}</span></td>
+                                                    <td class="d-none d-lg-table-cell"><span class="cell-ellipsis" title="{{ r.borrower_phone_number }}">{{r.borrower_phone_number}}</span></td>
                                                     <td><span class="cell-ellipsis" title="{{ r.book }}">{{ r.book }}</span></td>
-                                                    <td>{{r.start_day|date:"Y-m-d" }} </td>
-                                                    <td>{{r.end_day|date:"Y-m-d" }} </td>
-                                                    {% if r.return_status == "Delayed" %}
-                                                    <td class='table-danger'>{{r.return_status}} {{r.get_delay_number_days}} days</td>
+                                                    <td class="col-short">{{r.start_day|date:"Y-m-d" }} </td>
+                                                    <td class="col-short">{{r.end_day|date:"Y-m-d" }} </td>
+                                                    {% if r.return_status == "Overdue" %}
+                                                    <td class="col-short table-danger" title="{{ r.return_status }} {{ r.get_delay_number_days }} days">{{r.return_status}} {{r.get_delay_number_days}} days</td>
 
                                                     {% else %}
-                                                    <td class= 'table-success'>{{r.return_status}}</td>
+                                                    <td class="col-short table-success">{{r.return_status}}</td>
 
                                                     {% endif %}
 
                                                     {% if r.open_or_close == 0 %}
-                                                    <td><a href="{% url 'record_detail' r.pk %}" class="badge badge-danger badge-bg"><i class="fa fa-times"></i>&nbsp;Close</a></td>
+                                                    <td class="col-actions"><a href="{% url 'record_detail' r.pk %}" class="badge badge-danger badge-bg"><i class="fa fa-times"></i>&nbsp;Close</a></td>
                                                     {% else %}
-                                                    <td>Closed</td>
+                                                    <td class="col-actions">Closed</td>
 
                                                     {% endif %}
                                                     

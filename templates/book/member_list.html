@@ -63,33 +63,33 @@
                                 </div>
 
                                 <div class="table-responsive table-hover">
-                                    <table class="table">
+                                    <table class="table table-fit">
                                         <thead>
                                             <tr>
                                                 <th>Name</th>
-                                                <th>Sex</th>
-                                                <th>Phone</th>
+                                                <th class="col-short">Sex</th>
+                                                <th class="d-none d-lg-table-cell">Phone</th>
                                                 <th>Card</th>
-                                                <th>City</th>
-                                                <th>Email</th>
-                                                <th>Created At</th>
-                                                <th>Expired At</th>
-                                                <th>#</th>
+                                                <th class="d-none d-lg-table-cell">City</th>
+                                                <th class="d-none d-lg-table-cell">Email</th>
+                                                <th class="d-none d-lg-table-cell">Created At</th>
+                                                <th class="col-short">Expired At</th>
+                                                <th class="col-actions">#</th>
                                             </tr>
                                         </thead>
                                         <tbody>
                                             
                                             {% for member in members %}
                                             <tr>
-                                                <td><a href="{% url 'member_detail' member.pk %}" class='badge badge-secondary '><i class="feather icon-user"></i>&nbsp;{{member.name}}</a></td>                                                                
-                                                <td>{{member.gender|upper}}</td>
-                                                <td>{{member.phone_number}}</td>
-                                                <td>{{member.card_number}}</td>
-                                                <td>{{member.city}}</td>
-                                                <td>{{member.email}}</td>
-                                                <td>{{ member.created_at|date:"Y-m-d" }} by {{member.created_by}} </td>
-                                                <td>{{ member.expired_at|date:"Y-m-d" }} </td>
-                                                <td>
+                                                <td><a href="{% url 'member_detail' member.pk %}" class="cell-ellipsis" title="{{ member.name }}"><i class="feather icon-user"></i>&nbsp;{{member.name}}</a></td>
+                                                <td class="col-short">{{member.gender|upper}}</td>
+                                                <td class="d-none d-lg-table-cell"><span class="cell-ellipsis" title="{{ member.phone_number }}">{{member.phone_number}}</span></td>
+                                                <td><span class="cell-ellipsis" title="{{ member.card_number }}">{{member.card_number}}</span></td>
+                                                <td class="d-none d-lg-table-cell"><span class="cell-ellipsis" title="{{ member.city }}">{{member.city}}</span></td>
+                                                <td class="d-none d-lg-table-cell"><span class="cell-ellipsis" title="{{ member.email }}">{{member.email}}</span></td>
+                                                <td class="d-none d-lg-table-cell"><span class="cell-ellipsis" title="{{ member.created_at|date:'Y-m-d' }} by {{ member.created_by }}">{{ member.created_at|date:"Y-m-d" }} by {{member.created_by}}</span></td>
+                                                <td class="col-short">{{ member.expired_at|date:"Y-m-d" }} </td>
+                                                <td class="col-actions">
                                                     <a href="{% url 'member_update' member.pk %}" class="badge badge-info"><i class="feather icon-edit"></i>&nbsp;Edit</a>&nbsp;
                                                     <form method="post" action="{% url 'member_delete' member.pk %}" style="display:inline">{% csrf_token %}<button type="submit" class="badge badge-danger border-0"><i class="feather icon-trash-2"></i>&nbsp;Delete</button></form></td>
                                                     

@@ -34,8 +34,13 @@ class SignUpView(CreateView):
     # and this URL is the same form. registration/signup.html was never added.
     template_name = "registration/register.html"
 
+    def dispatch(self, request, *args, **kwargs):
+        if request.user.is_authenticated:
+            return redirect("home")
+        return super().dispatch(request, *args, **kwargs)
 
-@login_required
+
+@login_required(login_url="login")
 def profile_view(request):
     """Display user profile."""
     from book.models import Profile
@@ -48,6 +53,8 @@ def profile_view(request):
 
 def register_view(request):
     """Handle user registration."""
+    if request.user.is_authenticated:
+        return redirect("home")
     if request.method == "POST":
         form = CustomUserCreationForm(request.POST)
         if form.is_valid():

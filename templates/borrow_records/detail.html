@@ -82,7 +82,7 @@
                                                 
                                                 <tr>
                                                     <td>Return On Time ? </td>
-                                                    {% if record.return_status == "On time"%}
+                                                    {% if record.return_status == "On Time" %}
                                                     <td>{{record.return_status}}</td>
                                                     {% else %}
                                                     <td>{{record.return_status}}, delayed {{record.get_delay_number_days}} days </td>
@@ -99,10 +99,12 @@
                                                     <td>{{record.closed_by}}</td>                                                
                                                 </tr>
 
+                                                {% if record.open_or_close == 1 and record.closed_at %}
                                                 <tr>
                                                     <td>Closed at</td>
-                                                    <td>{{record.closed_at| date:"Y-m-d H:i"}}</td>                                                
+                                                    <td>{{ record.closed_at|date:"Y-m-d H:i" }}</td>
                                                 </tr>
+                                                {% endif %}
                                                 
                                       
                                         
