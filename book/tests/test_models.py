@@ -2,7 +2,8 @@
 
 import io
 import tempfile
-from datetime import timedelta
+from datetime import date, datetime, timedelta, timezone as datetime_timezone
+from unittest.mock import patch
 
 from django.apps import apps
 
@@ -210,6 +211,198 @@ class BorrowRecordComputedTests(TestCase):
         closed.refresh_from_db()
         self.assertIsNone(open_record.closed_at)
         self.assertEqual(closed.closed_at, stamp)
+
+
+class BorrowRecordCalendarDelayTests(TestCase):
+    """Due dates are local calendar dates, not timestamp comparisons."""
+
+    def setUp(self):
+        # 15:30 in Europe/Paris, so earlier and later times the same day exist.
+        self.frozen_now = timezone.make_aware(datetime(2026, 9, 27, 15, 30))
+        self.now_patch = patch(
+            "django.utils.timezone.now", return_value=self.frozen_now
+        )
+        self.now_patch.start()
+        self.addCleanup(self.now_patch.stop)
+
+    def _loan(self, end_day, **kwargs):
+        return BorrowRecord.objects.create(
+            borrower="Sam", book="Guide", end_day=end_day, **kwargs
+        )
+
+    def test_due_yesterday_is_overdue_by_one_calendar_day(self):
+        # 23:00 yesterday is only 16.5 hours ago, so a timestamp delta is 0 days.
+        record = self._loan(timezone.make_aware(datetime(2026, 9, 26, 23, 0)))
+        self.assertEqual(record.return_status, "Overdue")
+        self.assertEqual(record.get_delay_number_days, 1)
+        record.refresh_from_db()
+        self.assertEqual(record.delay_days, 1)
+
+    def test_due_today_earlier_or_later_than_now_is_on_time(self):
+        earlier = self._loan(timezone.make_aware(datetime(2026, 9, 27, 8, 0)))
+        later = self._loan(timezone.make_aware(datetime(2026, 9, 27, 22, 0)))
+        for record in (earlier, later):
+            self.assertEqual(record.return_status, "On Time")
+            self.assertEqual(record.get_delay_number_days, 0)
+            record.refresh_from_db()
+            self.assertEqual(record.delay_days, 0)
+
+    def test_due_tomorrow_is_on_time(self):
+        record = self._loan(timezone.make_aware(datetime(2026, 9, 28, 1, 0)))
+        self.assertEqual(record.return_status, "On Time")
+        self.assertEqual(record.get_delay_number_days, 0)
+        record.refresh_from_db()
+        self.assertEqual(record.delay_days, 0)
+
+    def test_delay_counts_calendar_days_not_elapsed_timestamps(self):
+        # 23:00 three dates back is 2 days and 16.5 hours, which truncates to 2.
+        record = self._loan(timezone.make_aware(datetime(2026, 9, 24, 23, 0)))
+        self.assertEqual(record.return_status, "Overdue")
+        self.assertEqual(record.get_delay_number_days, 3)
+        record.refresh_from_db()
+        self.assertEqual(record.delay_days, 3)
+
+    def test_closed_record_returns_stored_delay_days(self):
+        closed = self._loan(
+            timezone.make_aware(datetime(2026, 9, 20, 9, 0)),
+            open_or_close=1,
+            delay_days=4,
+        )
+        self.assertEqual(closed.return_status, "Returned")
+        self.assertEqual(closed.get_delay_number_days, 4)
+        closed.refresh_from_db()
+        self.assertEqual(closed.delay_days, 4)
+
+    def test_naive_end_day_uses_its_date_not_a_timezone_conversion(self):
+        yesterday = BorrowRecord(
+            borrower="Sam",
+            book="Guide",
+            end_day=datetime(2026, 9, 26, 23, 0),
+        )
+        due_today = BorrowRecord(
+            borrower="Sam",
+            book="Guide",
+            end_day=datetime(2026, 9, 27, 8, 0),
+        )
+        self.assertFalse(timezone.is_aware(yesterday.end_day))
+        self.assertEqual(yesterday.return_status, "Overdue")
+        self.assertEqual(yesterday.get_delay_number_days, 1)
+        self.assertEqual(due_today.return_status, "On Time")
+        self.assertEqual(due_today.get_delay_number_days, 0)
+
+    def test_closing_a_loan_keeps_the_calendar_delay(self):
+        record = self._loan(timezone.make_aware(datetime(2026, 9, 25, 23, 30)))
+        record.final_status = record.return_status
+        record.delay_days = record.get_delay_number_days
+        record.open_or_close = 1
+        record.closed_at = timezone.now()
+        record.save()
+        record.refresh_from_db()
+        self.assertEqual(record.final_status, "Overdue")
+        self.assertEqual(record.delay_days, 2)
+        self.assertEqual(record.return_status, "Returned")
+        self.assertEqual(record.get_delay_number_days, 2)
+
+
+@override_settings(TIME_ZONE="Europe/Paris")
+class BorrowRecordParisMidnightTests(TestCase):
+    """Local calendar dates around midnight, not the UTC date of the timestamp.
+
+    Django stores aware datetimes in UTC and ``timezone.now()`` is UTC.
+    ``datetime.date()`` on those values is the UTC day. Europe/Paris in
+    September is UTC+2, so local 00:30 is 22:30 UTC on the previous day.
+    """
+
+    def setUp(self):
+        self.assertEqual(str(timezone.get_current_timezone()), "Europe/Paris")
+
+    def _freeze_local(self, wall_clock):
+        """Freeze ``timezone.now()`` at a Paris wall time, returned in UTC."""
+        frozen_utc = timezone.make_aware(wall_clock).astimezone(datetime_timezone.utc)
+        patcher = patch("django.utils.timezone.now", return_value=frozen_utc)
+        patcher.start()
+        self.addCleanup(patcher.stop)
+        return frozen_utc
+
+    def _open_loan(self, due_wall_clock):
+        record = BorrowRecord.objects.create(
+            borrower="Sam",
+            book="Guide",
+            end_day=timezone.make_aware(due_wall_clock),
+        )
+        # Reload so ``end_day`` is the stored UTC instant, as the list view sees it.
+        record.refresh_from_db()
+        return record
+
+    def _assert_list_status(self, record, status, days):
+        """Borrow lists render ``return_status`` and ``get_delay_number_days``."""
+        self.assertEqual(record.return_status, status)
+        self.assertEqual(record.get_delay_number_days, days)
+
+    def _close_and_assert_saved_delay(self, record, status, days):
+        """Close the way ``BorrowRecordClose`` does, then read the saved delay.
+
+        The view copies the list properties, then ``save()`` persists
+        ``delay_days`` without recomputing it for a closed loan.
+        """
+        record.final_status = record.return_status
+        record.delay_days = record.get_delay_number_days
+        record.open_or_close = 1
+        record.closed_at = timezone.now()
+        record.save()
+        record.refresh_from_db()
+        self.assertEqual(record.final_status, status)
+        self.assertEqual(record.delay_days, days)
+        self.assertEqual(record.return_status, "Returned")
+        self.assertEqual(record.get_delay_number_days, days)
+
+    def test_local_2359_on_the_due_date_is_on_time(self):
+        # 23:59 in Paris is 21:59 UTC the same calendar day.
+        frozen_utc = self._freeze_local(datetime(2026, 9, 27, 23, 59))
+        self.assertEqual(timezone.localdate(), date(2026, 9, 27))
+        self.assertEqual(frozen_utc.date(), date(2026, 9, 27))
+        self.assertEqual((frozen_utc.hour, frozen_utc.minute), (21, 59))
+
+        # Due 00:30 local is 22:30 UTC the previous day. UTC .date() is Sep 26.
+        record = self._open_loan(datetime(2026, 9, 27, 0, 30))
+        self.assertEqual(record.end_day.utcoffset(), timedelta(0))
+        self.assertEqual(record.end_day.date(), date(2026, 9, 26))
+        self.assertEqual(timezone.localdate(record.end_day), date(2026, 9, 27))
+        self.assertEqual(record.delay_days, 0)
+        self._assert_list_status(record, "On Time", 0)
+        self._close_and_assert_saved_delay(record, "On Time", 0)
+
+    def test_local_0030_on_the_due_date_is_on_time(self):
+        # 00:30 in Paris is 22:30 UTC on the previous day.
+        frozen_utc = self._freeze_local(datetime(2026, 9, 27, 0, 30))
+        self.assertEqual(timezone.localdate(), date(2026, 9, 27))
+        self.assertEqual(frozen_utc.date(), date(2026, 9, 26))
+        self.assertEqual((frozen_utc.hour, frozen_utc.minute), (22, 30))
+
+        # Due later that local day. Its UTC date is Sep 27, now's UTC date is Sep 26.
+        record = self._open_loan(datetime(2026, 9, 27, 23, 59))
+        self.assertEqual(record.end_day.date(), date(2026, 9, 27))
+        self.assertEqual(timezone.localdate(record.end_day), date(2026, 9, 27))
+        self.assertNotEqual(timezone.now().date(), timezone.localdate())
+        self.assertEqual(record.delay_days, 0)
+        self._assert_list_status(record, "On Time", 0)
+        self._close_and_assert_saved_delay(record, "On Time", 0)
+
+    def test_local_0030_the_morning_after_the_due_date_is_one_day_overdue(self):
+        # Still Sep 27 in UTC, already Sep 28 in Paris.
+        frozen_utc = self._freeze_local(datetime(2026, 9, 28, 0, 30))
+        self.assertEqual(timezone.localdate(), date(2026, 9, 28))
+        self.assertEqual(frozen_utc.date(), date(2026, 9, 27))
+        self.assertEqual((frozen_utc.hour, frozen_utc.minute), (22, 30))
+
+        record = self._open_loan(datetime(2026, 9, 27, 23, 59))
+        self.assertEqual(record.end_day.date(), date(2026, 9, 27))
+        self.assertEqual(timezone.localdate(record.end_day), date(2026, 9, 27))
+        # UTC .date() of now and of end_day match, which would be delay 0.
+        self.assertEqual(timezone.now().date(), record.end_day.date())
+        self.assertEqual(record.delay_days, 1)
+        self._assert_list_status(record, "Overdue", 1)
+        self._close_and_assert_saved_delay(record, "Overdue", 1)
 
 
 class CommentSaveTests(TestCase):

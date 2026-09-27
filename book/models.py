@@ -260,22 +260,50 @@ class BorrowRecord(models.Model):
     # save, so open loans showed a close date.
     closed_at = models.DateTimeField(null=True, blank=True)
 
+    def _local_end_date(self):
+        """Calendar due date of ``end_day`` in the active time zone.
+
+        Aware values are converted with ``timezone.localdate``. Naive values
+        already store a wall-clock date, so ``.date()`` is used as-is.
+        """
+        end_day = self.end_day
+        if timezone.is_aware(end_day):
+            return timezone.localdate(end_day)
+        return end_day.date()
+
+    def _calendar_delay_days(self) -> int:
+        """Calendar days past the local due date, or 0 when not yet overdue.
+
+        Due today is not overdue. The count is the difference of local dates,
+        not the number of 24-hour periods between the two timestamps.
+        """
+        delay = (timezone.localdate() - self._local_end_date()).days
+        if delay > 0:
+            return delay
+        return 0
+
     @property
     def return_status(self) -> str:
-        """Return the current return status of the borrowed book."""
+        """Return the current return status of the borrowed book.
+
+        An open loan is overdue only when today's local date is strictly
+        after the local date of ``end_day``. A loan due today is on time.
+        """
         if self.open_or_close == 0:
-            if timezone.now() > self.end_day:
+            if self._calendar_delay_days() > 0:
                 return "Overdue"
             return "On Time"
         return "Returned"
 
     @property
     def get_delay_number_days(self) -> int:
-        """Calculate the number of delay days."""
+        """Calendar days past due for an open loan, else the stored delay.
+
+        Closed records keep the ``delay_days`` saved when the loan was open
+        or returned. They are not recomputed from today's date.
+        """
         if self.open_or_close == 0:
-            if timezone.now() > self.end_day:
-                return (timezone.now() - self.end_day).days
-            return 0
+            return self._calendar_delay_days()
         return self.delay_days
 
     def get_absolute_url(self) -> str:
@@ -289,16 +317,18 @@ class BorrowRecord(models.Model):
     def save(self, *args: Any, **kwargs: Any) -> None:
         """Save the borrow record and keep ``closed_at`` in step with status.
 
-        An open loan has no close timestamp. The first save that marks the
-        loan closed stamps ``closed_at``; later edits leave that stamp alone.
-        Opening the loan again clears it. There is no dedicated reopen view;
-        this covers any save that sets ``open_or_close`` back to open.
+        An open loan has no close timestamp. While it stays open, ``delay_days``
+        is the number of local calendar days past ``end_day`` (zero when that
+        date is today or later). Closing does not recompute that value: the
+        caller copies ``get_delay_number_days`` first, and this method leaves
+        the stored delay alone once the loan is closed. The first save that
+        marks the loan closed stamps ``closed_at``; later edits leave that
+        stamp alone. Opening the loan again clears it. There is no dedicated
+        reopen view; this covers any save that sets ``open_or_close`` back
+        to open.
         """
         if self.open_or_close == 0:
-            if timezone.now() > self.end_day:
-                self.delay_days = (timezone.now() - self.end_day).days
-            else:
-                self.delay_days = 0
+            self.delay_days = self._calendar_delay_days()
             self.closed_at = None
         elif self.closed_at is None:
             self.closed_at = timezone.now()
