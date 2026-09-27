@@ -9,7 +9,7 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.models import Group, User
 from django.contrib.messages.views import messages
 from django.core.exceptions import PermissionDenied
-from django.core.paginator import EmptyPage, PageNotAnInteger, Paginator
+from django.core.paginator import Paginator
 from django.db import transaction
 from django.db.models import Count, Q, Sum
 from django.db.models.functions import TruncMonth
@@ -49,12 +49,13 @@ from .models import (
     UserActivity,
 )
 from .notification import send_notification
+from .pagination import CATALOG_PAGE_SIZE, redirect_for_page
 
 logger = logging.getLogger(__name__)
 
 
 TODAY = get_n_days_ago(0, "%Y%m%d")
-PAGINATOR_NUMBER = 5
+PAGINATOR_NUMBER = CATALOG_PAGE_SIZE
 
 
 def apply_ordering(queryset, requested, default):
@@ -71,31 +72,13 @@ def apply_ordering(queryset, requested, default):
     return queryset.order_by(candidate), candidate
 
 
-def clamp_page(queryset, page_number):
-    """Return a page for ``page_number``, never an empty page when rows exist.
-
-    ``Paginator.get_page`` clamps non-integers to page 1 and out-of-range
-    numbers to the last page. If that still raises (an empty paginator whose
-    ``num_pages`` is 0), fall back to the last real page or page 1 so
-    ``/record-list/?page=4`` cannot 500 or render a blank table while earlier
-    pages have rows.
-    """
-    paginator = Paginator(queryset, PAGINATOR_NUMBER)
-    try:
-        page = paginator.get_page(page_number)
-    except (EmptyPage, PageNotAnInteger):
-        last = paginator.num_pages or 1
-        try:
-            page = paginator.page(last)
-        except EmptyPage:
-            page = paginator.page(1)
-    if paginator.count and not page.object_list:
-        page = paginator.page(paginator.num_pages or 1)
-    return page
-
-
 class OrderedPageMixin:
-    """Shared search, sort, and clamped pagination for catalog list views."""
+    """Shared search, sort, and redirected pagination for catalog list views.
+
+    Subclasses implement ``listing()`` and return the filtered queryset
+    before it is sliced. ``get`` sends a bad ``?page=`` back as a 302
+    before the template renders.
+    """
 
     default_order = "-id"
     search_value = ""
@@ -110,9 +93,27 @@ class OrderedPageMixin:
         )
         return ordered, search
 
+    def listing(self):
+        raise NotImplementedError
+
+    def get(self, request, *args, **kwargs):
+        redirect_to = redirect_for_page(
+            request, self.listing(), per_page=PAGINATOR_NUMBER
+        )
+        if redirect_to is not None:
+            return redirect_to
+        return super().get(request, *args, **kwargs)
+
+    def get_queryset(self):
+        return self.page_queryset(self.listing())
+
     def page_queryset(self, queryset):
         self.count_total = queryset.count()
-        return clamp_page(queryset, self.request.GET.get("page"))
+        # ``get`` already rejected a page that is not in range, so the
+        # remaining value is a real page or absent (page 1).
+        return Paginator(queryset, PAGINATOR_NUMBER).get_page(
+            self.request.GET.get("page")
+        )
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -290,13 +291,13 @@ class BookListView(LoginRequiredMixin, OrderedPageMixin, ListView):
     template_name = "book/book_list.html"
     default_order = "-updated_at"
 
-    def get_queryset(self):
+    def listing(self):
         books, search = self.order_queryset(Book.objects.all())
         if search:
             books = books.filter(
                 Q(title__icontains=search) | Q(author__icontains=search)
             )
-        return self.page_queryset(books)
+        return books
 
 
 class BookDetailView(LoginRequiredMixin, DetailView):
@@ -388,11 +389,11 @@ class CategoryListView(LoginRequiredMixin, OrderedPageMixin, ListView):
     template_name = "book/category_list.html"
     default_order = "-created_at"
 
-    def get_queryset(self):
+    def listing(self):
         categories, search = self.order_queryset(Category.objects.all())
         if search:
             categories = categories.filter(Q(name__icontains=search))
-        return self.page_queryset(categories)
+        return categories
 
 
 class CategoryCreateView(LoginRequiredMixin, CreateView):
@@ -453,7 +454,7 @@ class PublisherListView(LoginRequiredMixin, OrderedPageMixin, ListView):
     template_name = "book/publisher_list.html"
     default_order = "-created_at"
 
-    def get_queryset(self):
+    def listing(self):
         publishers, search = self.order_queryset(Publisher.objects.all())
         if search:
             publishers = publishers.filter(
@@ -461,7 +462,7 @@ class PublisherListView(LoginRequiredMixin, OrderedPageMixin, ListView):
                 | Q(city__icontains=search)
                 | Q(contact__icontains=search)
             )
-        return self.page_queryset(publishers)
+        return publishers
 
 
 class PublisherCreateView(LoginRequiredMixin, CreateView):
@@ -556,7 +557,7 @@ class ActivityListView(LoginRequiredMixin, ListView):
     # def dispatch(self, *args, **kwargs):
     #     return super(ActivityListView, self).dispatch(*args, **kwargs)
 
-    def get_queryset(self):
+    def listing(self):
         search = self.request.GET.get("search") or ""
         filter_user = self.request.GET.get("created_by") or ""
         self.search_value = search
@@ -573,9 +574,22 @@ class ActivityListView(LoginRequiredMixin, ListView):
 
         if search:
             all_activities = all_activities.filter(Q(target_model__icontains=search))
+        return all_activities
 
+    def get(self, request, *args, **kwargs):
+        redirect_to = redirect_for_page(
+            request, self.listing(), per_page=PAGINATOR_NUMBER
+        )
+        if redirect_to is not None:
+            return redirect_to
+        return super().get(request, *args, **kwargs)
+
+    def get_queryset(self):
+        all_activities = self.listing()
         self.count_total = all_activities.count()
-        return clamp_page(all_activities, self.request.GET.get("page"))
+        return Paginator(all_activities, PAGINATOR_NUMBER).get_page(
+            self.request.GET.get("page")
+        )
 
     def get_context_data(self, *args, **kwargs):
         context = super(ActivityListView, self).get_context_data(*args, **kwargs)
@@ -610,13 +624,13 @@ class MemberListView(LoginRequiredMixin, OrderedPageMixin, ListView):
     template_name = "book/member_list.html"
     default_order = "-updated_at"
 
-    def get_queryset(self):
+    def listing(self):
         members, search = self.order_queryset(Member.objects.all())
         if search:
             members = members.filter(
                 Q(name__icontains=search) | Q(card_number__icontains=search)
             )
-        return self.page_queryset(members)
+        return members
 
 
 class MemberCreateView(LoginRequiredMixin, CreateView):
@@ -859,7 +873,7 @@ class BorrowRecordListView(LoginRequiredMixin, OrderedPageMixin, ListView):
     context_object_name = "records"
     default_order = "-closed_at"
 
-    def get_queryset(self):
+    def listing(self):
         records, search = self.order_queryset(BorrowRecord.objects.all())
         if search:
             records = records.filter(
@@ -867,7 +881,7 @@ class BorrowRecordListView(LoginRequiredMixin, OrderedPageMixin, ListView):
                 | Q(book__icontains=search)
                 | Q(borrower_card__icontains=search)
             )
-        return self.page_queryset(records)
+        return records
 
 
 class BorrowRecordDeleteView(LoginRequiredMixin, View):

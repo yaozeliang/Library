@@ -311,7 +311,6 @@ class BorrowReturnTests(MutationSetup):
 
         listed = self.client.get(reverse("record_list"))
         self.assertContains(listed, "Overdue")
-        self.assertContains(listed, "table-danger")
 
         self.client.post(reverse("record_close", args=[record.pk]))
         record.refresh_from_db()

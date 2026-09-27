@@ -21,6 +21,16 @@ class CommentListView(ListView):
     context_object_name = "comments"
     paginate_by = 10
 
+    def get(self, request, *args, **kwargs):
+        from book.pagination import redirect_for_page
+
+        redirect_to = redirect_for_page(
+            request, self.get_queryset(), per_page=self.paginate_by
+        )
+        if redirect_to is not None:
+            return redirect_to
+        return super().get(request, *args, **kwargs)
+
 
 class CommentCreateView(LoginRequiredMixin, CreateView):
     """View for creating new comments."""

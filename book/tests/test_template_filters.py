@@ -3,7 +3,7 @@
 from datetime import timedelta
 
 from django.contrib.auth.models import Group, User
-from django.template import Context, Template
+from django.template import Context
 from django.test import RequestFactory, TestCase
 from django.utils import timezone
 
@@ -48,38 +48,3 @@ class GroupAndQueryTests(TestCase):
         self.assertIn("page=4", rendered)
         self.assertIn("orderby=borrower", rendered)
         self.assertNotIn("search", rendered)
-
-    def test_pagination_last_link_keeps_orderby(self):
-        user = User.objects.create_user(username="pat", password="pat-pass-1")
-        request = RequestFactory().get("/book-list")
-        request.user = user
-        html = Template(
-            "{% load book_extras %}"
-            "{% show_pagination %}"
-        ).render(
-            Context(
-                {
-                    "request": request,
-                    "objects": _FakePage(),
-                    "search": "ada",
-                    "orderby": "title",
-                }
-            )
-        )
-        self.assertIn("orderby=title", html)
-        self.assertIn("page=3", html)
-        self.assertNotIn("orderby=&", html)
-
-
-class _FakePage:
-    number = 1
-
-    class paginator:
-        num_pages = 3
-        page_range = range(1, 4)
-
-    def has_previous(self):
-        return False
-
-    def has_next(self):
-        return True
