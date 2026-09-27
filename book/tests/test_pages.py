@@ -462,6 +462,22 @@ class LibraryPageTests(PageFixture):
         self.assertContains(home, "table-responsive")
         self.assertContains(home, 'class="col-text">Member')
         self.assertContains(home, 'class="col-short">Start / End')
+        self.assertContains(home, 'class="col-user">User')
+        self.assertContains(home, 'class="user-with-avatar"')
+        self.assertContains(home, 'class="col-text">Name')
+        self.assertContains(home, 'class="col-text">Title')
+        self.assertIn(".user-with-avatar", css)
+        self.assertIn("flex-wrap: nowrap", css)
+        self.assertIn(".table-fit .col-user", css)
+        self.assertContains(
+            books, 'class="col-short d-none d-lg-table-cell">Location'
+        )
+        self.assertContains(
+            books, 'class="col-text d-none d-lg-table-cell">Updated By'
+        )
+        self.assertContains(
+            members, 'class="col-text d-none d-lg-table-cell">Created At'
+        )
 
     def test_dashboard_tabs_have_unique_ids_and_a_selected_tab(self):
         self.login(self.staff)

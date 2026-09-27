@@ -70,8 +70,8 @@
                                                 <th class="col-text d-none d-lg-table-cell">Category</th>
                                                 <th class="col-short">Status</th>
                                                 <th class="col-short">Quantity</th>
-                                                <th class="d-none d-lg-table-cell">Location</th>
-                                                <th class="d-none d-lg-table-cell">Updated By</th>
+                                                <th class="col-short d-none d-lg-table-cell">Location</th>
+                                                <th class="col-text d-none d-lg-table-cell">Updated By</th>
                                                 <th class="col-actions">Operation</th>
                                             </tr>
                                         </thead>
@@ -85,7 +85,7 @@
                                                 <td class="col-text d-none d-lg-table-cell">{{ book.category }}</td>
                                                 <td class="col-short">{{book.get_status_display}}</td>
                                                 <td class="col-short">{{book.quantity}}</td>
-                                                <td class="d-none d-lg-table-cell">{{book.floor_number}}{{book.bookshelf_number}}</td>
+                                                <td class="col-short d-none d-lg-table-cell">{{book.floor_number}}{{book.bookshelf_number}}</td>
                                                 <td class="col-text d-none d-lg-table-cell">{{ book.updated_by }}</td>
                                                 <td class="col-actions">                                
                                                     <a href="{% url 'book_detail' book.id%}" class="badge badge-warning"><i class="feather icon-eye"></i></a>

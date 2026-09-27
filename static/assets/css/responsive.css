@@ -421,10 +421,32 @@ video {
 }
 
 .table-fit .col-short,
-.table-fit .col-actions {
+.table-fit .col-actions,
+.table-fit .col-user {
   white-space: nowrap;
   width: 1%;
   min-width: max-content;
+}
+
+/* Avatar and username stay on one line. min-width: max-content stops the
+   cell from shrinking under the image so the name cannot spill into the
+   next column; the table scrolls inside .table-responsive instead. */
+.user-with-avatar {
+  display: inline-flex;
+  align-items: center;
+  flex-wrap: nowrap;
+  white-space: nowrap;
+  gap: 0.5rem;
+  min-width: max-content;
+  vertical-align: middle;
+}
+
+.user-with-avatar img {
+  width: 30px;
+  height: 30px;
+  max-width: none;
+  flex: 0 0 30px;
+  object-fit: cover;
 }
 
 .recent-events .tab-content {
