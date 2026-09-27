@@ -360,7 +360,7 @@
                                                     <td><span class="cell-ellipsis" title="{{ r.book }}">{{ r.book }}</span></td>
                                                     <td>{{r.start_day|date:"Y-m-d" }} </td>
                                                     <td>{{r.end_day|date:"Y-m-d" }} </td>
-                                                    {% if r.return_status == "Delayed" %}
+                                                    {% if r.return_status == "Overdue" %}
                                                     <td class='table-danger'>{{r.return_status}} {{r.get_delay_number_days}} days</td>
 
                                                     {% else %}

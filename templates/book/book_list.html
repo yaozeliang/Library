@@ -47,13 +47,12 @@
                                     <div class="col-4">
                                         <form class="form-inline mb-2">
                                             <div class="form-group mx-sm-3 mb-2">
-                                                <input type="text" 
-                                                       class="form-control" 
-                                                       name="search",
-                                                       id='search',
-                                                       placeholder="Search title / author",
-                                                       value={{search}}
-                                                       >
+                                                <input type="text"
+                                                       class="form-control"
+                                                       name="search"
+                                                       id="search"
+                                                       placeholder="Search title / author"
+                                                       value="{{ search }}">
                                             </div>
                                             <button type="submit" class="btn btn-secondary mb-2 btn-sm">Search</button>
                                         </form>
@@ -83,7 +82,6 @@
                                                 <td><span class="cell-ellipsis" title="{{ book.title }}">{{ book.title }}</span></td>
                                                 <td>{{book.author}}</td>
                                                 <td>{{book.category}}</td>
-                                                <!-- <td>{{book.updated|date:"Y/m/d H:i" }}</td> -->
                                                 <td>{{book.get_status_display}}</td>
                                                 <td>{{book.quantity}}</td>
                                                 <td>{{book.floor_number}}{{book.bookshelf_number}}</td>

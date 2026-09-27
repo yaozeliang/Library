@@ -123,7 +123,7 @@
                                     <td>{{record.start_day | date:"Y/m/d"}} - {{record.end_day | date:"Y/m/d"}}</td>
                                     <td>{{record.get_open_or_close_display}}</td>
                                     <td>{{record.closed_at | date:"Y/m/d"}}</td>
-                                    {% if record.final_status == "Delayed" %}
+                                    {% if record.final_status == "Overdue" %}
                                         <td>{{record.final_status}}, {{record.delay_days}} days</td>
                                     {% else %}
                                         <td>{{record.final_status}}</td>

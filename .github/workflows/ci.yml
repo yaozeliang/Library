@@ -71,9 +71,14 @@ jobs:
       run: |
         uv run python manage.py collectstatic --noinput
 
-    - name: Run Django tests
+    - name: Run Django tests with coverage
       run: |
-        uv run python manage.py test
+        # authentication.tests is a module, not the authentication/ tree, so the
+        # vendored authentication/env virtualenv is not collected.
+        uv run coverage run manage.py test book comment Api authentication.tests
+        uv run coverage report
+        uv run coverage xml -o coverage.xml
+        uv run coverage html -d coverage_html
 
 
 

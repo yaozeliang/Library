@@ -105,6 +105,9 @@ REST_FRAMEWORK = {
 }
 
 ROOT_URLCONF = "core.urls"
+# Named URL, not /accounts/login/. Third-party views such as django-notifications
+# call login_required without an explicit login_url and would otherwise 404.
+LOGIN_URL = "login"
 LOGIN_REDIRECT_URL = "home"
 LOGOUT_REDIRECT_URL = "home"
 TEMPLATE_DIR = os.path.join(BASE_DIR, "templates")  # ROOT dir for templates
