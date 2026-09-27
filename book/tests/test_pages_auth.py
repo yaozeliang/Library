@@ -78,7 +78,7 @@ class AuthPageTests(PageFixture):
         self.assertIn("invalid-feedback", html)
         self.assertIn("d-block", html)
         self.assertIn("is-invalid", html)
-        self.assertIn('id="id_username_error"', html)
+        self.assertEqual(html.count('id="id_username_error"'), 1)
         self.assertIn("A user with that username already exists.", html)
         self.assertIn("Enter a valid email address.", html)
         ids = set(re.findall(r'\bid="([^"]+)"', html))
