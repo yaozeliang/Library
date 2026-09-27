@@ -13,15 +13,23 @@ from book.templatetags.book_extras import get_item, has_group, param_replace, ti
 
 
 class TimesinceTests(TestCase):
-    def test_buckets(self):
+    def test_singular_and_plural_for_each_unit(self):
         now = timezone.now()
-        self.assertIn("just now", timesince(now - timedelta(seconds=10)))
-        self.assertIn("minutes ago", timesince(now - timedelta(minutes=5)))
-        self.assertIn("hours ago", timesince(now - timedelta(hours=3)))
-        self.assertIn("day ago", timesince(now - timedelta(days=1)))
-        self.assertIn("days ago", timesince(now - timedelta(days=4)))
-        self.assertIn("months ago", timesince(now - timedelta(days=40)))
-        self.assertIn("years ago", timesince(now - timedelta(days=400)))
+        cases = (
+            (timedelta(seconds=10), " just now"),
+            (timedelta(minutes=1), "1 minute ago"),
+            (timedelta(minutes=5), "5 minutes ago"),
+            (timedelta(hours=1), "1 hour ago"),
+            (timedelta(hours=3), "3 hours ago"),
+            (timedelta(days=1), "1 day ago"),
+            (timedelta(days=4), "4 days ago"),
+            (timedelta(days=30), "1 month ago"),
+            (timedelta(days=70), "2 months ago"),
+            (timedelta(days=365), "1 year ago"),
+            (timedelta(days=800), "2 years ago"),
+        )
+        for delta, expected in cases:
+            self.assertEqual(timesince(now - delta), expected, delta)
         self.assertEqual(timesince(now + timedelta(days=1)), "")
 
 

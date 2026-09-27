@@ -6,6 +6,7 @@ from typing import Any, Dict
 
 import requests
 from django import template
+from django.template.defaultfilters import pluralize
 from django.utils.html import mark_safe
 from django.utils import timezone
 
@@ -110,20 +111,21 @@ def timesince(date: datetime.datetime) -> str:
     now = timezone.now()
     diff = now - date
 
+    def ago(count: int, unit: str) -> str:
+        return f"{count} {unit}{pluralize(count)} ago"
+
     if diff.days == 0 and diff.seconds >= 0 and diff.seconds < 60:
         return " just now"
     if diff.days == 0 and diff.seconds >= 60 and diff.seconds < 3600:
-        return str(math.floor(diff.seconds / 60)) + " minutes ago"
+        return ago(math.floor(diff.seconds / 60), "minute")
     if diff.days == 0 and diff.seconds >= 3600 and diff.seconds < 86400:
-        return str(math.floor(diff.seconds / 3600)) + " hours ago"
-    if diff.days == 1 and diff.days < 30:
-        return str(diff.days) + " day ago"
+        return ago(math.floor(diff.seconds / 3600), "hour")
     if diff.days >= 1 and diff.days < 30:
-        return str(diff.days) + " days ago"
+        return ago(diff.days, "day")
     if diff.days >= 30 and diff.days < 365:
-        return str(math.floor(diff.days / 30)) + " months ago"
+        return ago(math.floor(diff.days / 30), "month")
     if diff.days >= 365:
-        return str(math.floor(diff.days / 365)) + " years ago"
+        return ago(math.floor(diff.days / 365), "year")
     return ""
 
 
