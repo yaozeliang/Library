@@ -14,6 +14,7 @@ def _apply_widget_attrs(form, placeholders):
         field.widget.attrs.update(
             {
                 "placeholder": placeholder,
+                "aria-label": placeholder,
                 "class": "form-control",
             }
         )
