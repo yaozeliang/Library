@@ -16,11 +16,23 @@ class GroupSerializer(serializers.HyperlinkedModelSerializer):
         fields = ["url", "name"]
 
 
+def _required_name():
+    """Name is the identity of the row.
+
+    Category.name and Publisher.name are ``blank=True`` on the model, so a
+    ModelSerializer would accept a missing, empty, or whitespace-only name
+    and store ``""``. The API treats that name as required. Neither field
+    is unique, so a repeated name is still a valid create.
+    """
+    return {"required": True, "allow_blank": False}
+
+
 # Category Serializer
 class CategorySerializer(serializers.ModelSerializer):
     class Meta:
         model = Category
         fields = "__all__"
+        extra_kwargs = {"name": _required_name()}
 
     def to_representation(self, instance):
         representation = super(CategorySerializer, self).to_representation(instance)
@@ -62,6 +74,7 @@ class PublisherSerializer(serializers.ModelSerializer):
             "city",
             "contact",
         )
+        extra_kwargs = {"name": _required_name()}
 
     def to_representation(self, instance):
         representation = super(PublisherSerializer, self).to_representation(instance)

@@ -11,7 +11,7 @@ from django.contrib.messages.views import messages
 from django.core.exceptions import PermissionDenied
 from django.core.paginator import Paginator
 from django.db import transaction
-from django.db.models import Count, Q, Sum
+from django.db.models import Count, F, Q, Sum
 from django.db.models.functions import TruncMonth
 from django.http import Http404, HttpResponse, HttpResponseRedirect, JsonResponse
 from django.shortcuts import get_object_or_404, redirect, render
@@ -59,17 +59,36 @@ TODAY = get_n_days_ago(0, "%Y%m%d")
 PAGINATOR_NUMBER = CATALOG_PAGE_SIZE
 
 
+def borrow_record_listing_order():
+    """Open loans first, then the newest borrow, then the highest id.
+
+    ``order_by("-closed_at")`` puts NULL close dates first on Postgres and
+    leaves those open rows in an arbitrary order. Spell the NULL placement
+    out and break ties with the borrow record's created timestamp, then id.
+    """
+    return (
+        F("closed_at").desc(nulls_first=True),
+        F("created_at").desc(),
+        "-id",
+    )
+
+
 def apply_ordering(queryset, requested, default):
     """Order by a real column. An unknown ``orderby`` falls back to ``default``.
 
     Passing the query string straight to ``order_by`` raised FieldError and
-    the list view answered 500.
+    the list view answered 500. The borrow-record default ``-closed_at``
+    uses ``borrow_record_listing_order`` so open loans stay first in a
+    stable order. The home page "Recent Closed" list does not use this
+    helper; it only shows closed loans, newest close first.
     """
     candidate = (requested or "").strip() or default
     raw = candidate[1:] if candidate.startswith("-") else candidate
     field_names = {field.name for field in queryset.model._meta.fields}
     if raw not in field_names:
         candidate = default
+    if candidate == "-closed_at" and queryset.model is BorrowRecord:
+        return queryset.order_by(*borrow_record_listing_order()), candidate
     return queryset.order_by(candidate), candidate
 
 
@@ -186,6 +205,8 @@ class HomeView(LoginRequiredMixin, TemplateView):
 
         books_return_thisweek = BorrowRecord.objects.filter(end_day__week=current_week)
         number_books_return_thisweek = books_return_thisweek.count()
+        # Closed loans only, newest close first. Open loans are excluded, so
+        # this does not use the record-list NULLS FIRST ordering.
         new_closed_records = BorrowRecord.objects.filter(
             open_or_close=1, closed_at__isnull=False
         ).order_by("-closed_at")[:5]

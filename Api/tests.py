@@ -119,13 +119,18 @@ def _request_path(route):
     return "/api/" + route
 
 
-def _success_status(view_name, method):
-    """Status the view already returns after the permission check passes.
+_CREATE_VIEWS = frozenset(
+    {"CategoryCreate", "BookCreate", "PublisherCreate", "MemberList"}
+)
 
-    Member create is 201 and member delete is 204. Every other method,
-    including GET on those same routes, returns 200.
+
+def _success_status(view_name, method):
+    """Status the view returns after the permission check passes.
+
+    Creates are 201. Member delete is 204. Reads and updates are 200,
+    including GET on the create routes.
     """
-    if view_name == "MemberList" and method == "post":
+    if method == "post" and view_name in _CREATE_VIEWS:
         return 201
     if view_name == "MemberDetail" and method == "delete":
         return 204
