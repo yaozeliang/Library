@@ -65,9 +65,9 @@
                                         <thead>
                                             <tr>
                                                 <th class="col-short">#</th>
-                                                <th>Title</th>
-                                                <th>Author</th>
-                                                <th class="d-none d-lg-table-cell">Category</th>
+                                                <th class="col-text">Title</th>
+                                                <th class="col-text">Author</th>
+                                                <th class="col-text d-none d-lg-table-cell">Category</th>
                                                 <th class="col-short">Status</th>
                                                 <th class="col-short">Quantity</th>
                                                 <th class="d-none d-lg-table-cell">Location</th>
@@ -80,13 +80,13 @@
                                             {% for book in books %}
                                             <tr>
                                                 <th class="col-short" scope="row">{{book.id}}</th>
-                                                <td><span class="cell-ellipsis" title="{{ book.title }}">{{ book.title }}</span></td>
-                                                <td><span class="cell-ellipsis" title="{{ book.author }}">{{book.author}}</span></td>
-                                                <td class="d-none d-lg-table-cell"><span class="cell-ellipsis" title="{{ book.category }}">{{book.category}}</span></td>
+                                                <td class="col-text">{{ book.title }}</td>
+                                                <td class="col-text">{{ book.author }}</td>
+                                                <td class="col-text d-none d-lg-table-cell">{{ book.category }}</td>
                                                 <td class="col-short">{{book.get_status_display}}</td>
                                                 <td class="col-short">{{book.quantity}}</td>
                                                 <td class="d-none d-lg-table-cell">{{book.floor_number}}{{book.bookshelf_number}}</td>
-                                                <td class="d-none d-lg-table-cell"><span class="cell-ellipsis" title="{{ book.updated_by }}">{{book.updated_by}}</span></td>
+                                                <td class="col-text d-none d-lg-table-cell">{{ book.updated_by }}</td>
                                                 <td class="col-actions">                                
                                                     <a href="{% url 'book_detail' book.id%}" class="badge badge-warning"><i class="feather icon-eye"></i></a>
                                                     <a href="{% url 'book_update' book.id%}" class="badge badge-info"><i class="feather icon-edit"></i>&nbsp;Update</a>&nbsp;

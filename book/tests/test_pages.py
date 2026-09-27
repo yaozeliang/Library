@@ -2,7 +2,10 @@
 
 import re
 from datetime import timedelta
+from pathlib import Path
+from unittest.mock import patch
 
+from django.contrib.staticfiles import finders
 from django.urls import reverse
 from django.utils import timezone
 
@@ -397,6 +400,24 @@ class LibraryPageTests(PageFixture):
             self.assertIn("orderby=created_at", href)
             self.assertIn("search=Book", href)
             self.assertIn("page=", href)
+        self.assertContains(page, ">Previous<")
+        self.assertContains(page, ">Next<")
+        nxt = re.search(r'href="(\?[^"]*)">Next<', page.content.decode())
+        self.assertIsNotNone(nxt)
+        self.assertIn("page=2", nxt.group(1))
+        self.assertIn("orderby=created_at", nxt.group(1))
+        self.assertIn("search=Book", nxt.group(1))
+
+        page2 = self.client.get(
+            reverse("user_activity_list"),
+            {"orderby": "created_at", "search": "Book", "page": 2},
+        )
+        prev = re.search(r'href="(\?[^"]*)">Previous<', page2.content.decode())
+        self.assertIsNotNone(prev)
+        self.assertIn("page=1", prev.group(1))
+        self.assertIn("orderby=created_at", prev.group(1))
+        self.assertIn("search=Book", prev.group(1))
+        self.assertNotIn("&amp;", prev.group(1))
 
     def test_overdue_borrow_row_uses_the_model_status(self):
         self.login(self.staff)
@@ -410,6 +431,121 @@ class LibraryPageTests(PageFixture):
         self.assertEqual(page.status_code, 200)
         self.assertContains(page, "Overdue")
         self.assertContains(page, "table-danger")
+
+    def test_text_columns_keep_a_minimum_width_and_scroll_in_the_card(self):
+        self.login(self.staff)
+        css_path = finders.find("assets/css/responsive.css")
+        css = Path(css_path).read_text()
+        self.assertIn("min-width: 12rem", css)
+        self.assertIn("min-width: 16rem", css)
+        self.assertIn("overflow-x: auto", css)
+        self.assertNotIn("table-layout: fixed", css)
+        table_rules = css.split(".table-fit {", 1)[1].split(".recent-events", 1)[0]
+        self.assertNotIn("text-overflow: ellipsis", table_rules)
+        self.assertNotIn("table-layout: fixed", table_rules)
+
+        records = self.client.get(reverse("record_list"))
+        self.assertContains(records, "table-responsive")
+        self.assertContains(records, 'class="col-text">Name')
+        self.assertContains(records, 'class="col-text">Book')
+        self.assertContains(records, 'class="col-short">Num')
+
+        books = self.client.get(reverse("book_list"))
+        self.assertContains(books, "table-responsive")
+        self.assertContains(books, 'class="col-text">Title')
+
+        members = self.client.get(reverse("member_list"))
+        self.assertContains(members, 'class="col-text">Name')
+        self.assertContains(members, 'class="col-email d-none d-lg-table-cell">Email')
+
+        home = self.client.get(reverse("home"))
+        self.assertContains(home, "table-responsive")
+        self.assertContains(home, 'class="col-text">Member')
+        self.assertContains(home, 'class="col-short">Start / End')
+
+    def test_dashboard_tabs_have_unique_ids_and_a_selected_tab(self):
+        self.login(self.staff)
+        home = self.client.get(reverse("home"))
+        html = home.content.decode()
+        self.assertNotIn('id="contact-tab"', html)
+        self.assertEqual(html.count('aria-selected="true"'), 1)
+        for tab_id, panel_id in (
+            ("members-tab", "new_member"),
+            ("stock-tab", "stock"),
+            ("logs-tab", "logs"),
+            ("return-tab", "return"),
+        ):
+            self.assertEqual(html.count(f'id="{tab_id}"'), 1, tab_id)
+            self.assertIn(f'aria-controls="{panel_id}"', html)
+            self.assertIn(f'aria-labelledby="{tab_id}"', html)
+        self.assertIn('id="return-tab"', html)
+        self.assertIn('aria-selected="true"', html[html.index('id="return-tab"') - 80:html.index('id="return-tab"') + 160])
+
+    def test_delay_column_pluralizes_the_model_status(self):
+        """Pluralization and the red row follow return_status, not a date rule."""
+        self.login(self.staff)
+        one = BorrowRecord.objects.create(
+            borrower="One Late",
+            book=self.book.title,
+            borrower_card=self.member.card_number,
+            end_day=timezone.now() + timedelta(days=4),
+        )
+        two = BorrowRecord.objects.create(
+            borrower="Two Late",
+            book=self.book.title,
+            borrower_card=self.member.card_number,
+            end_day=timezone.now() + timedelta(days=4),
+        )
+        planned = {
+            one.pk: ("Overdue", 1),
+            two.pk: ("Overdue", 2),
+        }
+
+        def status(record):
+            return planned.get(record.pk, ("On Time", 0))[0]
+
+        def delay_days(record):
+            return planned.get(record.pk, ("On Time", 0))[1]
+
+        with (
+            patch.object(BorrowRecord, "return_status", property(status)),
+            patch.object(
+                BorrowRecord, "get_delay_number_days", property(delay_days)
+            ),
+        ):
+            page = self.client.get(reverse("record_list"))
+        html = page.content.decode()
+
+        def row(name):
+            match = re.search(
+                rf'<td class="col-text">{name}</td>.*?</tr>', html, re.S
+            )
+            self.assertIsNotNone(match, name)
+            return match.group(0)
+
+        late_one = row("One Late")
+        late_two = row("Two Late")
+        on_time = row(self.member.name)
+        self.assertIn("table-danger", late_one)
+        self.assertIn("Overdue 1 day", late_one)
+        self.assertNotIn("1 days", late_one)
+        self.assertIn("table-danger", late_two)
+        self.assertIn("Overdue 2 days", late_two)
+        self.assertNotIn("table-danger", on_time)
+        self.assertIn("table-success", on_time)
+        self.assertIn("On Time", on_time)
+        self.assertNotIn("Overdue", on_time)
+
+    def test_record_create_labels_the_visible_date_inputs(self):
+        self.login(self.staff)
+        page = self.client.get(reverse("record_create"))
+        html = page.content.decode()
+        self.assertIn('for="id_start_day"', html)
+        self.assertIn('for="id_end_day"', html)
+        self.assertIn('["id_start_day", "Start day"]', html)
+        self.assertIn('["id_end_day", "End day"]', html)
+        self.assertIn('pair[0] + "_alt"', html)
+        self.assertIn('setAttribute("aria-label", pair[1])', html)
 
 
 class NotificationPageTests(PageFixture):

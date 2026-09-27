@@ -86,6 +86,33 @@ $( "#id_book" ).autocomplete({
 //  )
 
 } );
+
+document.addEventListener("DOMContentLoaded", function () {
+  [
+    ["id_start_day", "Start day"],
+    ["id_end_day", "End day"],
+  ].forEach(function (pair) {
+    var hidden = document.getElementById(pair[0]);
+    if (!hidden) {
+      return;
+    }
+    var wrap = hidden.closest(".django-flatpickr");
+    var visible = wrap
+      ? wrap.querySelector("input:not([type=hidden])")
+      : hidden;
+    if (!visible) {
+      return;
+    }
+    if (visible !== hidden) {
+      visible.id = pair[0] + "_alt";
+      var label = document.querySelector('label[for="' + pair[0] + '"]');
+      if (label) {
+        label.setAttribute("for", visible.id);
+      }
+    }
+    visible.setAttribute("aria-label", pair[1]);
+  });
+});
 </script>
 
 {% endblock javascripts %}

@@ -66,12 +66,12 @@
                                     <table class="table table-fit">
                                         <thead>
                                             <tr>
-                                                <th>Name</th>
+                                                <th class="col-text">Name</th>
                                                 <th class="col-short">Sex</th>
-                                                <th class="d-none d-lg-table-cell">Phone</th>
-                                                <th>Card</th>
-                                                <th class="d-none d-lg-table-cell">City</th>
-                                                <th class="d-none d-lg-table-cell">Email</th>
+                                                <th class="col-text d-none d-lg-table-cell">Phone</th>
+                                                <th class="col-text">Card</th>
+                                                <th class="col-text d-none d-lg-table-cell">City</th>
+                                                <th class="col-email d-none d-lg-table-cell">Email</th>
                                                 <th class="d-none d-lg-table-cell">Created At</th>
                                                 <th class="col-short">Expired At</th>
                                                 <th class="col-actions">#</th>
@@ -81,13 +81,13 @@
                                             
                                             {% for member in members %}
                                             <tr>
-                                                <td><a href="{% url 'member_detail' member.pk %}" class="cell-ellipsis" title="{{ member.name }}"><i class="feather icon-user"></i>&nbsp;{{member.name}}</a></td>
+                                                <td class="col-text"><a href="{% url 'member_detail' member.pk %}"><i class="feather icon-user"></i>&nbsp;{{ member.name }}</a></td>
                                                 <td class="col-short">{{member.gender|upper}}</td>
-                                                <td class="d-none d-lg-table-cell"><span class="cell-ellipsis" title="{{ member.phone_number }}">{{member.phone_number}}</span></td>
-                                                <td><span class="cell-ellipsis" title="{{ member.card_number }}">{{member.card_number}}</span></td>
-                                                <td class="d-none d-lg-table-cell"><span class="cell-ellipsis" title="{{ member.city }}">{{member.city}}</span></td>
-                                                <td class="d-none d-lg-table-cell"><span class="cell-ellipsis" title="{{ member.email }}">{{member.email}}</span></td>
-                                                <td class="d-none d-lg-table-cell"><span class="cell-ellipsis" title="{{ member.created_at|date:'Y-m-d' }} by {{ member.created_by }}">{{ member.created_at|date:"Y-m-d" }} by {{member.created_by}}</span></td>
+                                                <td class="col-text d-none d-lg-table-cell">{{ member.phone_number }}</td>
+                                                <td class="col-text">{{ member.card_number }}</td>
+                                                <td class="col-text d-none d-lg-table-cell">{{ member.city }}</td>
+                                                <td class="col-email d-none d-lg-table-cell">{{ member.email }}</td>
+                                                <td class="col-text d-none d-lg-table-cell">{{ member.created_at|date:"Y-m-d" }} by {{ member.created_by }}</td>
                                                 <td class="col-short">{{ member.expired_at|date:"Y-m-d" }} </td>
                                                 <td class="col-actions">
                                                     <a href="{% url 'member_update' member.pk %}" class="badge badge-info"><i class="feather icon-edit"></i>&nbsp;Edit</a>&nbsp;

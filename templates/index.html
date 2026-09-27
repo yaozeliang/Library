@@ -93,8 +93,8 @@
                                         <table class="table table-hover table-fit">
                                             <thead class="">
                                                 <tr>
-                                                    <th>Member</th>
-                                                    <th>Book</th>
+                                                    <th class="col-text">Member</th>
+                                                    <th class="col-text">Book</th>
                                                     <th class="col-short">Start / End</th>
                                                     <th class="col-short">Closed at</th>
                                                     <!-- <th>On Time ?</th> -->
@@ -103,11 +103,11 @@
                                             <tbody>
                                                 {% for r in new_closed_records %}
                                                 <tr class="unread">
-                                                 <td>
-                                                        <p class="mb-1"><a class="cell-ellipsis" href="{% url 'record_detail' r.pk %}" title="{{ r.borrower }}">{{ r.borrower}}</a></p>
-                                                        <p class="m-0 d-none d-lg-block cell-ellipsis" title="{{ r.borrower_card }} {{ r.borrower_phone_number }}"><i class="fas fa-credit-card" style="color: Tomato;"></i>&nbsp;{{r.borrower_card}}&nbsp;&nbsp;<i class="fas fa-mobile" style="color: cornflowerblue;"></i>&nbsp;{{r.borrower_phone_number}}</p>
+                                                 <td class="col-text">
+                                                        <p class="mb-1"><a href="{% url 'record_detail' r.pk %}">{{ r.borrower }}</a></p>
+                                                        <p class="m-0 d-none d-lg-block"><i class="fas fa-credit-card" style="color: Tomato;"></i>&nbsp;{{ r.borrower_card }}&nbsp;&nbsp;<i class="fas fa-mobile" style="color: cornflowerblue;"></i>&nbsp;{{ r.borrower_phone_number }}</p>
                                                  </td>
-                                                    <td><span class="cell-ellipsis" title="{{ r.book }}">{{ r.book }}</span></td>
+                                                    <td class="col-text">{{ r.book }}</td>
                                                     <td class="col-short" title="{{ r.start_day|date:'Y/m/d' }} - {{ r.end_day|date:'Y/m/d' }}">{{r.start_day|date:"Y/m/d" }} - {{r.end_day|date:"Y/m/d" }} </td>
                                                     <td class="col-short">{% if r.open_or_close == 1 and r.closed_at %}{{ r.closed_at|timesince }}{% endif %}</td>
                                                     <!-- <td>{{r.return_status}}</td> -->
@@ -199,21 +199,21 @@
                             <div class="card-block ">
                                 <ul class="nav nav-tabs" id="myTab" role="tablist">
                                     <li class="nav-item">
-                                        <a class="nav-link " id="home-tab" data-toggle="tab" href="#new_member" role="tab" aria-controls="home" aria-selected="false">New Member</a>
+                                        <a class="nav-link " id="members-tab" data-toggle="tab" href="#new_member" role="tab" aria-controls="new_member" aria-selected="false">New Member</a>
                                     </li>
                                     <li class="nav-item">
-                                        <a class="nav-link " id="profile-tab" data-toggle="tab" href="#stock" role="tab" aria-controls="profile" aria-selected="false">Short inventory</a>
+                                        <a class="nav-link " id="stock-tab" data-toggle="tab" href="#stock" role="tab" aria-controls="stock" aria-selected="false">Short inventory</a>
                                     </li>
                                     <li class="nav-item">
-                                        <a class="nav-link" id="contact-tab" data-toggle="tab" href="#logs" role="tab" aria-controls="contact" aria-selected="false">Recent Logs </a>
+                                        <a class="nav-link" id="logs-tab" data-toggle="tab" href="#logs" role="tab" aria-controls="logs" aria-selected="false">Recent Logs </a>
                                     </li>
                                     <li class="nav-item">
-                                        <a class="nav-link active show" id="contact-tab" data-toggle="tab" href="#return" role="tab" aria-controls="return" aria-selected="false">Return books this week </a>
+                                        <a class="nav-link active show" id="return-tab" data-toggle="tab" href="#return" role="tab" aria-controls="return" aria-selected="true">Return books this week </a>
                                     </li>
                                 </ul>
                                 <div class="tab-content" id="myTabContent">
                                     <!-- New members -->
-                                    <div class="tab-pane fade " id="new_member" role="tabpanel" aria-labelledby="home-tab">
+                                    <div class="tab-pane fade " id="new_member" role="tabpanel" aria-labelledby="members-tab">
                                         <div class="table-responsive">
                                         <table class="table table-hover">
                                             <thead>
@@ -253,7 +253,7 @@
     
                                     </div>
                                     <!-- Book inventory -->
-                                    <div class="tab-pane fade " id="stock" role="tabpanel" aria-labelledby="profile-tab">
+                                    <div class="tab-pane fade " id="stock" role="tabpanel" aria-labelledby="stock-tab">
                                         <div class="table-responsive">
                                         <table class="table table-hover">
                                             <thead>
@@ -287,7 +287,7 @@
     
                                     </div>
                                     <!-- Recent Logs -->
-                                    <div class="tab-pane fade" id="logs" role="tabpanel" aria-labelledby="contact-tab">
+                                    <div class="tab-pane fade" id="logs" role="tabpanel" aria-labelledby="logs-tab">
                                         <div class="table-responsive">
                                         <table class="table table-hover">
                                             <thead>
@@ -336,15 +336,15 @@
                                     </div>
 
                                     <!-- Retrun books this week -->
-                                    <div class="tab-pane fade active show" id="return" role="tabpanel" aria-labelledby="contact-tab">
+                                    <div class="tab-pane fade active show" id="return" role="tabpanel" aria-labelledby="return-tab">
                                     <div class="table-responsive">
                                     <table class="table table-hover table-fit">
                                         <thead>
                                             <tr>
-                                                <th>Borrower</th>
-                                                <th class="d-none d-lg-table-cell">Card</th>
-                                                <th class="d-none d-lg-table-cell">Phone</th>
-                                                <th>Book</th>
+                                                <th class="col-text">Borrower</th>
+                                                <th class="col-text d-none d-lg-table-cell">Card</th>
+                                                <th class="col-text d-none d-lg-table-cell">Phone</th>
+                                                <th class="col-text">Book</th>
                                                 <th class="col-short">Start date</th>
                                                 <th class="col-short">Return date</th>
                                                 <th class="col-short">Delayed</th>
@@ -354,14 +354,14 @@
                                         <tbody>
                                             {% for r in books_return_thisweek %}
                                                 <tr>   
-                                                    <td><a class="cell-ellipsis" href="{% url 'record_detail' r.pk %}" title="{{ r.borrower }}">{{ r.borrower}}</a></td>
-                                                    <td class="d-none d-lg-table-cell"><span class="cell-ellipsis" title="{{ r.borrower_card }}">{{r.borrower_card}}</span></td>
-                                                    <td class="d-none d-lg-table-cell"><span class="cell-ellipsis" title="{{ r.borrower_phone_number }}">{{r.borrower_phone_number}}</span></td>
-                                                    <td><span class="cell-ellipsis" title="{{ r.book }}">{{ r.book }}</span></td>
+                                                    <td class="col-text"><a href="{% url 'record_detail' r.pk %}">{{ r.borrower }}</a></td>
+                                                    <td class="col-text d-none d-lg-table-cell">{{ r.borrower_card }}</td>
+                                                    <td class="col-text d-none d-lg-table-cell">{{ r.borrower_phone_number }}</td>
+                                                    <td class="col-text">{{ r.book }}</td>
                                                     <td class="col-short">{{r.start_day|date:"Y-m-d" }} </td>
                                                     <td class="col-short">{{r.end_day|date:"Y-m-d" }} </td>
                                                     {% if r.return_status == "Overdue" %}
-                                                    <td class="col-short table-danger" title="{{ r.return_status }} {{ r.get_delay_number_days }} days">{{r.return_status}} {{r.get_delay_number_days}} days</td>
+                                                    <td class="col-short table-danger">{{ r.return_status }} {{ r.get_delay_number_days }} day{{ r.get_delay_number_days|pluralize }}</td>
 
                                                     {% else %}
                                                     <td class="col-short table-success">{{r.return_status}}</td>

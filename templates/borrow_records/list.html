@@ -67,10 +67,10 @@
                                     <table class="table table-fit">
                                         <thead>
                                             <tr>
-                                                <th>Name</th>
-                                                <th class="d-none d-lg-table-cell">Card</th>
-                                                <th class="d-none d-lg-table-cell">Phone</th>
-                                                <th>Book</th>
+                                                <th class="col-text">Name</th>
+                                                <th class="col-text d-none d-lg-table-cell">Card</th>
+                                                <th class="col-text d-none d-lg-table-cell">Phone</th>
+                                                <th class="col-text">Book</th>
                                                 <th class="col-short">Num</th>
                                                 <th class="col-short">Borrow date</th>
                                                 <th class="col-short">Return date</th>
@@ -83,16 +83,16 @@
                                             
                                             {% for record in records %}
                                             <tr>
-                                                <td><span class="cell-ellipsis" title="{{ record.borrower }}">{{ record.borrower }}</span></td>
-                                                <td class="d-none d-lg-table-cell"><span class="cell-ellipsis" title="{{ record.borrower_card }}">{{ record.borrower_card }}</span></td>
-                                                <td class="d-none d-lg-table-cell"><span class="cell-ellipsis" title="{{ record.borrower_phone_number }}">{{ record.borrower_phone_number }}</span></td>
-                                                <td><span class="cell-ellipsis" title="{{ record.book }}">{{ record.book }}</span></td>
+                                                <td class="col-text">{{ record.borrower }}</td>
+                                                <td class="col-text d-none d-lg-table-cell">{{ record.borrower_card }}</td>
+                                                <td class="col-text d-none d-lg-table-cell">{{ record.borrower_phone_number }}</td>
+                                                <td class="col-text">{{ record.book }}</td>
                                                 <td class="col-short">{{record.quantity}}</td>
                                                 <td class="col-short">{{record.start_day|date:"Y-m-d"}}</td>
                                                 <td class="col-short">{{record.end_day|date:"Y-m-d"}}</td>
                                                 <td class="col-short">{{record.get_open_or_close_display}}</td>
                                                 {% if record.return_status == "Overdue" %}
-                                                <td class="col-short table-danger" title="{{ record.return_status }} {{ record.get_delay_number_days }} days">{{record.return_status}} {{record.get_delay_number_days}} days</td>
+                                                <td class="col-short table-danger">{{ record.return_status }} {{ record.get_delay_number_days }} day{{ record.get_delay_number_days|pluralize }}</td>
                                                 {% else %}
                                                 <td class="col-short table-success">{{record.return_status}}</td>
                                                 {% endif %}
