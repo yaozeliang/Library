@@ -155,3 +155,15 @@ def get_item(dictionary: Dict[str, Any], key: str) -> Any:
         Value from dictionary or None.
     """
     return dictionary.get(key)
+
+
+@register.filter(name="with_invalid")
+def with_invalid(field):
+    """Render a field, adding is-invalid when Django attached errors."""
+    if not getattr(field, "errors", None):
+        return field
+    css = field.field.widget.attrs.get("class", "form-control")
+    parts = css.split()
+    if "is-invalid" not in parts:
+        parts.append("is-invalid")
+    return field.as_widget(attrs={"class": " ".join(parts)})

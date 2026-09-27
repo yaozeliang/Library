@@ -1,0 +1,11 @@
+{% load book_extras %}
+<div class="input-group {{ group_class|default:'mb-3' }}">
+    <label class="sr-only" for="{{ field.id_for_label }}">{{ label }}</label>
+    {{ field|with_invalid }}
+</div>
+{% if field.errors %}
+<span class="text-error"><span class="invalid-feedback d-block" id="{{ field.auto_id }}_error">{{ field.errors }}</span></span>
+{% endif %}
+{% if field.help_text %}
+<div class="form-text text-muted small auth-help" id="{{ field.auto_id }}_helptext">{{ field.help_text }}</div>
+{% endif %}

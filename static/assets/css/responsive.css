@@ -103,13 +103,34 @@ video {
 }
 
 .auth-wrapper .text-error,
-.auth-wrapper .text-error ul {
+.auth-wrapper .text-error ul,
+.auth-wrapper .errorlist,
+.auth-wrapper .errorlist li {
   display: block;
+  list-style: none;
   max-width: 100%;
-  margin: 0 0 0.75rem;
-  padding: 0;
+  margin: 4px 0 0;
+  padding-left: 0;
   text-align: left;
   overflow-wrap: anywhere;
+  color: #dc3545;
+}
+
+.auth-wrapper .auth-help {
+  display: block;
+  margin: 4px 0 0.75rem;
+  text-align: left;
+  color: #6c757d;
+}
+
+.auth-wrapper .auth-help ul {
+  margin: 0;
+  padding-left: 1.1rem;
+  text-align: left;
+}
+
+.auth-wrapper .form-control.is-invalid {
+  border-color: #dc3545;
 }
 
 @media only screen and (max-width: 768px) {
