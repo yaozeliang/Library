@@ -38,15 +38,27 @@
 
                     <form role="form" method="post" action="">
 
-                        {% csrf_token %}                   
+                        {% csrf_token %}
+
+                        {% if form.non_field_errors %}
+                        <span class="text-error">{{ form.non_field_errors }}</span>
+                        {% endif %}
 
                         <div class="input-group mb-3">
+                            <label class="sr-only" for="{{ form.username.id_for_label }}">Username</label>
                             {{ form.username }}
                         </div>
-                        
+                        {% if form.username.errors %}
+                        <span class="text-error">{{ form.username.errors }}</span>
+                        {% endif %}
+
                         <div class="input-group mb-4">
+                            <label class="sr-only" for="{{ form.password.id_for_label }}">Password</label>
                             {{ form.password }}
                         </div>
+                        {% if form.password.errors %}
+                        <span class="text-error">{{ form.password.errors }}</span>
+                        {% endif %}
                         
                         <div class="form-group text-left">
                             <div class="checkbox checkbox-fill d-inline">
