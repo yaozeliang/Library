@@ -119,6 +119,15 @@
 
                                             {% endif %}
 
+                                            {% if activities.has_previous %}
+                                            <li class="page-item"><a class="page-link"
+                                                    href="?{% param_replace page=activities.previous_page_number %}">Previous</a>
+                                            </li>
+                                            {% else %}
+                                            <li class="page-item disabled"><a href=""><span
+                                                        class="page-link">Previous</span></a></li>
+                                            {% endif %}
+
                                             {% if activities.number|add:'-4' > 1 %}
                                             <li class="page-item"><a class="page-link"
                                                     href="?{% param_replace page=activities.number|add:'-5'  %}">&hellip;</a>
@@ -140,8 +149,14 @@
                                                 </li>
                                                 {% endif %}
 
-
-
+                                                {% if activities.has_next %}
+                                                <li class="page-item"><a class="page-link"
+                                                        href="?{% param_replace page=activities.next_page_number %}">Next</a>
+                                                </li>
+                                                {% else %}
+                                                <li class="page-item disabled"><a href=""><span
+                                                            class="page-link">Next</span></a></li>
+                                                {% endif %}
 
                                                 {% if activities.has_next %}
 

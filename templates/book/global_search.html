@@ -221,7 +221,7 @@
                                                 <td>{{record.end_day|date:"Y-m-d"}}</td>
                                                 <td>{{record.get_open_or_close_display}}</td>
                                                 {% if record.return_status == "Overdue" %}
-                                                <td class='table-danger'>{{record.return_status}} {{record.get_delay_number_days}} days</td>
+                                                <td class='table-danger'>{{ record.return_status }} {{ record.get_delay_number_days }} day{{ record.get_delay_number_days|pluralize }}</td>
                                                 {% else %}
                                                 <td class='table-success'>{{record.return_status}}</td>
                                                 {% endif %}

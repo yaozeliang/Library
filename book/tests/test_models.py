@@ -150,6 +150,28 @@ class BorrowRecordComputedTests(TestCase):
         self.assertGreaterEqual(overdue.delay_days, 3)
         self.assertGreaterEqual(overdue.get_delay_number_days, 3)
 
+    def test_due_today_is_on_time_and_yesterday_is_one_day(self):
+        start_of_today = timezone.localtime().replace(
+            hour=0, minute=0, second=0, microsecond=0
+        )
+        due_today = BorrowRecord.objects.create(
+            borrower="Today",
+            book="Guide",
+            end_day=start_of_today,
+        )
+        self.assertEqual(due_today.return_status, "On Time")
+        self.assertEqual(due_today.get_delay_number_days, 0)
+        self.assertEqual(due_today.delay_days, 0)
+
+        yesterday = BorrowRecord.objects.create(
+            borrower="Yesterday",
+            book="Guide",
+            end_day=start_of_today - timedelta(days=1),
+        )
+        self.assertEqual(yesterday.return_status, "Overdue")
+        self.assertEqual(yesterday.get_delay_number_days, 1)
+        self.assertEqual(yesterday.delay_days, 1)
+
     def test_closed_record_keeps_stored_delay_and_says_returned(self):
         closed = BorrowRecord.objects.create(
             borrower="Sam",

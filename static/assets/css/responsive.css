@@ -375,39 +375,56 @@ video {
 }
 
 .table-responsive {
+  display: block;
+  width: 100%;
+  max-width: 100%;
+  overflow-x: auto;
   -webkit-overflow-scrolling: touch;
 }
 
-/* Keep list tables inside the card. Long cells ellipsize; short columns stay nowrap. */
+/* Flex columns default to min-width:auto, so a wide table stretches the
+   page. Let the column shrink and keep the scroll inside .table-responsive. */
+.pcoded-content [class*="col-"],
+.pcoded-content .card,
+.pcoded-content .card-block,
+.pcoded-content .card-body {
+  min-width: 0;
+}
+
+/* Size columns from their content. Text columns keep a readable minimum
+   and wrap; short columns stay one line. The .table-responsive parent
+   scrolls instead of clipping a cell. */
 .table-fit {
-  width: 100%;
-  table-layout: fixed;
+  width: max-content;
+  min-width: 100%;
+  table-layout: auto;
   margin-bottom: 0;
 }
 
 .table-fit th,
 .table-fit td {
-  overflow: hidden;
-  text-overflow: ellipsis;
+  overflow: visible;
+  text-overflow: clip;
   vertical-align: middle;
 }
 
-.table-fit .col-short {
-  white-space: nowrap;
-  width: 12%;
-}
-
-.table-fit .col-actions {
+.table-fit .col-text {
+  min-width: 12rem;
   white-space: normal;
-  width: 18%;
-  overflow: hidden;
+  overflow-wrap: anywhere;
 }
 
-@media (max-width: 991.98px) {
-  .table-fit .col-short,
-  .table-fit .col-actions {
-    width: auto;
-  }
+.table-fit .col-email {
+  min-width: 16rem;
+  white-space: normal;
+  overflow-wrap: anywhere;
+}
+
+.table-fit .col-short,
+.table-fit .col-actions {
+  white-space: nowrap;
+  width: 1%;
+  min-width: max-content;
 }
 
 .recent-events .tab-content {

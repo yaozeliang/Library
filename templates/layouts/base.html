@@ -19,12 +19,10 @@
     <link rel="stylesheet" href="{% static 'assets/css/responsive.css' %}">
     <style>
         .cell-ellipsis {
-            display: block;
-            max-width: 100%;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            white-space: nowrap;
-            vertical-align: bottom;
+            white-space: normal;
+            overflow: visible;
+            text-overflow: clip;
+            max-width: none;
         }
         .notification-unread {
             font-weight: 600;
