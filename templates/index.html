@@ -215,31 +215,31 @@
                                     <!-- New members -->
                                     <div class="tab-pane fade " id="new_member" role="tabpanel" aria-labelledby="members-tab">
                                         <div class="table-responsive">
-                                        <table class="table table-hover">
+                                        <table class="table table-hover table-fit">
                                             <thead>
                                                 <tr>
-                                                    <th>Name</th>
-                                                    <th>Sex</th>
-                                                    <th>Age</th>
-                                                    <th>Card N </th>
-                                                    <th>Joined at</th>
-                                                    <th>Created by</th>
-                                                    <th class="text-right"></th>
+                                                    <th class="col-text">Name</th>
+                                                    <th class="col-short">Sex</th>
+                                                    <th class="col-short">Age</th>
+                                                    <th class="col-short">Card N </th>
+                                                    <th class="col-short">Joined at</th>
+                                                    <th class="col-text">Created by</th>
+                                                    <th class="col-short text-right"></th>
                                                 </tr>
                                             </thead>
                                             <tbody>
                                                 {% for member in new_members %}
                                                 <tr>
-                                                    <td><a href="{% url 'member_detail' member.pk %}">{{member.name}}</a></td>
+                                                    <td class="col-text"><a href="{% url 'member_detail' member.pk %}">{{member.name}}</a></td>
                                                     {% if member.gender == 'm' %}
-                                                    <td><i class="fas fa-mars "></i></td>
+                                                    <td class="col-short"><i class="fas fa-mars "></i></td>
                                                     {% else %}
-                                                    <td><i class="fas fa-venus"></i></td>
+                                                    <td class="col-short"><i class="fas fa-venus"></i></td>
                                                     {% endif %}
-                                                    <td>{{member.age}}</td>     
-                                                    <td>{{member.card_number}}</td>  
-                                                    <td>{{member.created_at| timesince}}</td>
-                                                    <td>{{member.created_by}}</td>                     
+                                                    <td class="col-short">{{member.age}}</td>     
+                                                    <td class="col-short">{{member.card_number}}</td>  
+                                                    <td class="col-short">{{member.created_at| timesince}}</td>
+                                                    <td class="col-text">{{member.created_by}}</td>                     
          
                                                 </tr>
     
@@ -255,28 +255,28 @@
                                     <!-- Book inventory -->
                                     <div class="tab-pane fade " id="stock" role="tabpanel" aria-labelledby="stock-tab">
                                         <div class="table-responsive">
-                                        <table class="table table-hover">
+                                        <table class="table table-hover table-fit">
                                             <thead>
                                                 <tr>
-                                                    <th>Title</th>
-                                                    <th>Author</th>
-                                                    <th>Quantity</th>
-                                                    <th>Location</th>
-                                                    <th class="text-right"></th>
+                                                    <th class="col-text">Title</th>
+                                                    <th class="col-text">Author</th>
+                                                    <th class="col-short">Quantity</th>
+                                                    <th class="col-short">Location</th>
+                                                    <th class="col-short text-right"></th>
                                                 </tr>
                                             </thead>
                                             <tbody>
     
                                                 {% for book in short_inventory %}
                                                 <tr>
-                                                    <td><a href="{% url 'book_detail' book.pk %}">{{book.title}}</a></td>
-                                                    <td>{{book.author}}</td>
-                                                    <td>{{book.quantity}}</td>     
-                                                    <td>{{book.floor_number}}{{book.bookshelf_number}}</td>                       
+                                                    <td class="col-text"><a href="{% url 'book_detail' book.pk %}">{{book.title}}</a></td>
+                                                    <td class="col-text">{{book.author}}</td>
+                                                    <td class="col-short">{{book.quantity}}</td>     
+                                                    <td class="col-short">{{book.floor_number}}{{book.bookshelf_number}}</td>                       
                                                     {% if book.quantity < 5 %}
-                                                    <td class="text-center"><i class="fas fa-exclamation-circle text-c-red f-20"></i></td>
+                                                    <td class="col-short text-center"><i class="fas fa-exclamation-circle text-c-red f-20"></i></td>
                                                     {% elif  book.quantity > 5 and book.quantity <= 10 %}
-                                                    <td class="text-center"><i class="fas fa-exclamation-circle text-c-purple f-20"></i></td>
+                                                    <td class="col-short text-center"><i class="fas fa-exclamation-circle text-c-purple f-20"></i></td>
                                                     {% endif %}
                                                 </tr>
     
@@ -289,40 +289,40 @@
                                     <!-- Recent Logs -->
                                     <div class="tab-pane fade" id="logs" role="tabpanel" aria-labelledby="logs-tab">
                                         <div class="table-responsive">
-                                        <table class="table table-hover">
+                                        <table class="table table-hover table-fit">
                                             <thead>
                                                 <tr>
-                                                    <th>User</th>
-                                                    <th>Activity</th>
-                                                    <th>At</th>
-                                                    <th>Type</th>
-                                                    <th class="text-right"></th>
+                                                    <th class="col-user">User</th>
+                                                    <th class="col-text">Activity</th>
+                                                    <th class="col-short">At</th>
+                                                    <th class="col-short">Type</th>
+                                                    <th class="col-short text-right"></th>
                                                 </tr>
                                             </thead>
                                             <tbody>
                                                 {% for log in recent_user_activities %}
                                                     <tr>   
-                                                        <td>{% with avatar=user_avatar|get_item:log.created_by %}<img class="rounded-circle m-r-10" style="width:30px;height:30px;object-fit:cover;" alt="" src="{% if avatar %}{{ avatar }}{% else %}{% static 'assets/images/user/avatar-2.jpg' %}{% endif %}" onerror="this.onerror=null;this.src='{% static 'assets/images/user/avatar-2.jpg' %}'">{% endwith %}{{log.created_by}}</td>
-                                                        <td> {{log.detail}} </td>
+                                                        <td class="col-user">{% with avatar=user_avatar|get_item:log.created_by %}<span class="user-with-avatar"><img class="rounded-circle" alt="" src="{% if avatar %}{{ avatar }}{% else %}{% static 'assets/images/user/avatar-2.jpg' %}{% endif %}" onerror="this.onerror=null;this.src='{% static 'assets/images/user/avatar-2.jpg' %}'"><span>{{ log.created_by }}</span></span>{% endwith %}</td>
+                                                        <td class="col-text"> {{log.detail}} </td>
                                                         <!-- <td>{{log.created_at |date:"Y-m-d"}}</td> -->
-                                                        <td>{{ log.created_at | timesince }}</td>
-                                                        <td>{{log.get_operation_type_display}} </td>
+                                                        <td class="col-short">{{ log.created_at | timesince }}</td>
+                                                        <td class="col-short">{{log.get_operation_type_display}} </td>
     
                                                         {% if log.operation_type == "success" %}
-                                                            <td class="text-right"><i class="fas fa-circle text-c-green f-10"></i></td>
+                                                            <td class="col-short text-right"><i class="fas fa-circle text-c-green f-10"></i></td>
                                                         {% endif %}
     
                                                         {% if log.operation_type == "warning" %}
-                                                            <td class="text-right"><i class="fas fa-circle text-c-yellow f-10"></i></td>
+                                                            <td class="col-short text-right"><i class="fas fa-circle text-c-yellow f-10"></i></td>
                                                         {% endif %}
     
                                                         {% if log.operation_type == "danger" %}
-                                                            <td class="text-right"><i class="fas fa-circle text-c-red f-10"></i></td>
+                                                            <td class="col-short text-right"><i class="fas fa-circle text-c-red f-10"></i></td>
                                                         {% endif %}
 
 
                                                         {% if log.operation_type == "info" %}
-                                                        <td class="text-right"><i class="fas fa-circle text-c-blue f-10"></i></td>
+                                                        <td class="col-short text-right"><i class="fas fa-circle text-c-blue f-10"></i></td>
                                                     {% endif %}
     
                                                     </tr>
