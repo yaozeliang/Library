@@ -936,6 +936,8 @@ class BorrowRecordDeleteView(LoginRequiredMixin, View):
 
 
 class BorrowRecordClose(LoginRequiredMixin, View):
+    login_url = "login"
+
     def post(self, request, *args, **kwargs):
         close_record = get_object_or_404(BorrowRecord, pk=self.kwargs["pk"])
         if close_record.open_or_close == 0:
@@ -1120,6 +1122,8 @@ class NoticeListView(SuperUserRequiredMixin, ListView):
 
 class NoticeUpdateView(SuperUserRequiredMixin, View):
     """Update Status of Notification"""
+
+    login_url = "login"
 
     def post(self, request):
         notice_id = request.POST.get("notice_id")

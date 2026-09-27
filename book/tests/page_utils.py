@@ -58,7 +58,10 @@ class PageFixture(TestCase):
     def assert_redirects_to_login(self, url):
         response = self.client.get(url)
         self.assertEqual(response.status_code, 302, url)
-        self.assertIn("/auth/login/", response.url, url)
+        self.assertTrue(
+            response.url.startswith("/auth/login/?next="),
+            f"{url} redirected to {response.url}",
+        )
         return response
 
     def assert_local_static_exists(self, response):

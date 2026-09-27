@@ -25,6 +25,10 @@
   .chart-plot svg {
     max-width: 100%;
   }
+  #record-status {
+    min-height: 360px;
+    width: 100%;
+  }
 </style>
 {% endblock stylesheets %}
 
@@ -400,10 +404,11 @@
     showEmpty("record-status", "No borrow records yet.");
   } else {
     try {
-      new Highcharts.Chart({
+      var statusChart = new Highcharts.Chart({
         chart: {
           type: "pie",
-          renderTo: "record-status"
+          renderTo: "record-status",
+          height: 400
         },
         tooltip: {
           pointFormat: "{series.name}: <b>{point.percentage:.1f}%</b>"
@@ -412,25 +417,58 @@
         accessibility: {
           point: { valueSuffix: "%" }
         },
+        legend: { enabled: false },
         plotOptions: {
           pie: {
             allowPointSelect: true,
             cursor: "pointer",
+            minSize: 160,
             dataLabels: {
               enabled: true,
+              distance: 8,
               format: "<b>{point.name}</b>: {point.y:.0f}"
             }
           }
         },
+        responsive: {
+          rules: [{
+            condition: { maxWidth: 480 },
+            chartOptions: {
+              legend: {
+                enabled: true,
+                align: "center",
+                verticalAlign: "bottom",
+                layout: "horizontal"
+              },
+              plotOptions: {
+                pie: {
+                  dataLabels: { enabled: false },
+                  center: ["50%", "42%"],
+                  size: "72%"
+                }
+              }
+            }
+          }]
+        },
         series: [{
           name: "Record",
           colorByPoint: true,
+          showInLegend: true,
           data: [
             { name: "Open", y: openCount, color: "#F28B5B" },
             { name: "Closed", y: closeCount, color: "#A169E7" }
           ]
         }]
       });
+      function fitStatusChart() {
+        var node = document.getElementById("record-status");
+        if (!statusChart || !node || !node.clientWidth) {
+          return;
+        }
+        statusChart.setSize(node.clientWidth, 400, false);
+      }
+      fitStatusChart();
+      window.addEventListener("resize", fitStatusChart);
     } catch (err) {
       showEmpty("record-status", "This chart could not be drawn.");
     }

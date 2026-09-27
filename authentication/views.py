@@ -35,7 +35,7 @@ class SignUpView(CreateView):
     template_name = "registration/register.html"
 
 
-@login_required
+@login_required(login_url="login")
 def profile_view(request):
     """Display user profile."""
     from book.models import Profile

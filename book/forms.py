@@ -83,6 +83,13 @@ class BorrowRecordCreateForm(forms.ModelForm):
     book = forms.CharField(
         max_length=BorrowRecord._meta.get_field("book").max_length,
         help_text="type book name",
+        widget=forms.TextInput(
+            attrs={
+                "placeholder": "Book title",
+                "aria-label": "Book title",
+                "class": "form-control",
+            }
+        ),
     )
 
     class Meta:

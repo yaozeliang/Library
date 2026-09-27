@@ -269,6 +269,33 @@ class LibraryPageTests(PageFixture):
         response = self.client.get(reverse("global_search"))
         self.assertRedirects(response, reverse("home"))
 
+    def test_brand_pagination_labels_and_chart_layout(self):
+        self.login(self.staff)
+        home = self.client.get(reverse("home"))
+        self.assertContains(home, 'href="/" class="b-brand"')
+        self.assertContains(home, "Open Library")
+
+        books = self.client.get(reverse("book_list"))
+        for label in ("First", "Previous", "Next", "Last"):
+            self.assertContains(books, f">{label}<")
+        self.assertNotContains(books, ">End<")
+
+        category = self.client.get(reverse("category_create"))
+        self.assertContains(category, 'placeholder="Name"')
+        self.assertContains(category, 'aria-label="Name"')
+        self.assertContains(category, 'class="form-control"')
+
+        record = self.client.get(reverse("record_create"))
+        self.assertContains(record, 'placeholder="Book title"')
+        self.assertContains(record, 'aria-label="Book title"')
+        self.assertContains(record, "form-control")
+
+        charts = self.client.get(reverse("chart"))
+        self.assertContains(charts, "min-height: 360px")
+        self.assertContains(charts, "maxWidth: 480")
+        self.assertContains(charts, "dataLabels: { enabled: false }")
+        self.assertContains(charts, "minSize: 160")
+
 
 class NotificationPageTests(PageFixture):
     def test_inbox_pages_require_login_and_missing_slugs_are_404(self):

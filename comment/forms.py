@@ -13,6 +13,15 @@ class CommentForm(forms.ModelForm):
 
         model = Comment
         fields = ["body"]
-        widgets = {
-            "body": forms.Textarea(attrs={"rows": 4, "class": "form-control"}),
-        }
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        # RichTextFormField replaces any Meta widget with CKEditorWidget.
+        self.fields["body"].widget.attrs.update(
+            {
+                "rows": 4,
+                "class": "form-control",
+                "placeholder": "Comment",
+                "aria-label": "Comment",
+            }
+        )

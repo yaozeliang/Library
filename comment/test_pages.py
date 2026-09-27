@@ -53,6 +53,9 @@ class CommentPageTests(PageFixture):
         self.assertEqual(created.status_code, 200)
         self.assertTemplateUsed(created, "comment/comment_form.html")
         self.assertContains(created, "Comment")
+        self.assertContains(created, 'placeholder="Comment"')
+        self.assertContains(created, 'aria-label="Comment"')
+        self.assertContains(created, "form-control")
 
         shown = self.client.get(detail)
         self.assertEqual(shown.status_code, 200)
@@ -63,6 +66,8 @@ class CommentPageTests(PageFixture):
         self.assertEqual(edited.status_code, 200)
         self.assertTemplateUsed(edited, "comment/comment_form.html")
         self.assertContains(edited, "Comment")
+        self.assertContains(edited, 'placeholder="Comment"')
+        self.assertContains(edited, 'aria-label="Comment"')
 
         confirm = self.client.get(delete)
         self.assertEqual(confirm.status_code, 200)

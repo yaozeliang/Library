@@ -6,6 +6,7 @@ Copyright (c) 2019 - present AppSeed.us
 import os
 
 from decouple import config
+from django.urls import reverse_lazy
 
 from core.db_config import databases_from_url
 from core.production_config import LOCAL_DEV_SECRET_KEY
@@ -105,9 +106,9 @@ REST_FRAMEWORK = {
 }
 
 ROOT_URLCONF = "core.urls"
-# Named URL, not /accounts/login/. Third-party views such as django-notifications
-# call login_required without an explicit login_url and would otherwise 404.
-LOGIN_URL = "login"
+# Path of the named "login" route. A bare name is easy to miss, and Django's
+# default /accounts/login/ 404s. reverse_lazy resolves when a request needs it.
+LOGIN_URL = reverse_lazy("login")
 LOGIN_REDIRECT_URL = "home"
 LOGOUT_REDIRECT_URL = "home"
 TEMPLATE_DIR = os.path.join(BASE_DIR, "templates")  # ROOT dir for templates

@@ -15,6 +15,7 @@
                             <div class="card-block">
                                 <form method="post">
                                     {% csrf_token %}
+                                    <label for="id_body">Comment</label>
                                     {{ form.body }}
                                     {{ form.body.errors }}
                                     <button type="submit" class="btn btn-success mt-3">Save</button>

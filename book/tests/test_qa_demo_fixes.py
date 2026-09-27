@@ -180,7 +180,10 @@ class GroupAccessTests(TestCase):
         ):
             response = self.client.get(url)
             self.assertEqual(response.status_code, 302, url)
-            self.assertIn("/auth/login/", response.url)
+            self.assertTrue(
+                response.url.startswith("/auth/login/?next="),
+                f"{url} redirected to {response.url}",
+            )
 
     def test_staff_without_groups_is_forbidden(self):
         self.client.force_login(self.staff)
