@@ -3,6 +3,7 @@
 import re
 from datetime import timedelta
 from pathlib import Path
+from unittest.mock import patch
 
 from django.contrib.staticfiles import finders
 from django.urls import reverse
@@ -480,30 +481,39 @@ class LibraryPageTests(PageFixture):
         self.assertIn('id="return-tab"', html)
         self.assertIn('aria-selected="true"', html[html.index('id="return-tab"') - 80:html.index('id="return-tab"') + 160])
 
-    def test_due_today_is_not_overdue_and_one_day_is_singular(self):
+    def test_delay_column_pluralizes_the_model_status(self):
+        """Pluralization and the red row follow return_status, not a date rule."""
         self.login(self.staff)
-        start_of_today = timezone.localtime().replace(
-            hour=0, minute=0, second=0, microsecond=0
-        )
-        BorrowRecord.objects.create(
-            borrower="Due Today",
+        one = BorrowRecord.objects.create(
+            borrower="One Late",
             book=self.book.title,
             borrower_card=self.member.card_number,
-            end_day=start_of_today,
+            end_day=timezone.now() + timedelta(days=4),
         )
-        BorrowRecord.objects.create(
-            borrower="Due Yesterday",
+        two = BorrowRecord.objects.create(
+            borrower="Two Late",
             book=self.book.title,
             borrower_card=self.member.card_number,
-            end_day=start_of_today - timedelta(days=1),
+            end_day=timezone.now() + timedelta(days=4),
         )
-        BorrowRecord.objects.create(
-            borrower="Due Two Days",
-            book=self.book.title,
-            borrower_card=self.member.card_number,
-            end_day=start_of_today - timedelta(days=2),
-        )
-        page = self.client.get(reverse("record_list"))
+        planned = {
+            one.pk: ("Overdue", 1),
+            two.pk: ("Overdue", 2),
+        }
+
+        def status(record):
+            return planned.get(record.pk, ("On Time", 0))[0]
+
+        def delay_days(record):
+            return planned.get(record.pk, ("On Time", 0))[1]
+
+        with (
+            patch.object(BorrowRecord, "return_status", property(status)),
+            patch.object(
+                BorrowRecord, "get_delay_number_days", property(delay_days)
+            ),
+        ):
+            page = self.client.get(reverse("record_list"))
         html = page.content.decode()
 
         def row(name):
@@ -513,16 +523,18 @@ class LibraryPageTests(PageFixture):
             self.assertIsNotNone(match, name)
             return match.group(0)
 
-        today = row("Due Today")
-        yesterday = row("Due Yesterday")
-        two = row("Due Two Days")
-        self.assertNotIn("table-danger", today)
-        self.assertNotIn("Overdue", today)
-        self.assertIn("On Time", today)
-        self.assertIn("table-danger", yesterday)
-        self.assertIn("Overdue 1 day", yesterday)
-        self.assertNotIn("1 days", yesterday)
-        self.assertIn("Overdue 2 days", two)
+        late_one = row("One Late")
+        late_two = row("Two Late")
+        on_time = row(self.member.name)
+        self.assertIn("table-danger", late_one)
+        self.assertIn("Overdue 1 day", late_one)
+        self.assertNotIn("1 days", late_one)
+        self.assertIn("table-danger", late_two)
+        self.assertIn("Overdue 2 days", late_two)
+        self.assertNotIn("table-danger", on_time)
+        self.assertIn("table-success", on_time)
+        self.assertIn("On Time", on_time)
+        self.assertNotIn("Overdue", on_time)
 
     def test_record_create_labels_the_visible_date_inputs(self):
         self.login(self.staff)
