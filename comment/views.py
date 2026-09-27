@@ -4,6 +4,7 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.http import HttpResponse
 from django.shortcuts import get_object_or_404, redirect, render
+from django.views.decorators.http import require_POST
 from django.urls import reverse_lazy
 from django.views.generic import CreateView, DeleteView, ListView, UpdateView
 
@@ -20,6 +21,16 @@ class CommentListView(ListView):
     template_name = "comment/comment_list.html"
     context_object_name = "comments"
     paginate_by = 10
+
+    def get(self, request, *args, **kwargs):
+        from book.pagination import redirect_for_page
+
+        redirect_to = redirect_for_page(
+            request, self.get_queryset(), per_page=self.paginate_by
+        )
+        if redirect_to is not None:
+            return redirect_to
+        return super().get(request, *args, **kwargs)
 
 
 class CommentCreateView(LoginRequiredMixin, CreateView):
@@ -68,19 +79,17 @@ def comment_detail(request, pk):
     return render(request, "comment/comment_detail.html", {"comment": comment})
 
 
+@require_POST
 @login_required
 def post_comment(request, book_id):
-    """Handle posting comments on books."""
+    """Handle posting comments on books. GET is not allowed."""
     book = get_object_or_404(Book, id=book_id)
 
-    if request.method == "POST":
-        comment_form = CommentForm(request.POST)
-        if comment_form.is_valid():
-            new_comment = comment_form.save(commit=False)
-            new_comment.book = book
-            new_comment.user = request.user
-            new_comment.save()
-            return redirect("book_detail", pk=book_id)
-        return HttpResponse("Error in form, please rewrite")
-    # Handle non-POST requests
-    return HttpResponse("Comment only accepts POST requests")
+    comment_form = CommentForm(request.POST)
+    if comment_form.is_valid():
+        new_comment = comment_form.save(commit=False)
+        new_comment.book = book
+        new_comment.user = request.user
+        new_comment.save()
+        return redirect("book_detail", pk=book_id)
+    return HttpResponse("Error in form, please rewrite")

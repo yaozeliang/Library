@@ -170,6 +170,12 @@ class Member(models.Model):
         """Save the member with auto-generated card number and expiration date."""
         self.card_number = str(self.card_id)[:8]
         self.expired_at = timezone.now() + relativedelta(years=1)
+        # A partial update would otherwise drop the generated card fields.
+        update_fields = kwargs.get("update_fields")
+        if update_fields is not None:
+            kwargs["update_fields"] = list(
+                set(update_fields) | {"card_number", "expired_at"}
+            )
         return super().save(*args, **kwargs)
 
     def __str__(self) -> str:
@@ -250,7 +256,9 @@ class BorrowRecord(models.Model):
     created_at = models.DateTimeField(default=timezone.now)
     created_by = models.CharField(max_length=20, blank=True)
     closed_by = models.CharField(max_length=20, default="")
-    closed_at = models.DateTimeField(auto_now=True)
+    # Stamped only when the loan is closed. auto_now refreshed this on every
+    # save, so open loans showed a close date.
+    closed_at = models.DateTimeField(null=True, blank=True)
 
     @property
     def return_status(self) -> str:
@@ -272,18 +280,31 @@ class BorrowRecord(models.Model):
 
     def get_absolute_url(self) -> str:
         """Return the URL for the borrow record list view."""
-        return reverse("borrow_record_list")
+        return reverse("record_list")
 
     def __str__(self) -> str:
         """Return string representation of the borrow record."""
         return f"{self.borrower} - {self.book}"
 
     def save(self, *args: Any, **kwargs: Any) -> None:
-        """Save the borrow record with updated delay days."""
-        # profile = super(Profile, self).save(*args, **kwargs)
+        """Save the borrow record and keep ``closed_at`` in step with status.
+
+        An open loan has no close timestamp. The first save that marks the
+        loan closed stamps ``closed_at``; later edits leave that stamp alone.
+        Opening the loan again clears it. There is no dedicated reopen view;
+        this covers any save that sets ``open_or_close`` back to open.
+        """
         if self.open_or_close == 0:
             if timezone.now() > self.end_day:
                 self.delay_days = (timezone.now() - self.end_day).days
             else:
                 self.delay_days = 0
+            self.closed_at = None
+        elif self.closed_at is None:
+            self.closed_at = timezone.now()
+        update_fields = kwargs.get("update_fields")
+        if update_fields is not None:
+            kwargs["update_fields"] = list(
+                set(update_fields) | {"delay_days", "closed_at"}
+            )
         return super().save(*args, **kwargs)
