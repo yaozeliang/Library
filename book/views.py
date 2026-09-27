@@ -993,6 +993,27 @@ class DataCenterView(LoginRequiredMixin, TemplateView):
         return render(request, self.template_name, context={"model_list": count_total})
 
 
+def _export_frame(model):
+    """Stored field values for a data-center CSV, in model field order.
+
+    Open borrow loans write ``get_delay_number_days`` (the same live calendar
+    delay the record list shows). Closed loans keep the stored ``delay_days``.
+    Other models are unchanged.
+    """
+    rows = list(model.objects.all().values())
+    if model is BorrowRecord and rows:
+        open_ids = [row["id"] for row in rows if row["open_or_close"] == 0]
+        if open_ids:
+            live_delay = {
+                record.pk: record.get_delay_number_days
+                for record in BorrowRecord.objects.filter(pk__in=open_ids)
+            }
+            for row in rows:
+                if row["open_or_close"] == 0:
+                    row["delay_days"] = live_delay[row["id"]]
+    return pd.DataFrame(rows)
+
+
 @login_required(login_url="login")
 @allowed_groups(group_name=["download_data"])
 def download_data(request, model_name):
@@ -1000,7 +1021,7 @@ def download_data(request, model_name):
 
     download = {
         m.objects.model._meta.db_table: {
-            "source": pd.DataFrame(list(m.objects.all().values())),
+            "source": _export_frame(m),
             "path": f"{settings.BASE_DIR!s}/datacenter/{m.__name__}_{TODAY}.csv",
             "file_name": f"{m.__name__}_{TODAY}.csv",
         }
