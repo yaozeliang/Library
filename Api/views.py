@@ -148,7 +148,7 @@ def CategoryList(request, format=None):
 @api_view(["POST"])
 def CategoryCreate(request, format=None):
     serializer = CategorySerializer(data=request.data)
-    return _save_or_errors(serializer)
+    return _save_or_errors(serializer, success_status=status.HTTP_201_CREATED)
 
 
 @api_view(["GET"])
@@ -177,7 +177,7 @@ def BookList(request, format=None):
 @api_view(["POST"])
 def BookCreate(request, format=None):
     serializer = BookSerializer(data=request.data)
-    return _save_or_errors(serializer)
+    return _save_or_errors(serializer, success_status=status.HTTP_201_CREATED)
 
 
 @api_view(["GET"])
@@ -213,7 +213,7 @@ def PublisherList(request, format=None):
 @api_view(["POST"])
 def PublisherCreate(request, format=None):
     serializer = PublisherSerializer(data=request.data)
-    return _save_or_errors(serializer)
+    return _save_or_errors(serializer, success_status=status.HTTP_201_CREATED)
 
 
 @api_view(["POST"])

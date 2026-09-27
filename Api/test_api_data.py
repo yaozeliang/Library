@@ -129,7 +129,7 @@ class ApiDataTests(TestCase):
             },
             format="json",
         )
-        self.assertEqual(created.status_code, 200)
+        self.assertEqual(created.status_code, 201)
         book_id = created.json()["id"]
         self.assertEqual(Book.objects.get(pk=book_id).quantity, 2)
 
