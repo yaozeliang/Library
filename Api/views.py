@@ -94,6 +94,21 @@ def _public_path(pattern, prefix):
     return prefix + simplified
 
 
+def _get_or_404(model, pk):
+    try:
+        return model.objects.get(pk=pk)
+    except model.DoesNotExist:
+        raise Http404
+
+
+def _save_or_errors(serializer, success_status=status.HTTP_200_OK):
+    """Persist a valid payload. Invalid input is 400, not an empty 200."""
+    if serializer.is_valid():
+        serializer.save()
+        return Response(serializer.data, status=success_status)
+    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
 def _api_overview():
     """Name-to-path map of every real /api/ route, built from the URLconf."""
     import Api.urls as api_urls
@@ -133,24 +148,22 @@ def CategoryList(request, format=None):
 @api_view(["POST"])
 def CategoryCreate(request, format=None):
     serializer = CategorySerializer(data=request.data)
-
-    if serializer.is_valid():
-        serializer.save()
-    return Response(serializer.data)
+    return _save_or_errors(serializer)
 
 
 @api_view(["GET"])
 def CategoryDetail(request, pk, format=None):
-    cat = Category.objects.get(id=pk)
+    cat = _get_or_404(Category, pk)
     serializer = CategorySerializer(cat, many=False)
     return Response(serializer.data)
 
 
 @api_view(["DELETE"])
 def CategoryDelete(request, pk, format=None):
-    cat = Category.objects.get(id=pk)
+    cat = _get_or_404(Category, pk)
+    name = cat.name
     cat.delete()
-    return Response(f"{cat.name} succsesfully delete!")
+    return Response(f"{name} succsesfully delete!")
 
 
 # Book Api View
@@ -164,32 +177,29 @@ def BookList(request, format=None):
 @api_view(["POST"])
 def BookCreate(request, format=None):
     serializer = BookSerializer(data=request.data)
-    if serializer.is_valid():
-        serializer.save()
-    return Response(serializer.data)
+    return _save_or_errors(serializer)
 
 
 @api_view(["GET"])
 def BookDetail(request, pk, format=None):
-    book = Book.objects.get(id=pk)
+    book = _get_or_404(Book, pk)
     serializer = BookSerializer(book, many=False)
     return Response(serializer.data)
 
 
 @api_view(["POST"])
 def BookUpdate(request, pk, format=None):
-    book = Book.objects.get(id=pk)
+    book = _get_or_404(Book, pk)
     serializer = BookSerializer(instance=book, data=request.data)
-    if serializer.is_valid():
-        serializer.save()
-    return Response(serializer.data)
+    return _save_or_errors(serializer)
 
 
 @api_view(["DELETE"])
 def BookDelete(request, pk, format=None):
-    book = Book.objects.get(id=pk)
+    book = _get_or_404(Book, pk)
+    title = book.title
     book.delete()
-    return Response(f"{book.title} succsesfully delete!")
+    return Response(f"{title} succsesfully delete!")
 
 
 # Publisher Api View
@@ -203,25 +213,22 @@ def PublisherList(request, format=None):
 @api_view(["POST"])
 def PublisherCreate(request, format=None):
     serializer = PublisherSerializer(data=request.data)
-    if serializer.is_valid():
-        serializer.save()
-    return Response(serializer.data)
+    return _save_or_errors(serializer)
 
 
 @api_view(["POST"])
 def PublisherUpdate(request, pk, format=None):
-    pub = Publisher.objects.get(id=pk)
+    pub = _get_or_404(Publisher, pk)
     serializer = PublisherSerializer(instance=pub, data=request.data)
-    if serializer.is_valid():
-        serializer.save()
-    return Response(serializer.data)
+    return _save_or_errors(serializer)
 
 
 @api_view(["DELETE"])
 def PublisherDelete(request, pk, format=None):
-    pub = Publisher.objects.get(id=pk)
+    pub = _get_or_404(Publisher, pk)
+    name = pub.name
     pub.delete()
-    return Response(f"{pub.name} succsesfully delete!")
+    return Response(f"{name} succsesfully delete!")
 
 
 # Member API
@@ -235,18 +242,12 @@ class MemberList(APIView):
 
     def post(self, request, format=None):
         serializer = MemberSerializer(data=request.data)
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        return _save_or_errors(serializer, success_status=status.HTTP_201_CREATED)
 
 
 class MemberDetail(APIView):
     def get_object(self, pk):
-        try:
-            return Member.objects.get(pk=pk)
-        except Member.DoesNotExist:
-            return Http404
+        return _get_or_404(Member, pk)
 
     def get(self, request, pk, format=None):
         member = self.get_object(pk)

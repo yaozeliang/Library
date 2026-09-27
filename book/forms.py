@@ -98,6 +98,20 @@ class BorrowRecordCreateForm(forms.ModelForm):
             "start_day": DatePickerInput(),
             "end_day": DatePickerInput(),
         }
+
+    def clean(self):
+        """Reject a zero quantity and a return date before the borrow date."""
+        cleaned = super().clean()
+        start_day = cleaned.get("start_day")
+        end_day = cleaned.get("end_day")
+        if start_day and end_day and end_day < start_day:
+            self.add_error(
+                "end_day", "Return date must be on or after the borrow date."
+            )
+        quantity = cleaned.get("quantity")
+        if quantity is not None and quantity < 1:
+            self.add_error("quantity", "Borrow at least one copy.")
+        return cleaned
         # widgets = {'start_day': forms.DateTimeInput(attrs={'class': 'datepicker'}),
         #            'end_day': forms.DateTimeInput(attrs={'class': 'datepicker'})}
 

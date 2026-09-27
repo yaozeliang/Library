@@ -170,6 +170,12 @@ class Member(models.Model):
         """Save the member with auto-generated card number and expiration date."""
         self.card_number = str(self.card_id)[:8]
         self.expired_at = timezone.now() + relativedelta(years=1)
+        # A partial update would otherwise drop the generated card fields.
+        update_fields = kwargs.get("update_fields")
+        if update_fields is not None:
+            kwargs["update_fields"] = list(
+                set(update_fields) | {"card_number", "expired_at"}
+            )
         return super().save(*args, **kwargs)
 
     def __str__(self) -> str:
@@ -272,7 +278,7 @@ class BorrowRecord(models.Model):
 
     def get_absolute_url(self) -> str:
         """Return the URL for the borrow record list view."""
-        return reverse("borrow_record_list")
+        return reverse("record_list")
 
     def __str__(self) -> str:
         """Return string representation of the borrow record."""

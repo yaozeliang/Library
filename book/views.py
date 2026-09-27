@@ -10,9 +10,10 @@ from django.contrib.auth.models import Group, User
 from django.contrib.messages.views import messages
 from django.core.exceptions import PermissionDenied
 from django.core.paginator import EmptyPage, PageNotAnInteger, Paginator
+from django.db import transaction
 from django.db.models import Count, Q, Sum
 from django.db.models.functions import TruncMonth
-from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
+from django.http import Http404, HttpResponse, HttpResponseRedirect, JsonResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse, reverse_lazy
 from django.utils.decorators import method_decorator
@@ -54,6 +55,74 @@ logger = logging.getLogger(__name__)
 
 TODAY = get_n_days_ago(0, "%Y%m%d")
 PAGINATOR_NUMBER = 5
+
+
+def apply_ordering(queryset, requested, default):
+    """Order by a real column. An unknown ``orderby`` falls back to ``default``.
+
+    Passing the query string straight to ``order_by`` raised FieldError and
+    the list view answered 500.
+    """
+    candidate = (requested or "").strip() or default
+    raw = candidate[1:] if candidate.startswith("-") else candidate
+    field_names = {field.name for field in queryset.model._meta.fields}
+    if raw not in field_names:
+        candidate = default
+    return queryset.order_by(candidate), candidate
+
+
+def clamp_page(queryset, page_number):
+    """Return a page for ``page_number``, never an empty page when rows exist.
+
+    ``Paginator.get_page`` clamps non-integers to page 1 and out-of-range
+    numbers to the last page. If that still raises (an empty paginator whose
+    ``num_pages`` is 0), fall back to the last real page or page 1 so
+    ``/record-list/?page=4`` cannot 500 or render a blank table while earlier
+    pages have rows.
+    """
+    paginator = Paginator(queryset, PAGINATOR_NUMBER)
+    try:
+        page = paginator.get_page(page_number)
+    except (EmptyPage, PageNotAnInteger):
+        last = paginator.num_pages or 1
+        try:
+            page = paginator.page(last)
+        except EmptyPage:
+            page = paginator.page(1)
+    if paginator.count and not page.object_list:
+        page = paginator.page(paginator.num_pages or 1)
+    return page
+
+
+class OrderedPageMixin:
+    """Shared search, sort, and clamped pagination for catalog list views."""
+
+    default_order = "-id"
+    search_value = ""
+    order_field = ""
+    count_total = 0
+
+    def order_queryset(self, queryset):
+        search = self.request.GET.get("search") or ""
+        self.search_value = search
+        ordered, self.order_field = apply_ordering(
+            queryset, self.request.GET.get("orderby"), self.default_order
+        )
+        return ordered, search
+
+    def page_queryset(self, queryset):
+        self.count_total = queryset.count()
+        return clamp_page(queryset, self.request.GET.get("page"))
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["count_total"] = self.count_total
+        context["search"] = self.search_value
+        context["orderby"] = self.order_field
+        context["objects"] = self.object_list
+        return context
+
+
 allowed_models = [
     "Category",
     "Publisher",
@@ -214,42 +283,20 @@ class ChartView(LoginRequiredMixin, TemplateView):
 
 
 # Book
-class BookListView(LoginRequiredMixin, ListView):
+class BookListView(LoginRequiredMixin, OrderedPageMixin, ListView):
     login_url = "login"
     model = Book
     context_object_name = "books"
     template_name = "book/book_list.html"
-    search_value = ""
-    order_field = "-updated_at"
+    default_order = "-updated_at"
 
     def get_queryset(self):
-        search = self.request.GET.get("search")
-        order_by = self.request.GET.get("orderby")
-
-        if order_by:
-            all_books = Book.objects.all().order_by(order_by)
-            self.order_field = order_by
-        else:
-            all_books = Book.objects.all().order_by(self.order_field)
-
+        books, search = self.order_queryset(Book.objects.all())
         if search:
-            all_books = all_books.filter(
+            books = books.filter(
                 Q(title__icontains=search) | Q(author__icontains=search)
             )
-            self.search_value = search
-        self.count_total = all_books.count()
-        paginator = Paginator(all_books, PAGINATOR_NUMBER)
-        page = self.request.GET.get("page")
-        books = paginator.get_page(page)
-        return books
-
-    def get_context_data(self, *args, **kwargs):
-        context = super(BookListView, self).get_context_data(*args, **kwargs)
-        context["count_total"] = self.count_total
-        context["search"] = self.search_value
-        context["orderby"] = self.order_field
-        context["objects"] = self.get_queryset()
-        return context
+        return self.page_queryset(books)
 
 
 class BookDetailView(LoginRequiredMixin, DetailView):
@@ -280,17 +327,18 @@ class BookCreateView(LoginRequiredMixin, CreateView):
     login_url = "login"
     form_class = BookCreateEditForm
     template_name = "book/book_create.html"
+    success_url = reverse_lazy("book_list")
 
-    def post(self, request, *args, **kwargs):
-        super(BookCreateView, self).post(request)
-        new_book_name = request.POST["title"]
-        messages.success(request, f"New Book << {new_book_name} >> Added")
+    def form_valid(self, form):
+        response = super().form_valid(form)
+        new_book_name = form.cleaned_data["title"]
+        messages.success(self.request, f"New Book << {new_book_name} >> Added")
         UserActivity.objects.create(
             created_by=self.request.user.username,
             target_model=self.model.__name__,
             detail=f"Create {self.model.__name__} << {new_book_name} >>",
         )
-        return redirect("book_list")
+        return response
 
 
 class BookUpdateView(LoginRequiredMixin, UpdateView):
@@ -299,21 +347,16 @@ class BookUpdateView(LoginRequiredMixin, UpdateView):
     form_class = BookCreateEditForm
     template_name = "book/book_update.html"
 
-    def post(self, request, *args, **kwargs):
-        current_book = self.get_object()
-        current_book.updated_by = self.request.user.username
-        current_book.save(update_fields=["updated_by"])
+    def form_valid(self, form):
+        form.instance.updated_by = self.request.user.username
+        title = form.cleaned_data["title"]
+        messages.warning(self.request, f"Update << {title} >> success")
         UserActivity.objects.create(
             created_by=self.request.user.username,
             operation_type="warning",
             target_model=self.model.__name__,
-            detail=f"Update {self.model.__name__} << {current_book.title} >>",
+            detail=f"Update {self.model.__name__} << {title} >>",
         )
-        return super(BookUpdateView, self).post(request, *args, **kwargs)
-
-    def form_valid(self, form):
-        title = form.cleaned_data["title"]
-        messages.warning(self.request, f"Update << {title} >> success")
         return super().form_valid(form)
 
 
@@ -322,7 +365,7 @@ class BookDeleteView(LoginRequiredMixin, View):
 
     def post(self, request, *args, **kwargs):
         book_pk = kwargs["pk"]
-        delete_book = Book.objects.get(pk=book_pk)
+        delete_book = get_object_or_404(Book, pk=book_pk)
         model_name = delete_book.__class__.__name__
         messages.error(request, f"Book << {delete_book.title} >> Removed")
         delete_book.delete()
@@ -338,40 +381,18 @@ class BookDeleteView(LoginRequiredMixin, View):
 # Categorty
 
 
-class CategoryListView(LoginRequiredMixin, ListView):
+class CategoryListView(LoginRequiredMixin, OrderedPageMixin, ListView):
     login_url = "login"
     model = Category
     context_object_name = "categories"
     template_name = "book/category_list.html"
-    count_total = 0
-    search_value = ""
-    order_field = "-created_at"
+    default_order = "-created_at"
 
     def get_queryset(self):
-        search = self.request.GET.get("search")
-        order_by = self.request.GET.get("orderby")
-        if order_by:
-            all_categories = Category.objects.all().order_by(order_by)
-            self.order_field = order_by
-        else:
-            all_categories = Category.objects.all().order_by(self.order_field)
+        categories, search = self.order_queryset(Category.objects.all())
         if search:
-            all_categories = all_categories.filter(Q(name__icontains=search))
-            self.search_value = search
-
-        self.count_total = all_categories.count()
-        paginator = Paginator(all_categories, PAGINATOR_NUMBER)
-        page = self.request.GET.get("page")
-        categories = paginator.get_page(page)
-        return categories
-
-    def get_context_data(self, *args, **kwargs):
-        context = super(CategoryListView, self).get_context_data(*args, **kwargs)
-        context["count_total"] = self.count_total
-        context["search"] = self.search_value
-        context["orderby"] = self.order_field
-        context["objects"] = self.get_queryset()
-        return context
+            categories = categories.filter(Q(name__icontains=search))
+        return self.page_queryset(categories)
 
 
 class CategoryCreateView(LoginRequiredMixin, CreateView):
@@ -401,7 +422,7 @@ class CategoryDeleteView(LoginRequiredMixin, View):
 
     def post(self, request, *args, **kwargs):
         cat_pk = kwargs["pk"]
-        delete_cat = Category.objects.get(pk=cat_pk)
+        delete_cat = get_object_or_404(Category, pk=cat_pk)
         model_name = delete_cat.__class__.__name__
         messages.error(request, f"Category << {delete_cat.name} >> Removed")
         delete_cat.delete()
@@ -425,45 +446,22 @@ class CategoryDeleteView(LoginRequiredMixin, View):
 # Publisher
 
 
-class PublisherListView(LoginRequiredMixin, ListView):
+class PublisherListView(LoginRequiredMixin, OrderedPageMixin, ListView):
     login_url = "login"
     model = Publisher
     context_object_name = "publishers"
     template_name = "book/publisher_list.html"
-    count_total = 0
-    search_value = ""
-    order_field = "-created_at"
+    default_order = "-created_at"
 
     def get_queryset(self):
-        search = self.request.GET.get("search")
-        order_by = self.request.GET.get("orderby")
-        if order_by:
-            all_publishers = Publisher.objects.all().order_by(order_by)
-            self.order_field = order_by
-        else:
-            all_publishers = Publisher.objects.all().order_by(self.order_field)
+        publishers, search = self.order_queryset(Publisher.objects.all())
         if search:
-            all_publishers = all_publishers.filter(
+            publishers = publishers.filter(
                 Q(name__icontains=search)
                 | Q(city__icontains=search)
                 | Q(contact__icontains=search)
             )
-        else:
-            search = ""
-        self.search_value = search
-        self.count_total = all_publishers.count()
-        paginator = Paginator(all_publishers, PAGINATOR_NUMBER)
-        page = self.request.GET.get("page")
-        publishers = paginator.get_page(page)
-        return publishers
-
-    def get_context_data(self, *args, **kwargs):
-        context = super(PublisherListView, self).get_context_data(*args, **kwargs)
-        context["count_total"] = self.count_total
-        context["search"] = self.search_value
-        context["orderby"] = self.order_field
-        context["objects"] = self.get_queryset()
-        return context
+        return self.page_queryset(publishers)
 
 
 class PublisherCreateView(LoginRequiredMixin, CreateView):
@@ -505,21 +503,16 @@ class PublisherUpdateView(LoginRequiredMixin, UpdateView):
     form_class = PubCreateEditForm
     template_name = "book/publisher_update.html"
 
-    def post(self, request, *args, **kwargs):
-        current_pub = self.get_object()
-        current_pub.updated_by = self.request.user.username
-        current_pub.save(update_fields=["updated_by"])
+    def form_valid(self, form):
+        form.instance.updated_by = self.request.user.username
+        title = form.cleaned_data["name"]
+        messages.warning(self.request, f"Update << {title} >> success")
         UserActivity.objects.create(
             created_by=self.request.user.username,
             operation_type="warning",
             target_model=self.model.__name__,
-            detail=f"Update {self.model.__name__} << {current_pub.name} >>",
+            detail=f"Update {self.model.__name__} << {title} >>",
         )
-        return super(PublisherUpdateView, self).post(request, *args, **kwargs)
-
-    def form_valid(self, form):
-        title = form.cleaned_data["name"]
-        messages.warning(self.request, f"Update << {title} >> success")
         return super().form_valid(form)
 
 
@@ -528,7 +521,7 @@ class PublisherDeleteView(LoginRequiredMixin, View):
 
     def post(self, request, *args, **kwargs):
         pub_pk = kwargs["pk"]
-        delete_pub = Publisher.objects.get(pk=pub_pk)
+        delete_pub = get_object_or_404(Publisher, pk=pub_pk)
         model_name = delete_pub.__class__.__name__
         messages.error(request, f"Publisher << {delete_pub.name} >> Removed")
         delete_pub.delete()
@@ -564,31 +557,25 @@ class ActivityListView(LoginRequiredMixin, ListView):
     #     return super(ActivityListView, self).dispatch(*args, **kwargs)
 
     def get_queryset(self):
-        data = self.request.GET.copy()
-        search = self.request.GET.get("search")
-        filter_user = self.request.GET.get("created_by")
+        search = self.request.GET.get("search") or ""
+        filter_user = self.request.GET.get("created_by") or ""
+        self.search_value = search
+        self.created_by = filter_user
 
-        all_activities = UserActivity.objects.all()
+        all_activities, self.order_field = apply_ordering(
+            UserActivity.objects.all(),
+            self.request.GET.get("orderby"),
+            "-created_at",
+        )
 
         if filter_user:
-            self.created_by = filter_user
-            all_activities = all_activities.filter(created_by=self.created_by)
+            all_activities = all_activities.filter(created_by=filter_user)
 
         if search:
-            self.search_value = search
             all_activities = all_activities.filter(Q(target_model__icontains=search))
 
-        self.search_value = search
         self.count_total = all_activities.count()
-        paginator = Paginator(all_activities, PAGINATOR_NUMBER)
-        page = self.request.GET.get("page")
-        try:
-            response = paginator.get_page(page)
-        except PageNotAnInteger:
-            response = paginator.get_page(1)
-        except EmptyPage:
-            response = paginator.get_page(paginator.num_pages)
-        return response
+        return clamp_page(all_activities, self.request.GET.get("page"))
 
     def get_context_data(self, *args, **kwargs):
         context = super(ActivityListView, self).get_context_data(*args, **kwargs)
@@ -608,7 +595,7 @@ class ActivityDeleteView(LoginRequiredMixin, View):
 
     def post(self, request, *args, **kwargs):
         log_pk = kwargs["pk"]
-        delete_log = UserActivity.objects.get(pk=log_pk)
+        delete_log = get_object_or_404(UserActivity, pk=log_pk)
         messages.error(request, "Activity Removed")
         delete_log.delete()
 
@@ -616,43 +603,20 @@ class ActivityDeleteView(LoginRequiredMixin, View):
 
 
 # Membership
-class MemberListView(LoginRequiredMixin, ListView):
+class MemberListView(LoginRequiredMixin, OrderedPageMixin, ListView):
     login_url = "login"
     model = Member
     context_object_name = "members"
     template_name = "book/member_list.html"
-    count_total = 0
-    search_value = ""
-    order_field = "-updated_at"
+    default_order = "-updated_at"
 
     def get_queryset(self):
-        search = self.request.GET.get("search")
-        order_by = self.request.GET.get("orderby")
-        if order_by:
-            all_members = Member.objects.all().order_by(order_by)
-            self.order_field = order_by
-        else:
-            all_members = Member.objects.all().order_by(self.order_field)
+        members, search = self.order_queryset(Member.objects.all())
         if search:
-            all_members = all_members.filter(
+            members = members.filter(
                 Q(name__icontains=search) | Q(card_number__icontains=search)
             )
-        else:
-            search = ""
-        self.search_value = search
-        self.count_total = all_members.count()
-        paginator = Paginator(all_members, PAGINATOR_NUMBER)
-        page = self.request.GET.get("page")
-        members = paginator.get_page(page)
-        return members
-
-    def get_context_data(self, *args, **kwargs):
-        context = super(MemberListView, self).get_context_data(*args, **kwargs)
-        context["count_total"] = self.count_total
-        context["search"] = self.search_value
-        context["orderby"] = self.order_field
-        context["objects"] = self.get_queryset()
-        return context
+        return self.page_queryset(members)
 
 
 class MemberCreateView(LoginRequiredMixin, CreateView):
@@ -661,17 +625,6 @@ class MemberCreateView(LoginRequiredMixin, CreateView):
     form_class = MemberCreateEditForm
     template_name = "book/member_create.html"
 
-    def post(self, request, *args, **kwargs):
-        super(MemberCreateView, self).post(request)
-        new_member_name = request.POST["name"]
-        messages.success(request, f"New Member << {new_member_name} >> Added")
-        UserActivity.objects.create(
-            created_by=self.request.user.username,
-            target_model=self.model.__name__,
-            detail=f"Create {self.model.__name__} << {new_member_name} >>",
-        )
-        return redirect("member_list")
-
     def form_valid(self, form):
         self.object = form.save()
         self.object.created_by = self.request.user.username
@@ -679,7 +632,14 @@ class MemberCreateView(LoginRequiredMixin, CreateView):
         send_notification(
             self.request.user, self.object, f"Add new memeber {self.object.name}"
         )
-
+        messages.success(
+            self.request, f"New Member << {self.object.name} >> Added"
+        )
+        UserActivity.objects.create(
+            created_by=self.request.user.username,
+            target_model=self.model.__name__,
+            detail=f"Create {self.model.__name__} << {self.object.name} >>",
+        )
         return HttpResponseRedirect(self.get_success_url())
 
     # def form_valid(self, form):
@@ -694,21 +654,16 @@ class MemberUpdateView(LoginRequiredMixin, UpdateView):
     form_class = MemberCreateEditForm
     template_name = "book/member_update.html"
 
-    def post(self, request, *args, **kwargs):
-        current_member = self.get_object()
-        current_member.updated_by = self.request.user.username
-        current_member.save(update_fields=["updated_by"])
+    def form_valid(self, form):
+        form.instance.updated_by = self.request.user.username
+        member_name = form.cleaned_data["name"]
+        messages.warning(self.request, f"Update << {member_name} >> success")
         UserActivity.objects.create(
             created_by=self.request.user.username,
             operation_type="warning",
             target_model=self.model.__name__,
-            detail=f"Update {self.model.__name__} << {current_member.name} >>",
+            detail=f"Update {self.model.__name__} << {member_name} >>",
         )
-        return super(MemberUpdateView, self).post(request, *args, **kwargs)
-
-    def form_valid(self, form):
-        member_name = form.cleaned_data["name"]
-        messages.warning(self.request, f"Update << {member_name} >> success")
         return super().form_valid(form)
 
 
@@ -717,7 +672,7 @@ class MemberDeleteView(LoginRequiredMixin, View):
 
     def post(self, request, *args, **kwargs):
         member_pk = kwargs["pk"]
-        delete_member = Member.objects.get(pk=member_pk)
+        delete_member = get_object_or_404(Member, pk=member_pk)
         model_name = delete_member.__class__.__name__
         messages.error(request, f"Member << {delete_member.name} >> Removed")
         delete_member.delete()
@@ -802,42 +757,50 @@ class BorrowRecordCreateView(LoginRequiredMixin, CreateView):
         return form
 
     def form_valid(self, form):
-        selected_member = get_object_or_404(Member, name=form.cleaned_data["borrower"])
-        selected_book = Book.objects.get(title=form.cleaned_data["book"])
+        borrower_name = form.cleaned_data["borrower"]
+        book_title = form.cleaned_data["book"]
+        quantity = form.cleaned_data["quantity"]
 
-        # if form.is_valid():
-        #     form.save(commit=True)
-        #     return HttpResponse("Successfully added the date to database");
-        # else:
-        #     # The supplied form contained errors - just print them to the terminal.
-        #     print(form.errors)
+        try:
+            selected_member = Member.objects.get(name=borrower_name)
+        except Member.DoesNotExist:
+            form.add_error("borrower", "Select a member that exists.")
+            return self.form_invalid(form)
+
+        matches = Book.objects.filter(title=book_title)
+        if not matches.exists():
+            form.add_error("book", "Select a book that exists.")
+            return self.form_invalid(form)
+        if matches.count() > 1:
+            form.add_error("book", "More than one book has that title.")
+            return self.form_invalid(form)
+        selected_book = matches.get()
+
+        if quantity > selected_book.quantity:
+            form.add_error("quantity", "Not enough copies in stock.")
+            return self.form_invalid(form)
 
         form.instance.borrower_card = selected_member.card_number
         form.instance.borrower_email = selected_member.email
         form.instance.borrower_phone_number = selected_member.phone_number
         form.instance.created_by = self.request.user.username
-        form.instance.start_day = form.cleaned_data["start_day"]
-        form.instance.end_day = form.cleaned_data["end_day"]
-        form.save()
 
-        # Change field on Model Book
-        selected_book.status = 0
-        selected_book.total_borrow_times += 1
-        selected_book.quantity -= int(form.cleaned_data["quantity"])
-        selected_book.save()
+        with transaction.atomic():
+            self.object = form.save()
+            selected_book.status = 0
+            selected_book.total_borrow_times += 1
+            selected_book.quantity -= quantity
+            selected_book.save()
 
-        # Create Log
-        borrower_name = selected_member.name
-        book_name = selected_book.title
-
-        messages.success(self.request, f" '{borrower_name}' borrowed <<{book_name}>>")
+        messages.success(
+            self.request, f" '{selected_member.name}' borrowed <<{selected_book.title}>>"
+        )
         UserActivity.objects.create(
             created_by=self.request.user.username,
             target_model=self.model.__name__,
-            detail=f" '{borrower_name}' borrowed <<{book_name}>>",
+            detail=f" '{selected_member.name}' borrowed <<{selected_book.title}>>",
         )
-
-        return super(BorrowRecordCreateView, self).form_valid(form)
+        return HttpResponseRedirect(reverse("record_list"))
 
     # def post(self,request, *args, **kwargs):
 
@@ -882,50 +845,29 @@ class BorrowRecordDetailView(LoginRequiredMixin, DetailView):
     # Not recommanded
     def get_context_data(self, **kwargs):
         context = super(BorrowRecordDetailView, self).get_context_data(**kwargs)
-        related_member = Member.objects.get(name=self.get_object().borrower)
-        context["related_member"] = related_member
+        # A renamed or removed member must not turn the record page into a 500.
+        context["related_member"] = Member.objects.filter(
+            name=self.object.borrower
+        ).first()
         return context
 
 
-class BorrowRecordListView(LoginRequiredMixin, ListView):
+class BorrowRecordListView(LoginRequiredMixin, OrderedPageMixin, ListView):
     model = BorrowRecord
     template_name = "borrow_records/list.html"
     login_url = "login"
     context_object_name = "records"
-    count_total = 0
-    search_value = ""
-    order_field = "-closed_at"
+    default_order = "-closed_at"
 
     def get_queryset(self):
-        search = self.request.GET.get("search")
-        order_by = self.request.GET.get("orderby")
-        if order_by:
-            all_records = BorrowRecord.objects.all().order_by(order_by)
-            self.order_field = order_by
-        else:
-            all_records = BorrowRecord.objects.all().order_by(self.order_field)
+        records, search = self.order_queryset(BorrowRecord.objects.all())
         if search:
-            all_records = BorrowRecord.objects.filter(
+            records = records.filter(
                 Q(borrower__icontains=search)
                 | Q(book__icontains=search)
                 | Q(borrower_card__icontains=search)
             )
-        else:
-            search = ""
-        self.search_value = search
-        self.count_total = all_records.count()
-        paginator = Paginator(all_records, PAGINATOR_NUMBER)
-        page = self.request.GET.get("page")
-        records = paginator.get_page(page)
-        return records
-
-    def get_context_data(self, *args, **kwargs):
-        context = super(BorrowRecordListView, self).get_context_data(*args, **kwargs)
-        context["count_total"] = self.count_total
-        context["search"] = self.search_value
-        context["orderby"] = self.order_field
-        context["objects"] = self.get_queryset()
-        return context
+        return self.page_queryset(records)
 
 
 class BorrowRecordDeleteView(LoginRequiredMixin, View):
@@ -933,7 +875,7 @@ class BorrowRecordDeleteView(LoginRequiredMixin, View):
 
     def post(self, request, *args, **kwargs):
         record_pk = kwargs["pk"]
-        delete_record = BorrowRecord.objects.get(pk=record_pk)
+        delete_record = get_object_or_404(BorrowRecord, pk=record_pk)
         model_name = delete_record.__class__.__name__
         messages.error(
             request, f"Record {delete_record.borrower} => {delete_record.book} Removed"
@@ -950,31 +892,34 @@ class BorrowRecordDeleteView(LoginRequiredMixin, View):
 
 class BorrowRecordClose(LoginRequiredMixin, View):
     def post(self, request, *args, **kwargs):
-        close_record = BorrowRecord.objects.get(pk=self.kwargs["pk"])
-        close_record.closed_by = self.request.user.username
-        close_record.final_status = close_record.return_status
-        close_record.delay_days = close_record.get_delay_number_days
-        close_record.open_or_close = 1
-        close_record.save()
-        print(close_record.open_or_close, close_record.final_status, close_record.pk)
+        close_record = get_object_or_404(BorrowRecord, pk=self.kwargs["pk"])
+        if close_record.open_or_close == 0:
+            close_record.closed_by = request.user.username
+            close_record.final_status = close_record.return_status
+            close_record.delay_days = close_record.get_delay_number_days
+            close_record.open_or_close = 1
+            with transaction.atomic():
+                close_record.save()
+                matches = Book.objects.filter(title=close_record.book)
+                if matches.count() == 1:
+                    borrowed_book = matches.get()
+                    borrowed_book.quantity += close_record.quantity
+                    still_open = BorrowRecord.objects.filter(
+                        book=close_record.book, open_or_close=0
+                    ).exists()
+                    if not still_open:
+                        borrowed_book.status = 1
+                    borrowed_book.save()
 
-        borrowed_book = Book.objects.get(title=close_record.book)
-        borrowed_book.quantity += 1
-        count_record_same_book = BorrowRecord.objects.filter(
-            book=close_record.book
-        ).count()
-        if count_record_same_book == 1:
-            borrowed_book.status = 1
-
-        borrowed_book.save()
-
-        model_name = close_record.__class__.__name__
-        UserActivity.objects.create(
-            created_by=self.request.user.username,
-            operation_type="info",
-            target_model=model_name,
-            detail=f"Close {model_name} '{close_record.borrower}'=>{close_record.book}",
-        )
+            UserActivity.objects.create(
+                created_by=request.user.username,
+                operation_type="info",
+                target_model=close_record.__class__.__name__,
+                detail=(
+                    f"Close {close_record.__class__.__name__} "
+                    f"'{close_record.borrower}'=>{close_record.book}"
+                ),
+            )
         return HttpResponseRedirect(reverse("record_list"))
 
 
@@ -1014,6 +959,9 @@ def download_data(request, model_name):
         for m in apps.get_models()
         if m.__name__ in allowed_models
     }
+
+    if model_name not in download:
+        raise Http404
 
     download[model_name]["source"].to_csv(
         download[model_name]["path"], index=False, encoding="utf-8"
@@ -1128,12 +1076,10 @@ class NoticeUpdateView(SuperUserRequiredMixin, View):
     """Update Status of Notification"""
 
     def post(self, request):
-        # 获取未读消息
         notice_id = request.POST.get("notice_id")
-        # 更新单条通知
         if notice_id:
-            request.user.notifications.get(id=notice_id).mark_as_read()
+            notice = get_object_or_404(request.user.notifications, id=notice_id)
+            notice.mark_as_read()
             return redirect("category_list")
-        # 更新全部通知
         request.user.notifications.mark_all_as_read()
         return redirect("notice_list")
