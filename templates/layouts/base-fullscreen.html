@@ -27,7 +27,10 @@
 </head>
 
 <body>
-    
+    <a href="{% url 'home' %}" class="b-brand auth-home-brand">
+        <span class="b-title">Open Library</span>
+    </a>
+
     {% block content %}{% endblock content %}
 
     {% include 'includes/scripts.html' %}

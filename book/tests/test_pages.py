@@ -1,5 +1,6 @@
 """GET page coverage for library screens and the notification inbox."""
 
+import re
 from datetime import timedelta
 
 from django.urls import reverse
@@ -23,7 +24,6 @@ STAFF_PAGES = (
     ("record_list", {}, "borrow_records/list.html", "All Borrow Records", 200),
     ("record_create", {}, "borrow_records/create.html", "Add New Record", 200),
     ("chart", {}, "book/charts.html", "Charts", 200),
-    ("profile_create", {}, "profile/profile_create.html", "Create Profile", 200),
     ("user_activity_list", {}, "book/user_activity_list.html", "User Activity", 403),
     ("data_center", {}, "book/download_data.html", "Download data", 403),
     ("employees_list", {}, "book/employees.html", "Employee Status", 403),
@@ -77,6 +77,7 @@ class LibraryPageTests(PageFixture):
 
     def _protected_urls(self):
         names = [name for name, *_rest in STAFF_PAGES]
+        names.append("profile_create")
         names += list(POST_ONLY)
         names += [
             "book_detail",
@@ -206,8 +207,9 @@ class LibraryPageTests(PageFixture):
 
         detail = self.client.get(reverse("record_detail", args=[self.record.pk]))
         self.assertContains(detail, "On Time")
+        self.record.refresh_from_db()
         self.assertEqual(self.record.open_or_close, 0)
-        self.assertIsNotNone(self.record.closed_at)
+        self.assertIsNone(self.record.closed_at)
         self.assertNotContains(detail, "Closed at")
 
         Member.objects.create(name="Ada Close", city="Paris", phone_number="0600000001")
@@ -343,6 +345,71 @@ class LibraryPageTests(PageFixture):
 
         detail = self.client.get(reverse("book_detail", args=[self.book.pk]))
         self.assertContains(detail, "exportpdf")
+
+    def test_profile_create_redirects_when_a_profile_exists(self):
+        self.login(self.staff)
+        response = self.client.get(reverse("profile_create"))
+        self.assertRedirects(
+            response, reverse("profile_update", args=[self.staff.profile.pk])
+        )
+
+    def test_last_page_link_keeps_orderby_and_search(self):
+        self.login(self.staff)
+        for index in range(11):
+            Book.objects.create(
+                author="Ada",
+                title=f"Shelf {index:02d}",
+                description="catalog",
+                quantity=1,
+                category=self.category,
+                publisher=self.publisher,
+            )
+        page = self.client.get(
+            reverse("book_list"),
+            {"search": "Shelf", "orderby": "title", "page": 2},
+        )
+        self.assertEqual(page.status_code, 200)
+        self.assertContains(
+            page, 'href="?page=1&orderby=title&search=Shelf">First<'
+        )
+        self.assertContains(
+            page, 'href="?page=3&orderby=title&search=Shelf">Last<'
+        )
+
+    def test_activity_pagination_hrefs_are_not_double_escaped(self):
+        self.login(self.superuser)
+        for index in range(6):
+            UserActivity.objects.create(
+                created_by=self.staff.username,
+                target_model="Book",
+                detail=f"Create Book << Shelf {index} >>",
+            )
+        page = self.client.get(
+            reverse("user_activity_list"),
+            {"orderby": "created_at", "search": "Book"},
+        )
+        self.assertEqual(page.status_code, 200)
+        hrefs = re.findall(r'href="(\?[^"]*)"', page.content.decode())
+        self.assertTrue(hrefs)
+        for href in hrefs:
+            self.assertNotIn("&amp;", href)
+            self.assertNotIn("amp;page", href)
+            self.assertIn("orderby=created_at", href)
+            self.assertIn("search=Book", href)
+            self.assertIn("page=", href)
+
+    def test_overdue_borrow_row_uses_the_model_status(self):
+        self.login(self.staff)
+        BorrowRecord.objects.create(
+            borrower=self.member.name,
+            book=self.book.title,
+            borrower_card=self.member.card_number,
+            end_day=timezone.now() - timedelta(days=2),
+        )
+        page = self.client.get(reverse("record_list"))
+        self.assertEqual(page.status_code, 200)
+        self.assertContains(page, "Overdue")
+        self.assertContains(page, "table-danger")
 
 
 class NotificationPageTests(PageFixture):

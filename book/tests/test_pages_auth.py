@@ -18,6 +18,7 @@ class AuthPageTests(PageFixture):
             with self.subTest(name=name):
                 response = self.client.get(reverse(name))
                 self.assertEqual(response.status_code, 200)
+                self.assertContains(response, 'href="/" class="b-brand')
                 self.assert_local_static_exists(response)
 
     def test_logged_in_user_can_still_open_login_and_register(self):

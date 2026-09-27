@@ -50,9 +50,16 @@ class CommentPageTests(PageFixture):
         delete = reverse("comment:comment_delete", args=[self.comment.pk])
         post = reverse("comment:post_comment", args=[self.book.pk])
 
-        for url in (create, detail, edit, delete, post):
+        for url in (create, detail, edit, delete):
             with self.subTest(url=url):
                 self.assert_redirects_to_login(url)
+
+        # GET is refused before the login check. POST still sends anonymous
+        # visitors to the named login route.
+        self.assertEqual(self.client.get(post).status_code, 405)
+        anonymous_post = self.client.post(post, {"body": "nope"})
+        self.assertEqual(anonymous_post.status_code, 302)
+        self.assertTrue(anonymous_post.url.startswith("/auth/login/?next="))
 
         self.login(self.staff)
         created = self.client.get(create)
@@ -85,10 +92,9 @@ class CommentPageTests(PageFixture):
             self.assertEqual(missing.status_code, 404, name)
 
         text = self.client.get(post)
-        self.assertEqual(text.status_code, 200)
-        self.assertContains(text, "Comment only accepts POST requests")
+        self.assertEqual(text.status_code, 405)
         missing_book = self.client.get(reverse("comment:post_comment", args=[999999]))
-        self.assertEqual(missing_book.status_code, 404)
+        self.assertEqual(missing_book.status_code, 405)
 
     def test_other_users_cannot_open_edit_or_delete(self):
         self.login(self.reader)

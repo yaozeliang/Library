@@ -133,6 +133,19 @@ video {
   border-color: #dc3545;
 }
 
+.auth-home-brand {
+  position: absolute;
+  top: 16px;
+  left: 16px;
+  z-index: 2;
+  text-decoration: none;
+}
+
+.auth-home-brand .b-title {
+  color: #373a3c;
+  font-weight: 600;
+}
+
 @media only screen and (max-width: 768px) {
   .auth-wrapper {
     max-width: 100%;
