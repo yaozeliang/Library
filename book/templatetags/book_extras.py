@@ -88,15 +88,9 @@ def show_weather(context: Dict[str, Any]) -> Dict[str, Any]:
                 "icon": r["weather"][0]["icon"],
                 "country": r["sys"]["country"],
             }
-    except (requests.RequestException, KeyError, ValueError):
+    except (requests.RequestException, KeyError):
         paris_weather = {}
 
-    # Keep the keys present so a failed lookup does not render as a blank crash.
-    paris_weather.setdefault("city", "")
-    paris_weather.setdefault("country", "")
-    paris_weather.setdefault("temperature", "")
-    paris_weather.setdefault("description", "")
-    paris_weather.setdefault("icon", "")
     return {"paris_weather": paris_weather}
 
 

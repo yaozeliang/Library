@@ -1,11 +1,14 @@
-"""Shared setup for route tests. No seed database; objects are created in setUp."""
+"""Shared setup for page tests. Objects are created in setUp, not from the seed database."""
 
 from copy import deepcopy
 from unittest.mock import patch
 
+import re
+
 import requests
 from django.conf import settings
 from django.contrib.auth.models import User
+from django.contrib.staticfiles import finders
 from django.test import TestCase, override_settings
 
 
@@ -25,8 +28,8 @@ def strict_templates():
 
 
 @override_settings(TEMPLATES=strict_templates())
-class RouteFixture(TestCase):
-    """Staff, superuser, and a plain user, plus one of each library object."""
+class PageFixture(TestCase):
+    """Staff, superuser, and a plain user. The weather widget is offline."""
 
     def setUp(self):
         weather = patch(
@@ -37,15 +40,15 @@ class RouteFixture(TestCase):
         self.addCleanup(weather.stop)
 
         self.staff = User.objects.create_user(
-            username="route-staff", password="pass12345", is_staff=True
+            username="page-staff", password="pass12345", is_staff=True
         )
         self.superuser = User.objects.create_superuser(
-            username="route-root",
-            email="route-root@example.com",
+            username="page-root",
+            email="page-root@example.com",
             password="pass12345",
         )
         self.reader = User.objects.create_user(
-            username="route-reader", password="pass12345"
+            username="page-reader", password="pass12345"
         )
         self.client.logout()
 
@@ -57,3 +60,16 @@ class RouteFixture(TestCase):
         self.assertEqual(response.status_code, 302, url)
         self.assertIn("/auth/login/", response.url, url)
         return response
+
+    def assert_local_static_exists(self, response):
+        """Every live same-origin /static/ reference on the page resolves to a file."""
+        html = re.sub(r"<!--.*?-->", "", response.content.decode(), flags=re.S)
+        prefix = settings.STATIC_URL
+        for quoted in html.split(prefix)[1:]:
+            relative = quoted.split('"', 1)[0].split("'", 1)[0].split("?", 1)[0]
+            if not relative or relative.startswith(("http://", "https://")):
+                continue
+            self.assertIsNotNone(
+                finders.find(relative),
+                f"missing static file {prefix}{relative}",
+            )

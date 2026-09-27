@@ -73,9 +73,10 @@ jobs:
 
     - name: Run Django tests with coverage
       run: |
-        # authentication.tests is a module, not the authentication/ tree, so the
-        # vendored authentication/env virtualenv is not collected.
-        uv run coverage run manage.py test book comment Api authentication.tests
+        # Explicit app labels. `manage.py test` with no label discovers `.`,
+        # which walks the vendored authentication/env virtualenv. Auth form
+        # tests stay in authentication/tests.py and are not part of this run.
+        uv run coverage run manage.py test book comment Api
         uv run coverage report
         uv run coverage xml -o coverage.xml
         uv run coverage html -d coverage_html
