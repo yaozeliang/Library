@@ -67,19 +67,6 @@ video {
 }
 
 .auth-wrapper .input-group > input,
-/* Screen-reader labels on auth inputs. Bootstrap's .sr-only is not in style.css. */
-.auth-wrapper .sr-only {
-  position: absolute;
-  width: 1px;
-  height: 1px;
-  padding: 0;
-  margin: -1px;
-  overflow: hidden;
-  clip: rect(0, 0, 0, 0);
-  white-space: nowrap;
-  border: 0;
-}
-
 .auth-wrapper .input-group > .form-control {
   display: block;
   flex: 1 1 auto;
@@ -94,6 +81,19 @@ video {
   background-color: #fff;
   border: 1px solid #ced4da;
   border-radius: 0.25rem;
+}
+
+/* Screen-reader labels on auth inputs. Bootstrap's .sr-only is not in style.css. */
+.auth-wrapper .sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
 }
 
 .auth-wrapper .checkbox,

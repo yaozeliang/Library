@@ -236,3 +236,15 @@ class AuthPlaceholderTests(TestCase):
             {"username": "reader", "password": "library-pass-1"},
         )
         self.assertRedirects(response, reverse("home"), fetch_redirect_response=False)
+
+    def test_sr_only_rule_does_not_clip_auth_inputs(self):
+        from pathlib import Path
+
+        css = Path("static/assets/css/responsive.css").read_text()
+        self.assertIn(
+            ".auth-wrapper .input-group > input,\n"
+            ".auth-wrapper .input-group > .form-control {",
+            css,
+        )
+        self.assertNotIn(".auth-wrapper .input-group > input,\n.auth-wrapper .sr-only", css)
+        self.assertIn(".auth-wrapper .sr-only {", css)
