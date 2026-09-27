@@ -17,6 +17,7 @@ from book.models import (
     BorrowRecord,
     Category,
     Member,
+    Profile,
     Publisher,
     UserActivity,
 )
@@ -287,16 +288,68 @@ class BorrowReturnTests(MutationSetup):
         self.assertEqual(self.book.status, 0)
 
         self.client.post(reverse("record_close", args=[second.pk]))
+        second.refresh_from_db()
         self.book.refresh_from_db()
         self.assertEqual(self.book.quantity, 5)
         self.assertEqual(self.book.status, 1)
 
+        closed_at = second.closed_at
+        self.assertIsNotNone(closed_at)
         self.client.post(reverse("record_close", args=[second.pk]))
+        second.refresh_from_db()
         self.book.refresh_from_db()
         self.assertEqual(self.book.quantity, 5)
+        self.assertEqual(second.closed_at, closed_at)
         self.assertEqual(
             UserActivity.objects.filter(operation_type="info").count(), 2
         )
+
+    def test_closing_stamps_closed_at_and_later_edits_keep_it(self):
+        self.client.force_login(self.staff)
+        record = BorrowRecord.objects.create(
+            borrower=self.member.name, book=self.book.title, quantity=1
+        )
+        self.assertIsNone(record.closed_at)
+        before = timezone.now()
+        self.client.post(reverse("record_close", args=[record.pk]))
+        record.refresh_from_db()
+        self.assertEqual(record.open_or_close, 1)
+        self.assertIsNotNone(record.closed_at)
+        self.assertGreaterEqual(record.closed_at, before)
+        stamp = record.closed_at
+        record.borrower = "Edited"
+        record.save()
+        record.refresh_from_db()
+        self.assertEqual(record.closed_at, stamp)
+
+    def test_home_recent_closed_skips_open_loans_and_null_close_dates(self):
+        self.client.force_login(self.staff)
+        older = BorrowRecord.objects.create(
+            borrower="older-reader", book="Guide", open_or_close=1
+        )
+        newer = BorrowRecord.objects.create(
+            borrower="newer-reader", book="Guide", open_or_close=1
+        )
+        still_open = BorrowRecord.objects.create(
+            borrower="still-open", book="Guide"
+        )
+        missing_stamp = BorrowRecord.objects.create(
+            borrower="missing-stamp", book="Guide", open_or_close=1
+        )
+        now = timezone.now()
+        BorrowRecord.objects.filter(pk=older.pk).update(
+            closed_at=now - timedelta(days=2)
+        )
+        BorrowRecord.objects.filter(pk=newer.pk).update(closed_at=now)
+        BorrowRecord.objects.filter(pk=still_open.pk).update(closed_at=now)
+        BorrowRecord.objects.filter(pk=missing_stamp.pk).update(closed_at=None)
+
+        response = self.client.get(reverse("home"))
+        self.assertEqual(response.status_code, 200)
+        html = response.content.decode()
+        self.assertLess(html.index("newer-reader"), html.index("older-reader"))
+        self.assertNotContains(response, "still-open")
+        self.assertNotContains(response, "missing-stamp")
 
     def test_overdue_return_records_delay_and_the_list_marks_it(self):
         record = BorrowRecord.objects.create(
@@ -409,6 +462,36 @@ class AdminOnlyMutationTests(MutationSetup):
         self.assertEqual(self.admin.notifications.unread().count(), 0)
 
 
+class ProfileCreateTests(MutationSetup):
+    def test_existing_profile_is_sent_to_the_edit_page(self):
+        self.client.force_login(self.staff)
+        profile = self.staff.profile
+        url = reverse("profile_create")
+        for method in ("get", "post"):
+            response = getattr(self.client, method)(
+                url, {"bio": "Another", "phone_number": "0600", "email": "a@b.co"}
+            )
+            self.assertRedirects(
+                response, reverse("profile_update", args=[profile.pk])
+            )
+        self.assertEqual(Profile.objects.filter(user=self.staff).count(), 1)
+        profile.refresh_from_db()
+        self.assertNotEqual(profile.bio, "Another")
+
+    def test_user_without_a_profile_can_create_one(self):
+        user = make_staff(username="fresh")
+        self.client.force_login(user)
+        Profile.objects.filter(user=user).delete()
+        opened = self.client.get(reverse("profile_create"))
+        self.assertEqual(opened.status_code, 200)
+        created = self.client.post(
+            reverse("profile_create"),
+            {"bio": "Hello", "phone_number": "0600", "email": "fresh@example.com"},
+        )
+        self.assertRedirects(created, reverse("home"))
+        self.assertEqual(Profile.objects.get(user=user).bio, "Hello")
+
+
 class CommentMutationTests(MutationSetup):
     def test_owner_posts_a_sanitized_comment_and_others_cannot_change_it(self):
         book = Book.objects.create(author="Ada", title="Guide", description="d")
@@ -440,6 +523,15 @@ class CommentMutationTests(MutationSetup):
         )
         self.assertEqual(anonymous.status_code, 302)
         self.assertEqual(Comment.objects.count(), 1)
+
+    def test_get_post_comment_is_method_not_allowed(self):
+        book = Book.objects.create(author="Ada", title="Guide", description="d")
+        url = reverse("comment:post_comment", args=[book.pk])
+        self.client.force_login(self.staff)
+        self.assertEqual(self.client.get(url).status_code, 405)
+        self.client.logout()
+        self.assertEqual(self.client.get(url).status_code, 405)
+        self.assertEqual(Comment.objects.count(), 0)
 
     def test_owner_can_delete_their_comment(self):
         book = Book.objects.create(author="Ada", title="Guide", description="d")

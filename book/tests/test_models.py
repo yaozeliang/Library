@@ -4,6 +4,8 @@ import io
 import tempfile
 from datetime import timedelta
 
+from django.apps import apps
+
 from django.contrib.auth.models import User
 from django.core.files.base import ContentFile
 from django.core.files.uploadedfile import SimpleUploadedFile
@@ -159,6 +161,55 @@ class BorrowRecordComputedTests(TestCase):
         self.assertEqual(closed.get_delay_number_days, 4)
         closed.refresh_from_db()
         self.assertEqual(closed.delay_days, 4)
+
+    def test_closed_at_is_set_only_when_the_loan_is_closed(self):
+        open_record = BorrowRecord.objects.create(borrower="Sam", book="Guide")
+        open_record.borrower = "Sam Two"
+        open_record.save()
+        open_record.refresh_from_db()
+        self.assertIsNone(open_record.closed_at)
+        self.assertEqual(open_record.open_or_close, 0)
+
+        closed = BorrowRecord.objects.create(
+            borrower="Sam", book="Guide", open_or_close=1
+        )
+        stamp = closed.closed_at
+        self.assertIsNotNone(stamp)
+        closed.borrower = "Renamed"
+        closed.save()
+        closed.refresh_from_db()
+        self.assertEqual(closed.closed_at, stamp)
+        self.assertEqual(closed.borrower, "Renamed")
+
+        closed.open_or_close = 0
+        closed.save()
+        closed.refresh_from_db()
+        self.assertIsNone(closed.closed_at)
+        self.assertEqual(closed.open_or_close, 0)
+
+    def test_data_migration_clears_closed_at_on_open_records_only(self):
+        import importlib
+
+        migration = importlib.import_module(
+            "book.migrations.0038_borrowrecord_closed_at_nullable"
+        )
+
+        open_record = BorrowRecord.objects.create(borrower="Open", book="Guide")
+        BorrowRecord.objects.filter(pk=open_record.pk).update(
+            closed_at=timezone.now()
+        )
+        closed = BorrowRecord.objects.create(
+            borrower="Shut", book="Guide", open_or_close=1
+        )
+        stamp = closed.closed_at
+        self.assertIsNotNone(stamp)
+
+        migration.clear_closed_at_on_open_records(apps, None)
+
+        open_record.refresh_from_db()
+        closed.refresh_from_db()
+        self.assertIsNone(open_record.closed_at)
+        self.assertEqual(closed.closed_at, stamp)
 
 
 class CommentSaveTests(TestCase):

@@ -16,6 +16,7 @@ from django.db.models.functions import TruncMonth
 from django.http import Http404, HttpResponse, HttpResponseRedirect, JsonResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse, reverse_lazy
+from django.utils import timezone
 from django.utils.decorators import method_decorator
 from django.views.generic import DetailView, ListView, TemplateView, View
 from django.views.generic.edit import CreateView, UpdateView
@@ -185,9 +186,9 @@ class HomeView(LoginRequiredMixin, TemplateView):
 
         books_return_thisweek = BorrowRecord.objects.filter(end_day__week=current_week)
         number_books_return_thisweek = books_return_thisweek.count()
-        new_closed_records = BorrowRecord.objects.filter(open_or_close=1).order_by(
-            "-closed_at"
-        )[:5]
+        new_closed_records = BorrowRecord.objects.filter(
+            open_or_close=1, closed_at__isnull=False
+        ).order_by("-closed_at")[:5]
 
         self.context["data_count"] = data_count
         self.context["recent_user_activities"] = user_activities
@@ -741,6 +742,15 @@ class ProfileCreateView(LoginRequiredMixin, CreateView):
     login_url = "login"
     form_class = ProfileForm
 
+    def dispatch(self, request, *args, **kwargs):
+        # A user already has a OneToOne profile (the signup signal creates it).
+        # Posting the create form again raises IntegrityError.
+        if request.user.is_authenticated:
+            existing = Profile.objects.filter(user=request.user).first()
+            if existing is not None:
+                return redirect("profile_update", pk=existing.pk)
+        return super().dispatch(request, *args, **kwargs)
+
     def form_valid(self, form) -> HttpResponse:
         form.instance.user = self.request.user
         return super().form_valid(form)
@@ -912,6 +922,7 @@ class BorrowRecordClose(LoginRequiredMixin, View):
             close_record.final_status = close_record.return_status
             close_record.delay_days = close_record.get_delay_number_days
             close_record.open_or_close = 1
+            close_record.closed_at = timezone.now()
             with transaction.atomic():
                 close_record.save()
                 matches = Book.objects.filter(title=close_record.book)
