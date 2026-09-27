@@ -109,7 +109,7 @@
                                                  </td>
                                                     <td><span class="cell-ellipsis" title="{{ r.book }}">{{ r.book }}</span></td>
                                                     <td class="col-short" title="{{ r.start_day|date:'Y/m/d' }} - {{ r.end_day|date:'Y/m/d' }}">{{r.start_day|date:"Y/m/d" }} - {{r.end_day|date:"Y/m/d" }} </td>
-                                                    <td class="col-short">{{r.closed_at | timesince}}</td>
+                                                    <td class="col-short">{% if r.open_or_close == 1 and r.closed_at %}{{ r.closed_at|timesince }}{% endif %}</td>
                                                     <!-- <td>{{r.return_status}}</td> -->
                                                 </tr>
                                                 {% endfor %}

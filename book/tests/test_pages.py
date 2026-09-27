@@ -206,6 +206,27 @@ class LibraryPageTests(PageFixture):
 
         detail = self.client.get(reverse("record_detail", args=[self.record.pk]))
         self.assertContains(detail, "On Time")
+        self.assertEqual(self.record.open_or_close, 0)
+        self.assertIsNotNone(self.record.closed_at)
+        self.assertNotContains(detail, "Closed at")
+
+        Member.objects.create(name="Ada Close", city="Paris", phone_number="0600000001")
+        closed = BorrowRecord.objects.create(
+            borrower="Ada Close",
+            book=self.book.title,
+            borrower_card=self.member.card_number,
+            end_day=timezone.now() + timedelta(days=3),
+            open_or_close=1,
+        )
+        closed_page = self.client.get(reverse("record_detail", args=[closed.pk]))
+        self.assertContains(closed_page, "Closed at")
+        self.assertContains(
+            closed_page,
+            timezone.localtime(closed.closed_at).strftime("%Y-%m-%d %H:%M"),
+        )
+        home = self.client.get(reverse("home"))
+        self.assertContains(home, "Ada Close")
+        self.assertContains(home, "just now")
 
         self.login(self.superuser)
         employee = self.client.get(reverse("employees_detail", args=[self.staff.pk]))
