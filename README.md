@@ -1,6 +1,6 @@
 # Library Management System
 
-Django 5.2 LTS monolith for a small library: catalog, members, borrowing, and staff login. Local development uses SQLite. Demo and staging can use Postgres on a shared personal-site database, isolated in schema `library`.
+Django 5.2 LTS monolith for a small library: catalog, members, borrowing, and staff login. Local development uses SQLite. Demo and staging can use Postgres, isolated in schema `library`.
 
 ## Features
 
@@ -58,12 +58,7 @@ Do not run that script against a production database. Re-running it leaves exist
 
 ## Demo accounts
 
-`admin` / `admin` is the superuser `scripts/seed_library_demo.py` creates for local development only. On any shared or public host, change the admin password right after seeding, or set `DEMO_ADMIN_PASSWORD` before the first seed so the new superuser is created with that value. The variable is documented in `env.example` and `.env.example` with a placeholder only. Re-running the seed leaves existing users' passwords unchanged. To write the default passwords again on purpose, pass `--reset-passwords` or set `DEMO_RESET_PASSWORDS=1`.
-
-| Username | Password | Role |
-| --- | --- | --- |
-| `admin` | `admin` | superuser (local development seed only) |
-| `staff` | `staff` | staff |
+`scripts/seed_library_demo.py` creates a local superuser and a staff user with throwaway development passwords. It is for local development only. Never run it against a shared or public host with its default passwords. On any shared host, set `DEMO_ADMIN_PASSWORD` before the first seed, and change every seeded password right after. Re-running the seed leaves existing users' passwords unchanged. To rewrite the local default passwords on purpose, pass `--reset-passwords` or set `DEMO_RESET_PASSWORDS=1`.
 
 The script also loads the fake catalog. Sign in at `/auth/login/`.
 
@@ -75,7 +70,7 @@ Leave `DATABASE_URL` unset to keep SQLite (`db.sqlite3` via `core.settings`).
 
 `DATABASE_URL` is supported in both `core.settings` and `core.settings_production` through `core/db_config.py`. An empty value keeps SQLite. Postgres uses `core.postgresql_backend` so constraint lookups follow `search_path` (schema `library` on the shared demo database). The variable and a placeholder shape are in `env.example`. Set `DJANGO_SETTINGS_MODULE=core.settings_production` for the production configuration.
 
-Demo/staging Postgres is **schema isolation on the shared personal-site database**, not a separate database named `library`. Tables belong in schema `library`. The application role is `library_app`. Set the connection `search_path` to `library` (URL-encoded `options=-csearch_path%3Dlibrary`).
+Demo/staging Postgres uses **schema isolation**, not a separate database named `library`. Tables belong in schema `library`. The application role is `library_app`. Set the connection `search_path` to `library` (URL-encoded `options=-csearch_path%3Dlibrary`).
 
 ```bash
 # Placeholder only. Do not commit a real password, .env, or connection string.
@@ -101,7 +96,7 @@ The current public demo is an independent sslip.io host, not fillerwiki.
 
 - Site: https://library.167-172-169-210.sslip.io/
 - Login: https://library.167-172-169-210.sslip.io/auth/login/
-- Public demo account: `staff` / `staff`. The demo superuser uses a private password held by the maintainer.
+- Demo login is available on request. No credentials are published in this repository.
 
 ## Configuration
 
